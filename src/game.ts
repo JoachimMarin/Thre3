@@ -1,17 +1,24 @@
 import * as Phaser from 'phaser';
 
-import Demo from './DemoScene';
 import MainMenuScene from './MainMenuScene';
 
 const config = {
     type: Phaser.AUTO,
-    backgroundColor: '#eeeeee',
+    backgroundColor: '#777777',
     width: 3840,
     height: 2560,
-    scene: MainMenuScene,
+    physics: {
+        default: 'arcade',
+        arcade: {
+            debug: false
+        }
+    },
+    scene: [MainMenuScene].concat(MainMenuScene.GetLevels()),
     scale: {
         mode: Phaser.Scale.FIT,
-        parent: 'gameDiv'
+        parent: 'gameDiv',
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+
     }
 };
 
