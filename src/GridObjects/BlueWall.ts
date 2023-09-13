@@ -1,6 +1,5 @@
 import * as Phaser from 'phaser';
 import GridObjectStatic from './GridObjectStatic';
-import LevelScene from '../LevelScene';
 import { GridTags } from '../Constants/GridTags';
 import LevelGrid from '../LevelGrid';
 

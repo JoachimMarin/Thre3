@@ -6,6 +6,7 @@ import Player from './GridObjects/Player';
 import { GridTags } from './Constants/GridTags';
 import LevelScene from './LevelScene';
 import GreenGun from './GridObjects/GreenGun';
+import GridPoint from './Math/GridPoint';
 
 export default class LevelGrid {
     public at: Set<GridObject>[][];
@@ -22,7 +23,7 @@ export default class LevelGrid {
         this.CreateLevel();
     }
 
-    HasGridTag(x: integer, y: integer, tag: GridTags) {
+    HasGridTagXY(x: integer, y: integer, tag: GridTags) {
         const objectsAtGridPosition = this.at[x][y];
         for (const object of objectsAtGridPosition) {
             if (object.HasGridTag(tag)) {
@@ -32,7 +33,9 @@ export default class LevelGrid {
         return false;
     }
 
-
+    HasGridTag(point: GridPoint, tag: GridTags) {
+        return this.HasGridTagXY(point.x, point.y, tag);
+    }
 
     CreateLevel() {
         const gridWidth = 30;

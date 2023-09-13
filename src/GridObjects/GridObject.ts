@@ -1,19 +1,16 @@
 import * as Phaser from 'phaser';
-import LevelScene from '../LevelScene';
 import { GridTags } from '../Constants/GridTags';
-import { Grid } from 'matter';
 import LevelGrid from '../LevelGrid';
+import GridPoint from '../Math/GridPoint';
 
 export default abstract class GridObject extends Phaser.GameObjects.GameObject {
-    public x: integer;
-    public y: integer;
+    public position: GridPoint;
     public grid: LevelGrid;
     public tags: { [id: string]: boolean } = {};
 
     constructor(x: integer, y: integer, grid: LevelGrid) {
         super(grid.level_scene, 'GridObject');
-        this.x = x;
-        this.y = y;
+        this.position = new GridPoint(x, y);
         this.grid = grid;
         this.AddToGrid();
         this.Init();
@@ -35,21 +32,22 @@ export default abstract class GridObject extends Phaser.GameObjects.GameObject {
     }
 
     RemoveFromGrid() {
-        const objectsAtGridPosition = this.grid.at[this.x][this.y];
+        const objectsAtGridPosition = this.grid.at[this.position.x][this.position.y];
         objectsAtGridPosition.delete(this);
     }
 
     AddToGrid() {
-        const objectsAtGridPosition = this.grid.at[this.x][this.y];
+        const objectsAtGridPosition = this.grid.at[this.position.x][this.position.y];
         objectsAtGridPosition.add(this);
     }
 
-    SetGridPosition(x: integer, y: integer) {
+
+    SetGridPosition(position: GridPoint) {
         this.RemoveFromGrid();
-        this.x = x;
-        this.y = y;
+        this.position = position;
         this.AddToGrid();
     }
+
     Init() { }
 
     HasGridTag(tag: GridTags) {
