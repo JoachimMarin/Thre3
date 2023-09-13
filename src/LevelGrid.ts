@@ -69,11 +69,11 @@ export default class LevelGrid {
 
     PlayerStep() {
         var trigger = false;
+        this.playerStep++;
         if (this.playerStep >= 3) {
             this.playerStep = 0;
             trigger = true;
         }
-        this.playerStep++;
         for (const object of this.stepEventAll) {
             object.StepEvent(trigger);
         }
