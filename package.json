@@ -29,5 +29,8 @@
         "rollup-plugin-serve": "^2.0.2",
         "typescript": "^5.0.3",
         "tslib": "^2.6.2"
+    },
+    "dependencies": {
+        "enum-for": "0.0.6"
     }
 }

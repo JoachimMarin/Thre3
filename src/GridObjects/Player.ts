@@ -13,7 +13,7 @@ export default class Player extends GridObject {
     private sprite: Phaser.Physics.Arcade.Sprite;
 
     constructor(x: integer, y: integer, grid: LevelGrid) {
-        super(x, y, grid)
+        super(x, y, grid);
         this.cursors = grid.level_scene.cursors;
         this.sprite = grid.level_scene.physics.add.sprite(this.position.realX(), this.position.realY(), 'player');
         this.sprite.setDisplaySize(128, 128);

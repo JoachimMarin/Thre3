@@ -17,5 +17,10 @@ export default abstract class GridObjectStatic extends GridObject {
         this.image.setPosition(position.realX(), position.realY());
     }
 
+    Remove() {
+        this.image.destroy();
+        super.Remove();
+    }
+
     abstract GetImageKey(): string;
 }

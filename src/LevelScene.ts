@@ -17,11 +17,12 @@ export default class LevelScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('player', 'assets/player.png')
-        this.load.image('wall', 'assets/blue_wall.png')
-        this.load.image('protective_wall', 'assets/protective_wall.png')
-        //this.load.image('destination', 'assets/destination.png')
-        this.load.image('green_gun', 'assets/green_gun.png')
+        this.load.image('player', 'assets/player.png');
+        this.load.image('wall', 'assets/blue_wall.png');
+        this.load.image('protective_wall', 'assets/protective_wall.png');
+        //this.load.image('destination', 'assets/destination.png');
+        this.load.image('green_gun', 'assets/green_gun.png');
+        this.load.image('green_projectile', 'assets/green_projectile.png');
     }
 
     create() {

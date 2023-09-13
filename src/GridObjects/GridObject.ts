@@ -27,6 +27,7 @@ export default abstract class GridObject extends Phaser.GameObjects.GameObject {
     Remove() {
         this.grid.all.delete(this);
         this.grid.stepEventAll.delete(this);
+        this.grid.stepEventTrigger.delete(this);
         this.RemoveFromGrid();
         this.destroy();
     }

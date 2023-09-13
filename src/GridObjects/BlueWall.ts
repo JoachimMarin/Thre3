@@ -5,7 +5,7 @@ import LevelGrid from '../LevelGrid';
 
 export default class BlueWall extends GridObjectStatic {
     constructor(x: integer, y: integer, grid:LevelGrid) {
-        super(x, y, grid)
+        super(x, y, grid);
     }
 
     Init() {
