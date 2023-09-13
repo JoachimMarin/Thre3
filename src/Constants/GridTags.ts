@@ -1,3 +1,5 @@
 export enum GridTags {
-    WALL
+    WALL,
+    STEP_EVENT_ALL,
+    STEP_EVENT_TRIGGER,
 }

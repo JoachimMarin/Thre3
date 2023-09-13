@@ -3,6 +3,7 @@ import GridObject from './GridObject';
 import LevelScene from '../LevelScene';
 import { Direction } from '../Constants/Direction';
 import { GridTags } from '../Constants/GridTags';
+import LevelGrid from '../LevelGrid';
 
 export default class Player extends GridObject {
     private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -12,10 +13,10 @@ export default class Player extends GridObject {
     private destinationY: integer;
     private sprite: Phaser.Physics.Arcade.Sprite;
 
-    constructor(x: integer, y: integer, level_scene: LevelScene, cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
-        super(x, y, level_scene)
-        this.cursors = cursors;
-        this.sprite = level_scene.physics.add.sprite(x * 128 + 64, y * 128 + 64, 'player');
+    constructor(x: integer, y: integer, grid: LevelGrid) {
+        super(x, y, grid)
+        this.cursors = grid.level_scene.cursors;
+        this.sprite = grid.level_scene.physics.add.sprite(x * 128 + 64, y * 128 + 64, 'player');
         this.sprite.setDisplaySize(128, 128);
     }
 
@@ -32,28 +33,28 @@ export default class Player extends GridObject {
                 if (this.sprite.x >= this.destinationX * 128 + 64) {
                     this.moving = false;
                     this.SetGridPosition(this.destinationX, this.destinationY);
-                    this.level_scene.PlayerStep();
+                    this.grid.PlayerStep();
                 } 
             } else if (this.direction == Direction.LEFT) {
                 this.sprite.x -= speed * delta;
                 if (this.sprite.x <= this.destinationX * 128 + 64) {
                     this.moving = false;
                     this.SetGridPosition(this.destinationX, this.destinationY);
-                    this.level_scene.PlayerStep();
+                    this.grid.PlayerStep();
                 }
             } else if (this.direction == Direction.UP) {
                 this.sprite.y -= speed * delta;
                 if (this.sprite.y <= this.destinationY * 128 + 64) {
                     this.moving = false;
                     this.SetGridPosition(this.destinationX, this.destinationY);
-                    this.level_scene.PlayerStep();
+                    this.grid.PlayerStep();
                 }
             } else if (this.direction == Direction.DOWN) {
                 this.sprite.y += speed * delta;
                 if (this.sprite.y >= this.destinationY * 128 + 64) {
                     this.moving = false;
                     this.SetGridPosition(this.destinationX, this.destinationY);
-                    this.level_scene.PlayerStep();
+                    this.grid.PlayerStep();
                 }
             }
 
@@ -81,7 +82,7 @@ export default class Player extends GridObject {
                 this.destinationX = this.x;
                 this.destinationY = this.y + 1;
             }
-            if (this.moving && this.level_scene.HasGridTag(this.destinationX, this.destinationY, GridTags.WALL)) {
+            if (this.moving && this.grid.HasGridTag(this.destinationX, this.destinationY, GridTags.WALL)) {
                 console.log("wall at destination");
                 this.moving = false;
             }

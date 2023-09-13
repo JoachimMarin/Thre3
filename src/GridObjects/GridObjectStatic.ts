@@ -1,13 +1,14 @@
 import * as Phaser from 'phaser';
 import GridObject from './GridObject';
 import LevelScene from '../LevelScene';
+import LevelGrid from '../LevelGrid';
 
 export default abstract class GridObjectStatic extends GridObject {
     public image: Phaser.GameObjects.Image;
 
-    constructor(x: integer, y: integer, level_scene: LevelScene) {
-        super(x, y, level_scene);
-        this.image = level_scene.add.image(x * 128 + 64, y * 128 + 64, this.GetImageKey());
+    constructor(x: integer, y: integer, grid: LevelGrid) {
+        super(x, y, grid);
+        this.image = grid.level_scene.add.image(x * 128 + 64, y * 128 + 64, this.GetImageKey());
         this.image.setDisplaySize(128, 128);
     }
 
