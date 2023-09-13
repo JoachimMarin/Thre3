@@ -5,8 +5,9 @@ import ProtectiveWall from './GridObjects/ProtectiveWall'
 import Player from './GridObjects/Player';
 import { GridTags } from './Constants/GridTags';
 import LevelScene from './LevelScene';
-import GreenGun from './GridObjects/GreenGun';
 import GridPoint from './Math/GridPoint';
+import LaserColor from './Constants/LaserColor';
+import LaserGun from './GridObjects/LaserGun';
 
 export default class LevelGrid {
     public at: Set<GridObject>[][];
@@ -62,12 +63,14 @@ export default class LevelGrid {
 
         for (var x = 5; x < 25; x++) {
             for (var y = 5; y < 15; y++) {
-                new GreenGun(x, y, this);
+                new LaserGun(x, y, this, LaserColor.GREEN);
             }
         }
 
-        new GreenGun(4, 2, this);
-        new GreenGun(3, 7, this);
+        new LaserGun(4, 2, this, LaserColor.BLUE);
+        new LaserGun(3, 7, this, LaserColor.PURPLE);
+        new LaserGun(8, 3, this, LaserColor.YELLOW);
+        new LaserGun(3, 4, this, LaserColor.RED);
     }
 
 
