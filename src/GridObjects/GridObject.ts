@@ -3,13 +3,12 @@ import { GridTags } from '../Constants/GridTags';
 import LevelGrid from '../LevelGrid';
 import GridPoint from '../Math/GridPoint';
 
-export default abstract class GridObject extends Phaser.GameObjects.GameObject {
+export default abstract class GridObject {
     public position: GridPoint;
     public grid: LevelGrid;
     public tags: { [id: string]: boolean } = {};
 
     constructor(x: integer, y: integer, grid: LevelGrid) {
-        super(grid.level_scene, 'GridObject');
         this.position = new GridPoint(x, y);
         this.grid = grid;
         this.AddToGrid();
@@ -29,7 +28,6 @@ export default abstract class GridObject extends Phaser.GameObjects.GameObject {
         this.grid.stepEventAll.delete(this);
         this.grid.stepEventTrigger.delete(this);
         this.RemoveFromGrid();
-        this.destroy();
     }
 
     RemoveFromGrid() {

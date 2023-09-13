@@ -13,6 +13,7 @@ export default class GreenGun extends GridObjectStatic {
 
     Init() {
         this.AddGridTag(GridTags.WALL);
+        this.AddGridTag(GridTags.DESTROY_BULLETS);
         this.AddGridTag(GridTags.STEP_EVENT_TRIGGER);
     }
 

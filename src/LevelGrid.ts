@@ -60,6 +60,12 @@ export default class LevelGrid {
         }
         this.player = new Player(1, 1, this);
 
+        for (var x = 5; x < 25; x++) {
+            for (var y = 5; y < 15; y++) {
+                new GreenGun(x, y, this);
+            }
+        }
+
         new GreenGun(4, 2, this);
         new GreenGun(3, 7, this);
     }

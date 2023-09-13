@@ -23,6 +23,7 @@ export default class LevelScene extends Phaser.Scene {
         //this.load.image('destination', 'assets/destination.png');
         this.load.image('green_gun', 'assets/green_gun.png');
         this.load.image('green_projectile', 'assets/green_projectile.png');
+        this.load.image('green_projectile_end', 'assets/green_projectile_end.png');
     }
 
     create() {
@@ -31,6 +32,7 @@ export default class LevelScene extends Phaser.Scene {
 
 
     update(_time : number, delta : number) {
+        console.log(delta);
         this.grid.Update(delta);
     }
 }

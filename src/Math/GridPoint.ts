@@ -34,8 +34,16 @@ export default class GridPoint {
         return new GridPoint(factor * this.x, factor * this.y);
     }
 
+    Angle() {
+        return Math.atan2(this.y, this.x) * 180 / Math.PI;
+    }
+
     static Zero() {
         return new GridPoint(0, 0);
+    }
+
+    static DirectionToAngle(direction: Direction) {
+        return this.TranslationVector(direction).Angle();
     }
 
     static TranslationVector(direction: Direction, length: integer = 1) {
