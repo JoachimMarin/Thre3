@@ -33,7 +33,7 @@ export default class LaserGun extends GridObject {
     OnBeginStepTrigger(): void {
         for (const dir of getAllEnumValues(Direction)) {
             const nextPoint = this.position.Translate(dir);
-            if (!this.grid.HasGridTag(nextPoint, GridTags.DESTROY_BULLETS)) {
+            if (this.grid.IsInBounds(nextPoint) && !this.grid.HasGridTag(nextPoint, GridTags.DESTROY_BULLETS) ) {
                 new LaserProjectile(nextPoint.x, nextPoint.y, this.grid, dir, this.color.length, this.color);
             }
         }

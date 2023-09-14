@@ -14,7 +14,7 @@ export default class LaserProjectile extends GridObject {
         var end = true;
         if (length > 1) {
             const nextPoint = this.position.Translate(direction);
-            if (!this.grid.HasGridTag(nextPoint, GridTags.DESTROY_BULLETS)) {
+            if (this.grid.IsInBounds(nextPoint) && !this.grid.HasGridTag(nextPoint, GridTags.DESTROY_BULLETS)) {
                 end = false;
                 new LaserProjectile(nextPoint.x, nextPoint.y, this.grid, direction, length - 1, color);
             }

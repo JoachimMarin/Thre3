@@ -78,6 +78,13 @@ export default class LevelGrid {
         this.objectGroups.set(key,  new EventGroup(condition));
     }
 
+    IsInBoundsXY(x: integer, y: integer) {
+        return x >= 0 && y >= 0 && x < this.width && y < this.height;
+    }
+    IsInBounds(point: GridPoint) {
+        return this.IsInBoundsXY(point.x, point.y);
+    }
+
     HasGridTagXY(x: integer, y: integer, tag: GridTags) {
         const objectsAtGridPosition = this.at[x][y];
         for (const object of objectsAtGridPosition) {

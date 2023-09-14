@@ -62,7 +62,7 @@ export default class Player extends GridObject {
             }
             if (this.moving) {
                 this.destination = this.position.Translate(this.direction);
-                if (this.grid.HasGridTag(this.destination, GridTags.WALL)) {
+                if (!this.grid.IsInBounds(this.destination) || this.grid.HasGridTag(this.destination, GridTags.WALL)) {
                     this.moving = false;
                 }
             }

@@ -6,6 +6,7 @@ import LevelGrid from "./LevelGrid";
 import BlueWall from "./GridObjects/BlueWall";
 import ProtectiveWall from "./GridObjects/ProtectiveWall";
 import LaserGun from "./GridObjects/LaserGun";
+import Goal from "./GridObjects/Goal";
 
 export class TilesFile {
     public tileDict: { [key: integer]: string } = {};
@@ -92,6 +93,7 @@ export class LevelParser {
         this.RegisterTile('player', (x, y, grid) => new Player(x, y, grid));
         this.RegisterTile('blue_wall', (x, y, grid) => new BlueWall(x, y, grid));
         this.RegisterTile('protective_wall', (x, y, grid) => new ProtectiveWall(x, y, grid));
+        this.RegisterTile('goal', (x, y, grid) => new Goal(x, y, grid));
 
         for (const color of LaserColor.ALL) {
             this.RegisterTile(color.name + '_gun', (x, y, grid) => new LaserGun(x, y, grid, color));
@@ -111,8 +113,10 @@ export class LevelParser {
 
         for (var y = 0; y < levelFile.height; y++) {
             for (var x = 0; x < levelFile.width; x++) {
-                for (const object of levelFile.objects[x][y]) {
-                    this.tileDict[tilesFile.tileDict[object]](x, y, grid);
+                for (const objectId of levelFile.objects[x][y]) {
+                    const key = tilesFile.tileDict[objectId];
+                    console.log(key);
+                    this.tileDict[key](x, y, grid);
                 }
             }
         }
