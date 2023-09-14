@@ -85,7 +85,7 @@ export default class Inventory {
       const index = this.itemMap.get(itemKey);
       this.itemList[index].Remove();
       this.itemList.splice(index, 1);
-      for (let i = index; this.itemList.length; i++) {
+      for (let i = index; i < this.itemList.length; i++) {
         const entry = this.itemList[i];
         entry.index = i;
         entry.Update();
