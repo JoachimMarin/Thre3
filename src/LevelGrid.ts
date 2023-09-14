@@ -19,6 +19,7 @@ export default class LevelGrid {
     public at: Set<GridObject>[][];
     public readonly level_scene: LevelScene;
     private playerStep = 0;
+    private playerMaxStep = 3;
 
     public readonly width: integer;
     public readonly height: integer;
@@ -44,9 +45,11 @@ export default class LevelGrid {
             const first = functionString.indexOf("{}");
             return first == -1 || first != functionString.lastIndexOf("{}");
         }
-        this.DefineObjectGroup(GridObjectEvent.UPDATE, obj => hasEvent(obj.UpdateEvent));
-        this.DefineObjectGroup(GridObjectEvent.STEP_ALL, obj => hasEvent(obj.StepEvent));
-        this.DefineObjectGroup(GridObjectEvent.STEP_TRIGGER, obj => hasEvent(obj.StepEventTrigger));
+        this.DefineObjectGroup(GridObjectEvent.UPDATE, obj => hasEvent(obj.OnUpdate));
+        this.DefineObjectGroup(GridObjectEvent.BEGIN_STEP_ALL, obj => hasEvent(obj.OnBeginStep));
+        this.DefineObjectGroup(GridObjectEvent.BEGIN_STEP_TRIGGER, obj => hasEvent(obj.OnBeginStepTrigger));
+        this.DefineObjectGroup(GridObjectEvent.END_STEP_ALL, obj => hasEvent(obj.OnEndStep));
+        this.DefineObjectGroup(GridObjectEvent.END_STEP_TRIGGER, obj => hasEvent(obj.OnEndStepTrigger));
     }
 
     SetupObjectGroups(obj: GridObject) {
@@ -88,20 +91,29 @@ export default class LevelGrid {
     }
 
     Update(delta: number) {
-        this.ForGroup(GridObjectEvent.UPDATE, (obj) => obj.UpdateEvent(delta))
+        this.ForGroup(GridObjectEvent.UPDATE, (obj) => obj.OnUpdate(delta))
     }
 
 
-    PlayerStep() {
+    BeginPlayerStep() {
         var trigger = false;
-        this.playerStep++;
-        if (this.playerStep >= 3) {
-            this.playerStep = 0;
+        this.playerStep--;
+        if (this.playerStep == 0) {
             trigger = true;
+        } else if(this.playerStep < 0) {
+            this.playerStep = this.playerMaxStep - 1;
         }
-        this.ForGroup(GridObjectEvent.STEP_ALL, (obj) => obj.StepEvent(trigger))
+        this.ForGroup(GridObjectEvent.BEGIN_STEP_ALL, (obj) => obj.OnBeginStep(trigger))
         if (trigger) {
-            this.ForGroup(GridObjectEvent.STEP_TRIGGER, (obj) => obj.StepEventTrigger())
+            this.ForGroup(GridObjectEvent.BEGIN_STEP_TRIGGER, (obj) => obj.OnBeginStepTrigger())
+        }
+    }
+
+    EndPlayerStep() {
+        var trigger = this.playerStep == 0;
+        this.ForGroup(GridObjectEvent.END_STEP_ALL, (obj) => obj.OnEndStep(trigger))
+        if (trigger) {
+            this.ForGroup(GridObjectEvent.END_STEP_TRIGGER, (obj) => obj.OnEndStepTrigger())
         }
     }
 }

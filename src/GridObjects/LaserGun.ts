@@ -3,7 +3,7 @@ import GridObject from './GridObject';
 import { GridTags } from '../Constants/GridTags';
 import LevelGrid from '../LevelGrid';
 import { Direction } from '../Constants/Direction';
-import {getAllEnumValues} from 'enum-for'
+import { getAllEnumValues } from 'enum-for'
 import LaserProjectile from './LaserProjectile';
 import LaserColor from '../Constants/LaserColor';
 
@@ -11,7 +11,7 @@ export default class LaserGun extends GridObject {
     public image: Phaser.GameObjects.Image;
     private color: LaserColor;
 
-    constructor(x: integer, y: integer, grid:LevelGrid, color:LaserColor) {
+    constructor(x: integer, y: integer, grid: LevelGrid, color: LaserColor) {
         super(x, y, grid);
         this.color = color;
 
@@ -31,12 +31,14 @@ export default class LaserGun extends GridObject {
     }
 
 
-    StepEventTrigger(): void {
-        for (const dir of getAllEnumValues(Direction)) {
-            const nextPoint = this.position.Translate(dir);
-            if(!this.grid.HasGridTag(nextPoint, GridTags.DESTROY_BULLETS)) {
-                new LaserProjectile(nextPoint.x, nextPoint.y, this.grid, dir, this.color.length, this.color);
+    OnBeginStepTrigger(): void {
+        setTimeout(() => {
+            for (const dir of getAllEnumValues(Direction)) {
+                const nextPoint = this.position.Translate(dir);
+                if (!this.grid.HasGridTag(nextPoint, GridTags.DESTROY_BULLETS)) {
+                    new LaserProjectile(nextPoint.x, nextPoint.y, this.grid, dir, this.color.length, this.color);
+                }
             }
-        }
+        }, 250);
     }
 }

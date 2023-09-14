@@ -51,7 +51,9 @@ export default abstract class GridObject {
         delete this.tags[tag.toString()];
     }
 
-    StepEvent(trigger: boolean) { }
-    StepEventTrigger() { }
-    UpdateEvent(delta: number) {}
+    OnBeginStep(trigger: boolean) { }
+    OnBeginStepTrigger() { }
+    OnEndStep(trigger: boolean) { }
+    OnEndStepTrigger() { }
+    OnUpdate(delta: number) {}
 }

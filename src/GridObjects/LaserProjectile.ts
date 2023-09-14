@@ -9,12 +9,12 @@ import LaserColor from '../Constants/LaserColor';
 export default class LaserProjectile extends GridObject {
     public image: Phaser.GameObjects.Image;
 
-    constructor(x: integer, y: integer, grid:LevelGrid, direction:Direction, length:integer, color:LaserColor) {
+    constructor(x: integer, y: integer, grid: LevelGrid, direction: Direction, length: integer, color: LaserColor) {
         super(x, y, grid);
         var end = true;
-        if(length > 1) {
+        if (length > 1) {
             const nextPoint = this.position.Translate(direction);
-            if(!this.grid.HasGridTag(nextPoint, GridTags.DESTROY_BULLETS)) {
+            if (!this.grid.HasGridTag(nextPoint, GridTags.DESTROY_BULLETS)) {
                 end = false;
                 new LaserProjectile(nextPoint.x, nextPoint.y, this.grid, direction, length - 1, color);
             }
@@ -33,9 +33,7 @@ export default class LaserProjectile extends GridObject {
         super.Remove();
     }
 
-    StepEvent(trigger: boolean): void {
-        if(!trigger) {
-            this.Remove();
-        }
+    OnBeginStep(trigger: boolean): void {
+        setTimeout(() => this.Remove(), 50);
     }
 }

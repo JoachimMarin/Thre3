@@ -23,7 +23,7 @@ export default class Player extends GridObject {
         this.AddGridTag(GridTags.UPDATE);
     }
 
-    UpdateEvent(delta: number): void {
+    OnUpdate(delta: number): void {
         const speed = 0.6;
         if (this.moving) {
             const translationVector = GridPoint.TranslationVector(this.direction);
@@ -34,7 +34,7 @@ export default class Player extends GridObject {
             ) {
                 this.moving = false;
                 this.SetGridPosition(this.destination);
-                this.grid.PlayerStep();
+                this.grid.EndPlayerStep();
             }
         }
 
@@ -58,6 +58,9 @@ export default class Player extends GridObject {
                     console.log("wall at destination");
                     this.moving = false;
                 }
+            }
+            if(this.moving) {
+                this.grid.BeginPlayerStep();
             }
         }
         if (!this.moving) {
