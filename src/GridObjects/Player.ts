@@ -67,6 +67,7 @@ export default class Player extends GridObject {
                 }
             }
             if(this.moving) {
+                this.sprite.setAngle(GridPoint.DirectionToAngle(this.direction));
                 this.grid.BeginPlayerStep();
             }
         }

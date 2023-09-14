@@ -82,6 +82,10 @@ export class LevelParser {
         this.level_scene.load.image(key, "assets/" + key + ".png");
     }
 
+    RegisterSheet(key: string, width: integer) {
+        this.level_scene.load.spritesheet(key, "assets/" + key + ".png", {frameWidth: width});
+    }
+
     RegisterTile(key: string, fun: (x: integer, y: integer, grid: LevelGrid) => GridObject) {
         this.RegisterAsset(key);
         this.tileDict[key] = fun;
@@ -94,6 +98,7 @@ export class LevelParser {
         this.RegisterTile('blue_wall', (x, y, grid) => new BlueWall(x, y, grid));
         this.RegisterTile('protective_wall', (x, y, grid) => new ProtectiveWall(x, y, grid));
         this.RegisterTile('goal', (x, y, grid) => new Goal(x, y, grid));
+        this.RegisterSheet('goal_sheet', 256);
 
         for (const color of LaserColor.ALL) {
             this.RegisterTile(color.name + '_gun', (x, y, grid) => new LaserGun(x, y, grid, color));

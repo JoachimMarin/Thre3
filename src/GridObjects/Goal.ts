@@ -1,18 +1,24 @@
 import * as Phaser from 'phaser';
-import GridObjectStatic from './GridObjectStatic';
+import GridObject from './GridObject';
 import { GridTags } from '../Constants/GridTags';
 import LevelGrid from '../LevelGrid';
 
-export default class Goal extends GridObjectStatic {
-    constructor(x: integer, y: integer, grid:LevelGrid) {
+export default class Goal extends GridObject {
+    public image: Phaser.GameObjects.Image;
+
+    constructor(x: integer, y: integer, grid: LevelGrid) {
         super(x, y, grid);
+        this.image = grid.level_scene.add.image(this.position.realX(), this.position.realY(), 'goal_sheet', Math.floor(Math.random() * 16) );
+        this.image.setDisplaySize(128, 128);
     }
 
     Init() {
         this.AddGridTag(GridTags.DESTROY_BULLETS);
     }
 
-    GetImageKey(): string {
-        return 'goal';
+    Remove() {
+        this.image.destroy();
+        super.Remove();
     }
+
 }
