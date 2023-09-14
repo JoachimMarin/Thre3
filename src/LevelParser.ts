@@ -118,10 +118,12 @@ export class LevelParser {
     this.RegisterTile('goal', (x, y, grid) => new Goal(x, y, grid));
     this.RegisterSheet('goal_sheet', 256);
 
-    this.RegisterTile(
-      'mirror',
-      (x, y, grid) => new Item(x, y, grid, ItemType.MIRROR)
-    );
+    for (const itemType of ItemType.ITEM_TYPES) {
+      this.RegisterTile(
+        itemType.imageKey,
+        (x, y, grid) => new Item(x, y, grid, itemType)
+      );
+    }
 
     for (const color of LaserColor.ALL) {
       this.RegisterTile(
