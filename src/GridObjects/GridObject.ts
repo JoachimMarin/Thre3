@@ -14,23 +14,11 @@ export default abstract class GridObject {
         this.AddToGrid();
         this.Init();
 
-        this.grid.all.add(this);
-        if (this.HasGridTag(GridTags.STEP_EVENT_ALL)) {
-            this.grid.stepEventAll.add(this);
-        }
-        if (this.HasGridTag(GridTags.STEP_EVENT_TRIGGER)) {
-            this.grid.stepEventTrigger.add(this);
-        }
-        if (this.HasGridTag(GridTags.UPDATE)) {
-            this.grid.update.add(this);
-        }
+        this.grid.SetupObjectGroups(this);
     }
 
     Remove() {
-        this.grid.all.delete(this);
-        this.grid.update.delete(this);
-        this.grid.stepEventAll.delete(this);
-        this.grid.stepEventTrigger.delete(this);
+        this.grid.ClearObjectGroups(this);
         this.RemoveFromGrid();
     }
 

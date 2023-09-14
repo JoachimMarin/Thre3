@@ -1,24 +1,30 @@
 import * as Phaser from 'phaser'
 
 import GridObject from './GridObjects/GridObject'
-import Player from './GridObjects/Player';
 import { GridTags } from './Constants/GridTags';
 import LevelScene from './LevelScene';
 import GridPoint from './Math/GridPoint';
+import { GridObjectEvent } from './Constants/GridObjectEvent';
+
+class ObjectGroup {
+    public objects: Set<GridObject> = new Set<GridObject>();
+    public condition: (obj: GridObject) => boolean;
+
+    constructor(condition: (obj: GridObject) => boolean) {
+        this.condition = condition;
+    }
+}
 
 export default class LevelGrid {
     public at: Set<GridObject>[][];
     public readonly level_scene: LevelScene;
     private playerStep = 0;
 
-    public all: Set<GridObject> = new Set<GridObject>();
-    public update: Set<GridObject> = new Set<GridObject>();
-    public stepEventAll: Set<GridObject> = new Set<GridObject>();
-    public stepEventTrigger: Set<GridObject> = new Set<GridObject>();
     public readonly width: integer;
     public readonly height: integer;
+    private objectGroups: Map<GridObjectEvent, ObjectGroup> = new Map<GridObjectEvent, ObjectGroup>();
 
-    constructor(level_scene: LevelScene, width:integer, height:integer) {
+    constructor(level_scene: LevelScene, width: integer, height: integer) {
         this.level_scene = level_scene;
         this.width = width;
         this.height = height;
@@ -29,6 +35,42 @@ export default class LevelGrid {
                 this.at[x][y] = new Set<GridObject>();
             }
         }
+        this.InitObjectGroups();
+    }
+
+    InitObjectGroups() {
+        const hasEvent = (func: (args:any) => any) => {
+            const functionString : string = func.toString().replace(/\s/g, "");
+            const first = functionString.indexOf("{}");
+            return first == -1 || first != functionString.lastIndexOf("{}");
+        }
+        this.DefineObjectGroup(GridObjectEvent.UPDATE, obj => hasEvent(obj.UpdateEvent));
+        this.DefineObjectGroup(GridObjectEvent.STEP_ALL, obj => hasEvent(obj.StepEvent));
+        this.DefineObjectGroup(GridObjectEvent.STEP_TRIGGER, obj => hasEvent(obj.StepEventTrigger));
+    }
+
+    SetupObjectGroups(obj: GridObject) {
+        for (const objectGroup of this.objectGroups.values()) {
+            if (objectGroup.condition(obj)) {
+                objectGroup.objects.add(obj);
+            }
+        }
+    }
+
+    ClearObjectGroups(obj: GridObject) {
+        for (const objectGroup of this.objectGroups.values()) {
+            objectGroup.objects.delete(obj);
+        }
+    }
+
+    ForGroup(key:GridObjectEvent,  func: (obj:GridObject) => void) {
+        for (const object of this.objectGroups.get(key).objects) {
+            func(object);
+        }
+    }
+
+    DefineObjectGroup(key: GridObjectEvent, condition: (obj: GridObject) => boolean) {
+        this.objectGroups.set(key,  new ObjectGroup(condition));
     }
 
     HasGridTagXY(x: integer, y: integer, tag: GridTags) {
@@ -46,9 +88,7 @@ export default class LevelGrid {
     }
 
     Update(delta: number) {
-        for (const object of this.update) {
-            object.UpdateEvent(delta);
-        }
+        this.ForGroup(GridObjectEvent.UPDATE, (obj) => obj.UpdateEvent(delta))
     }
 
 
@@ -59,13 +99,9 @@ export default class LevelGrid {
             this.playerStep = 0;
             trigger = true;
         }
-        for (const object of this.stepEventAll) {
-            object.StepEvent(trigger);
-        }
+        this.ForGroup(GridObjectEvent.STEP_ALL, (obj) => obj.StepEvent(trigger))
         if (trigger) {
-            for (const object of this.stepEventTrigger) {
-                object.StepEventTrigger();
-            }
+            this.ForGroup(GridObjectEvent.STEP_TRIGGER, (obj) => obj.StepEventTrigger())
         }
     }
 }
