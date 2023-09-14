@@ -22,18 +22,24 @@ export default class LaserProjectile extends GridObject {
         this.image = grid.level_scene.add.image(this.position.realX(), this.position.realY(), color.name + (end ? '_projectile_end' : '_projectile'));
         this.image.setDisplaySize(128, 128);
         this.image.setAngle(GridPoint.DirectionToAngle(direction));
+        this.image.setVisible(false);
+        setTimeout(() => {
+            this.image.setVisible(true);
+        }, 150);
     }
-
     Init() {
-        this.AddGridTag(GridTags.STEP_EVENT_ALL);
+        this.AddGridTag(GridTags.DEADLY);
     }
 
     Remove() {
-        this.image.destroy();
+        const img = this.image;
+        setTimeout(() => {
+            img.destroy();;
+        }, 75);
         super.Remove();
     }
 
     OnBeginStep(trigger: boolean): void {
-        setTimeout(() => this.Remove(), 50);
+        this.Remove();
     }
 }

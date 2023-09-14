@@ -22,7 +22,6 @@ export default class LaserGun extends GridObject {
     Init() {
         this.AddGridTag(GridTags.WALL);
         this.AddGridTag(GridTags.DESTROY_BULLETS);
-        this.AddGridTag(GridTags.STEP_EVENT_TRIGGER);
     }
 
     Remove() {
@@ -32,13 +31,11 @@ export default class LaserGun extends GridObject {
 
 
     OnBeginStepTrigger(): void {
-        setTimeout(() => {
-            for (const dir of getAllEnumValues(Direction)) {
-                const nextPoint = this.position.Translate(dir);
-                if (!this.grid.HasGridTag(nextPoint, GridTags.DESTROY_BULLETS)) {
-                    new LaserProjectile(nextPoint.x, nextPoint.y, this.grid, dir, this.color.length, this.color);
-                }
+        for (const dir of getAllEnumValues(Direction)) {
+            const nextPoint = this.position.Translate(dir);
+            if (!this.grid.HasGridTag(nextPoint, GridTags.DESTROY_BULLETS)) {
+                new LaserProjectile(nextPoint.x, nextPoint.y, this.grid, dir, this.color.length, this.color);
             }
-        }, 250);
+        }
     }
 }

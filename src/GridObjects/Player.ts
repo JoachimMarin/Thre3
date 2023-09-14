@@ -11,16 +11,21 @@ export default class Player extends GridObject {
     private direction: Direction = Direction.DOWN;
     private destination: GridPoint;
     private sprite: Phaser.Physics.Arcade.Sprite;
+    private gameOver: boolean = false;
 
     constructor(x: integer, y: integer, grid: LevelGrid) {
         super(x, y, grid);
+        this.grid.player = this;
         this.cursors = grid.level_scene.cursors;
         this.sprite = grid.level_scene.physics.add.sprite(this.position.realX(), this.position.realY(), 'player');
         this.sprite.setDisplaySize(128, 128);
     }
 
-    Init(): void {
-        this.AddGridTag(GridTags.UPDATE);
+    GameOver() {
+        this.gameOver = true;
+        setTimeout(() => {
+            this.grid.level_scene.scene.restart();    
+        }, 2000);
     }
 
     OnUpdate(delta: number): void {
@@ -35,10 +40,13 @@ export default class Player extends GridObject {
                 this.moving = false;
                 this.SetGridPosition(this.destination);
                 this.grid.EndPlayerStep();
+                if(this.grid.HasGridTag(this.position, GridTags.DEADLY)) {
+                    this.GameOver();
+                }
             }
         }
 
-        if (!this.moving) {
+        if (!this.moving && !this.gameOver) {
             if (this.cursors.left.isDown) {
                 this.moving = true;
                 this.direction = Direction.LEFT;
@@ -55,7 +63,6 @@ export default class Player extends GridObject {
             if (this.moving) {
                 this.destination = this.position.Translate(this.direction);
                 if (this.grid.HasGridTag(this.destination, GridTags.WALL)) {
-                    console.log("wall at destination");
                     this.moving = false;
                 }
             }

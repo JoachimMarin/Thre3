@@ -5,8 +5,9 @@ import { GridTags } from './Constants/GridTags';
 import LevelScene from './LevelScene';
 import GridPoint from './Math/GridPoint';
 import { GridObjectEvent } from './Constants/GridObjectEvent';
+import Player from './GridObjects/Player';
 
-class ObjectGroup {
+class EventGroup {
     public objects: Set<GridObject> = new Set<GridObject>();
     public condition: (obj: GridObject) => boolean;
 
@@ -20,10 +21,11 @@ export default class LevelGrid {
     public readonly level_scene: LevelScene;
     private playerStep = 0;
     private playerMaxStep = 3;
+    public player: Player = null;
 
     public readonly width: integer;
     public readonly height: integer;
-    private objectGroups: Map<GridObjectEvent, ObjectGroup> = new Map<GridObjectEvent, ObjectGroup>();
+    private objectGroups: Map<GridObjectEvent, EventGroup> = new Map<GridObjectEvent, EventGroup>();
 
     constructor(level_scene: LevelScene, width: integer, height: integer) {
         this.level_scene = level_scene;
@@ -36,23 +38,23 @@ export default class LevelGrid {
                 this.at[x][y] = new Set<GridObject>();
             }
         }
-        this.InitObjectGroups();
+        this.DefineEventGroups();
     }
 
-    InitObjectGroups() {
+    DefineEventGroups() {
         const hasEvent = (func: (args:any) => any) => {
             const functionString : string = func.toString().replace(/\s/g, "");
             const first = functionString.indexOf("{}");
             return first == -1 || first != functionString.lastIndexOf("{}");
         }
-        this.DefineObjectGroup(GridObjectEvent.UPDATE, obj => hasEvent(obj.OnUpdate));
-        this.DefineObjectGroup(GridObjectEvent.BEGIN_STEP_ALL, obj => hasEvent(obj.OnBeginStep));
-        this.DefineObjectGroup(GridObjectEvent.BEGIN_STEP_TRIGGER, obj => hasEvent(obj.OnBeginStepTrigger));
-        this.DefineObjectGroup(GridObjectEvent.END_STEP_ALL, obj => hasEvent(obj.OnEndStep));
-        this.DefineObjectGroup(GridObjectEvent.END_STEP_TRIGGER, obj => hasEvent(obj.OnEndStepTrigger));
+        this.DefineEventGroup(GridObjectEvent.UPDATE, obj => hasEvent(obj.OnUpdate));
+        this.DefineEventGroup(GridObjectEvent.BEGIN_STEP_ALL, obj => hasEvent(obj.OnBeginStep));
+        this.DefineEventGroup(GridObjectEvent.BEGIN_STEP_TRIGGER, obj => hasEvent(obj.OnBeginStepTrigger));
+        this.DefineEventGroup(GridObjectEvent.END_STEP_ALL, obj => hasEvent(obj.OnEndStep));
+        this.DefineEventGroup(GridObjectEvent.END_STEP_TRIGGER, obj => hasEvent(obj.OnEndStepTrigger));
     }
 
-    SetupObjectGroups(obj: GridObject) {
+    SetupEventGroups(obj: GridObject) {
         for (const objectGroup of this.objectGroups.values()) {
             if (objectGroup.condition(obj)) {
                 objectGroup.objects.add(obj);
@@ -60,20 +62,20 @@ export default class LevelGrid {
         }
     }
 
-    ClearObjectGroups(obj: GridObject) {
+    ClearEventGroups(obj: GridObject) {
         for (const objectGroup of this.objectGroups.values()) {
             objectGroup.objects.delete(obj);
         }
     }
 
-    ForGroup(key:GridObjectEvent,  func: (obj:GridObject) => void) {
+    ForEventGroup(key:GridObjectEvent,  func: (obj:GridObject) => void) {
         for (const object of this.objectGroups.get(key).objects) {
             func(object);
         }
     }
 
-    DefineObjectGroup(key: GridObjectEvent, condition: (obj: GridObject) => boolean) {
-        this.objectGroups.set(key,  new ObjectGroup(condition));
+    DefineEventGroup(key: GridObjectEvent, condition: (obj: GridObject) => boolean) {
+        this.objectGroups.set(key,  new EventGroup(condition));
     }
 
     HasGridTagXY(x: integer, y: integer, tag: GridTags) {
@@ -91,9 +93,8 @@ export default class LevelGrid {
     }
 
     Update(delta: number) {
-        this.ForGroup(GridObjectEvent.UPDATE, (obj) => obj.OnUpdate(delta))
+        this.ForEventGroup(GridObjectEvent.UPDATE, (obj) => obj.OnUpdate(delta))
     }
-
 
     BeginPlayerStep() {
         var trigger = false;
@@ -103,17 +104,17 @@ export default class LevelGrid {
         } else if(this.playerStep < 0) {
             this.playerStep = this.playerMaxStep - 1;
         }
-        this.ForGroup(GridObjectEvent.BEGIN_STEP_ALL, (obj) => obj.OnBeginStep(trigger))
+        this.ForEventGroup(GridObjectEvent.BEGIN_STEP_ALL, (obj) => obj.OnBeginStep(trigger))
         if (trigger) {
-            this.ForGroup(GridObjectEvent.BEGIN_STEP_TRIGGER, (obj) => obj.OnBeginStepTrigger())
+            this.ForEventGroup(GridObjectEvent.BEGIN_STEP_TRIGGER, (obj) => obj.OnBeginStepTrigger())
         }
     }
 
     EndPlayerStep() {
         var trigger = this.playerStep == 0;
-        this.ForGroup(GridObjectEvent.END_STEP_ALL, (obj) => obj.OnEndStep(trigger))
+        this.ForEventGroup(GridObjectEvent.END_STEP_ALL, (obj) => obj.OnEndStep(trigger))
         if (trigger) {
-            this.ForGroup(GridObjectEvent.END_STEP_TRIGGER, (obj) => obj.OnEndStepTrigger())
+            this.ForEventGroup(GridObjectEvent.END_STEP_TRIGGER, (obj) => obj.OnEndStepTrigger())
         }
     }
 }

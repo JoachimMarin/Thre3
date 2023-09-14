@@ -14,11 +14,11 @@ export default abstract class GridObject {
         this.AddToGrid();
         this.Init();
 
-        this.grid.SetupObjectGroups(this);
+        this.grid.SetupEventGroups(this);
     }
 
     Remove() {
-        this.grid.ClearObjectGroups(this);
+        this.grid.ClearEventGroups(this);
         this.RemoveFromGrid();
     }
 
