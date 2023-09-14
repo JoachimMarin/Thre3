@@ -4,6 +4,9 @@ import { Direction } from '../Constants/Direction';
 import { GridTags } from '../Constants/GridTags';
 import LevelGrid from '../LevelGrid';
 import GridPoint from '../Math/GridPoint';
+import LaserProjectile from './LaserProjectile';
+import Item from './Item';
+import ItemType from '../Constants/ItemType';
 
 export default class Player extends GridObject {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -16,8 +19,8 @@ export default class Player extends GridObject {
   constructor(x: integer, y: integer, grid: LevelGrid) {
     super(x, y, grid);
     this.grid.player = this;
-    this.cursors = grid.level_scene.cursors;
-    this.sprite = grid.level_scene.physics.add.sprite(
+    this.cursors = grid.levelScene.cursors;
+    this.sprite = grid.levelScene.physics.add.sprite(
       this.position.realX(),
       this.position.realY(),
       'player'
@@ -28,8 +31,39 @@ export default class Player extends GridObject {
   GameOver() {
     this.gameOver = true;
     setTimeout(() => {
-      this.grid.level_scene.scene.restart();
+      this.grid.levelScene.scene.restart();
     }, 2000);
+  }
+
+  EndPlayerStep() {
+    this.grid.EndPlayerStep();
+
+    const itemList = this.grid.GetByTag(this.position, GridTags.ITEM);
+    for (const item of itemList) {
+      if (item instanceof Item) {
+        item.Remove();
+        this.grid.inventory.AddItem(item.itemType, 1);
+      }
+    }
+
+    const deadlyList = this.grid.GetByTag(this.position, GridTags.DEADLY);
+    let useMirror = false;
+    for (const deadly of deadlyList) {
+      if (
+        deadly instanceof LaserProjectile &&
+        this.grid.inventory.HasItem(ItemType.MIRROR)
+      ) {
+        deadly.owner.Remove();
+        useMirror = true;
+      }
+
+      if (!useMirror) {
+        this.GameOver();
+      }
+    }
+    if (useMirror) {
+      this.grid.inventory.RemoveItem(ItemType.MIRROR);
+    }
   }
 
   OnUpdate(delta: number): void {
@@ -46,10 +80,7 @@ export default class Player extends GridObject {
       ) {
         this.moving = false;
         this.SetGridPosition(this.destination);
-        this.grid.EndPlayerStep();
-        if (this.grid.HasGridTag(this.position, GridTags.DEADLY)) {
-          this.GameOver();
-        }
+        this.EndPlayerStep();
       }
     }
 

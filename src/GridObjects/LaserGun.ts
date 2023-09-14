@@ -15,7 +15,7 @@ export default class LaserGun extends GridObject {
     super(x, y, grid);
     this.color = color;
 
-    this.image = grid.level_scene.add.image(
+    this.image = grid.levelScene.add.image(
       this.position.realX(),
       this.position.realY(),
       color.name + '_gun'
@@ -46,7 +46,8 @@ export default class LaserGun extends GridObject {
           this.grid,
           dir,
           this.color.length,
-          this.color
+          this.color,
+          this
         );
       }
     }

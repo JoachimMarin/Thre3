@@ -7,6 +7,8 @@ import BlueWall from './GridObjects/BlueWall';
 import ProtectiveWall from './GridObjects/ProtectiveWall';
 import LaserGun from './GridObjects/LaserGun';
 import Goal from './GridObjects/Goal';
+import Item from './GridObjects/Item';
+import ItemType from './Constants/ItemType';
 
 export class TilesFile {
   public tileDict: { [key: integer]: string } = {};
@@ -116,6 +118,11 @@ export class LevelParser {
     this.RegisterTile('goal', (x, y, grid) => new Goal(x, y, grid));
     this.RegisterSheet('goal_sheet', 256);
 
+    this.RegisterTile(
+      'mirror',
+      (x, y, grid) => new Item(x, y, grid, ItemType.MIRROR)
+    );
+
     for (const color of LaserColor.ALL) {
       this.RegisterTile(
         color.name + '_gun',
@@ -145,7 +152,6 @@ export class LevelParser {
       for (let x = 0; x < levelFile.width; x++) {
         for (const objectId of levelFile.objects[x][y]) {
           const key = tilesFile.tileDict[objectId];
-          console.log(key);
           this.tileDict[key](x, y, grid);
         }
       }

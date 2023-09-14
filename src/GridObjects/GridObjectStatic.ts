@@ -8,7 +8,7 @@ export default abstract class GridObjectStatic extends GridObject {
 
   constructor(x: integer, y: integer, grid: LevelGrid) {
     super(x, y, grid);
-    this.image = grid.level_scene.add.image(
+    this.image = grid.levelScene.add.image(
       this.position.realX(),
       this.position.realY(),
       this.GetImageKey()

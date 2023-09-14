@@ -4,6 +4,7 @@ import LevelScene from './LevelScene';
 import GridPoint from './Math/GridPoint';
 import { GridObjectEvent } from './Constants/GridObjectEvent';
 import Player from './GridObjects/Player';
+import Inventory from './Inventory';
 
 class EventGroup {
   public objects: Set<GridObject> = new Set<GridObject>();
@@ -16,10 +17,11 @@ class EventGroup {
 
 export default class LevelGrid {
   public at: Set<GridObject>[][];
-  public readonly level_scene: LevelScene;
+  public readonly levelScene: LevelScene;
   private playerStep = 0;
   private playerMaxStep = 3;
   public player: Player = null;
+  public readonly inventory: Inventory;
 
   public readonly width: integer;
   public readonly height: integer;
@@ -28,8 +30,9 @@ export default class LevelGrid {
     EventGroup
   >();
 
-  constructor(level_scene: LevelScene, width: integer, height: integer) {
-    this.level_scene = level_scene;
+  constructor(levelScene: LevelScene, width: integer, height: integer) {
+    this.levelScene = levelScene;
+    this.inventory = new Inventory(levelScene);
     this.width = width;
     this.height = height;
     this.at = [];
@@ -111,6 +114,21 @@ export default class LevelGrid {
 
   HasGridTag(point: GridPoint, tag: GridTags) {
     return this.HasGridTagXY(point.x, point.y, tag);
+  }
+
+  GetByTagXY(x: integer, y: integer, tag: GridTags): GridObject[] {
+    const objectsAtGridPosition = this.at[x][y];
+    const array = [];
+    for (const object of objectsAtGridPosition) {
+      if (object.HasGridTag(tag)) {
+        array.push(object);
+      }
+    }
+    return array;
+  }
+
+  GetByTag(point: GridPoint, tag: GridTags): GridObject[] {
+    return this.GetByTagXY(point.x, point.y, tag);
   }
 
   Update(delta: number) {

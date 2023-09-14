@@ -8,6 +8,7 @@ import LaserColor from '../Constants/LaserColor';
 
 export default class LaserProjectile extends GridObject {
   public image: Phaser.GameObjects.Image;
+  public owner: GridObject;
 
   constructor(
     x: integer,
@@ -15,9 +16,12 @@ export default class LaserProjectile extends GridObject {
     grid: LevelGrid,
     direction: Direction,
     length: integer,
-    color: LaserColor
+    color: LaserColor,
+    owner: GridObject
   ) {
     super(x, y, grid);
+    this.owner = owner;
+    this.owner.AddChild(this);
     let end = true;
     if (length > 1) {
       const nextPoint = this.position.Translate(direction);
@@ -32,11 +36,12 @@ export default class LaserProjectile extends GridObject {
           this.grid,
           direction,
           length - 1,
-          color
+          color,
+          owner
         );
       }
     }
-    this.image = grid.level_scene.add.image(
+    this.image = grid.levelScene.add.image(
       this.position.realX(),
       this.position.realY(),
       color.name + (end ? '_projectile_end' : '_projectile')
@@ -53,10 +58,7 @@ export default class LaserProjectile extends GridObject {
   }
 
   Remove() {
-    const img = this.image;
-    setTimeout(() => {
-      img.destroy();
-    }, 75);
+    this.image.destroy();
     super.Remove();
   }
 

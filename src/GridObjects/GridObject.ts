@@ -6,6 +6,9 @@ export default abstract class GridObject {
   public position: GridPoint;
   public grid: LevelGrid;
   public tags: { [id: string]: boolean } = {};
+  public children: Set<GridObject> = new Set<GridObject>();
+  public parents: Set<GridObject> = new Set<GridObject>();
+  private removed: boolean = false;
 
   constructor(x: integer, y: integer, grid: LevelGrid) {
     this.position = new GridPoint(x, y);
@@ -16,9 +19,32 @@ export default abstract class GridObject {
     this.grid.SetupEventGroups(this);
   }
 
+  GetClassName() {
+    return (this as unknown).constructor.name;
+  }
+
+  AddChild(child: GridObject) {
+    this.children.add(child);
+    child.parents.add(this);
+  }
+  RemoveChild(child: GridObject) {
+    this.children.delete(child);
+    child.parents.delete(this);
+  }
+
   Remove() {
+    if (this.removed) {
+      return;
+    }
+    this.removed = true;
     this.grid.ClearEventGroups(this);
     this.RemoveFromGrid();
+    for (const parent of this.parents) {
+      parent.RemoveChild(this);
+    }
+    for (const child of this.children) {
+      child.Remove();
+    }
   }
 
   RemoveFromGrid() {
