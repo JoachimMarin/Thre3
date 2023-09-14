@@ -18,7 +18,6 @@ const config = {
         mode: Phaser.Scale.FIT,
         parent: 'gameDiv',
         autoCenter: Phaser.Scale.CENTER_BOTH,
-
     }
 };
 

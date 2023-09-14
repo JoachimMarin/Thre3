@@ -21,10 +21,14 @@ export default abstract class GridObject {
         if (this.HasGridTag(GridTags.STEP_EVENT_TRIGGER)) {
             this.grid.stepEventTrigger.add(this);
         }
+        if (this.HasGridTag(GridTags.UPDATE)) {
+            this.grid.update.add(this);
+        }
     }
 
     Remove() {
         this.grid.all.delete(this);
+        this.grid.update.delete(this);
         this.grid.stepEventAll.delete(this);
         this.grid.stepEventTrigger.delete(this);
         this.RemoveFromGrid();
@@ -61,4 +65,5 @@ export default abstract class GridObject {
 
     StepEvent(trigger: boolean) { }
     StepEventTrigger() { }
+    UpdateEvent(delta: number) {}
 }

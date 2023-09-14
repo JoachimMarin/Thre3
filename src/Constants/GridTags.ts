@@ -1,4 +1,5 @@
 export enum GridTags {
+    UPDATE,
     WALL,
     DESTROY_BULLETS,
     STEP_EVENT_ALL,

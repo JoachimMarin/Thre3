@@ -19,7 +19,11 @@ export default class Player extends GridObject {
         this.sprite.setDisplaySize(128, 128);
     }
 
-    update(delta: number): void {
+    Init(): void {
+        this.AddGridTag(GridTags.UPDATE);
+    }
+
+    UpdateEvent(delta: number): void {
         const speed = 0.6;
         if (this.moving) {
             const translationVector = GridPoint.TranslationVector(this.direction);
