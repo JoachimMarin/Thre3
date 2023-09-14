@@ -1,5 +1,5 @@
 export enum GridTags {
-    WALL,
-    DESTROY_BULLETS,
-    DEADLY
+  WALL,
+  DESTROY_BULLETS,
+  DEADLY
 }

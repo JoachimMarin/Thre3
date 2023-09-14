@@ -1,37 +1,46 @@
 {
-    "name": "thre3",
-    "version": "0.1.0",
-    "description": "A puzzle game written in TypeScript using Phaser 3.",
-    "main": "src/game.ts",
-    "scripts": {
-        "dev": "rollup --config rollup.config.dev.mjs",
-        "build": "rollup --config rollup.config.dist.mjs",
-        "watch": "rollup --watch --config rollup.config.dev.mjs"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/JoachimMarin/Thre3.git"
-    },
-    "author": "Joachim Marin",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/JoachimMarin/Thre3/issues"
-    },
-    "homepage": "https://github.com/JoachimMarin/Thre3#readme",
-    "devDependencies": {
-        "@rollup/plugin-commonjs": "^24.0.1",
-        "@rollup/plugin-node-resolve": "^15.0.2",
-        "@rollup/plugin-replace": "^5.0.2",
-        "@rollup/plugin-terser": "^0.4.0",
-        "@rollup/plugin-typescript": "^11.1.0",
-        "@types/node": "^20.6.0",
-        "phaser": "^3.60.0",
-        "rollup": "^3.20.2",
-        "rollup-plugin-serve": "^2.0.2",
-        "tslib": "^2.6.2",
-        "typescript": "^5.0.3"
-    },
-    "dependencies": {
-        "enum-for": "0.0.6"
-    }
+  "name": "thre3",
+  "version": "0.1.0",
+  "description": "A puzzle game written in TypeScript using Phaser 3.",
+  "main": "src/game.ts",
+  "scripts": {
+    "dev": "rollup --config rollup.config.dev.mjs",
+    "build": "rollup --config rollup.config.dist.mjs",
+    "watch": "rollup --watch --config rollup.config.dev.mjs",
+    "prettier-format": "prettier --config .prettierrc src/**/*.ts --write",
+    "lint": "eslint . --ext .ts",
+    "lint-and-fix": "eslint . --ext .ts --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoachimMarin/Thre3.git"
+  },
+  "author": "Joachim Marin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JoachimMarin/Thre3/issues"
+  },
+  "homepage": "https://github.com/JoachimMarin/Thre3#readme",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-node-resolve": "^15.0.2",
+    "@rollup/plugin-replace": "^5.0.2",
+    "@rollup/plugin-terser": "^0.4.0",
+    "@rollup/plugin-typescript": "^11.1.0",
+    "@types/node": "^20.6.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "eslint": "^8.49.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "phaser": "^3.60.0",
+    "prettier": "^3.0.3",
+    "rollup": "^3.20.2",
+    "rollup-plugin-serve": "^2.0.2",
+    "tslib": "^2.6.2",
+    "typescript": "^5.0.3"
+  },
+  "dependencies": {
+    "enum-for": "0.0.6"
+  }
 }
