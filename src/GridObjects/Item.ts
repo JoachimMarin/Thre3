@@ -1,31 +1,19 @@
 import { GridTags } from '../Constants/GridTags';
 import LevelGrid from '../LevelGrid';
-import GridObject from './GridObject';
 import ItemType from '../Constants/ItemType';
+import GridObjectStatic from './GridObjectStatic';
 
-export default class Item extends GridObject {
+export default class Item extends GridObjectStatic {
   public image: Phaser.GameObjects.Image;
   public readonly itemType: ItemType;
 
   constructor(x: integer, y: integer, grid: LevelGrid, itemType: ItemType) {
-    super(x, y, grid);
+    super(x, y, grid, itemType.imageKey);
 
     this.itemType = itemType;
-
-    this.image = grid.levelScene.add.image(
-      this.position.realX(),
-      this.position.realY(),
-      itemType.imageKey
-    );
-    this.image.setDisplaySize(128, 128);
   }
 
-  Init(): void {
+  OnInit(): void {
     this.AddGridTag(GridTags.ITEM);
-  }
-
-  Remove() {
-    this.image.destroy();
-    super.Remove();
   }
 }

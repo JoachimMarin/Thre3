@@ -53,7 +53,7 @@ export default class LaserProjectile extends GridObject {
       this.image.setVisible(true);
     }, 150);
   }
-  Init() {
+  OnInit() {
     this.AddGridTag(GridTags.DEADLY);
   }
 

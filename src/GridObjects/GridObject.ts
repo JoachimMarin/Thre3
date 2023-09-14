@@ -14,13 +14,8 @@ export default abstract class GridObject {
     this.position = new GridPoint(x, y);
     this.grid = grid;
     this.AddToGrid();
-    this.Init();
-
+    this.OnInit();
     this.grid.SetupEventGroups(this);
-  }
-
-  GetClassName() {
-    return (this as unknown).constructor.name;
   }
 
   AddChild(child: GridObject) {
@@ -45,15 +40,16 @@ export default abstract class GridObject {
     for (const child of this.children) {
       child.Remove();
     }
+    this.OnRemove();
   }
 
-  RemoveFromGrid() {
+  private RemoveFromGrid() {
     const objectsAtGridPosition =
       this.grid.at[this.position.x][this.position.y];
     objectsAtGridPosition.delete(this);
   }
 
-  AddToGrid() {
+  private AddToGrid() {
     const objectsAtGridPosition =
       this.grid.at[this.position.x][this.position.y];
     objectsAtGridPosition.add(this);
@@ -65,8 +61,6 @@ export default abstract class GridObject {
     this.AddToGrid();
   }
 
-  Init() {}
-
   HasGridTag(tag: GridTags) {
     return tag.toString() in this.tags;
   }
@@ -77,6 +71,8 @@ export default abstract class GridObject {
     delete this.tags[tag.toString()];
   }
 
+  OnInit() {}
+  OnRemove() {}
   OnBeginStep(_trigger: boolean) {}
   OnBeginStepTrigger() {}
   OnEndStep(_trigger: boolean) {}

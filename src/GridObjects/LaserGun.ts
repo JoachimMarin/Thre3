@@ -1,36 +1,22 @@
-import * as Phaser from 'phaser';
-import GridObject from './GridObject';
 import { GridTags } from '../Constants/GridTags';
 import LevelGrid from '../LevelGrid';
 import { Direction } from '../Constants/Direction';
 import { getAllEnumValues } from 'enum-for';
 import LaserProjectile from './LaserProjectile';
 import LaserColor from '../Constants/LaserColor';
+import GridObjectStatic from './GridObjectStatic';
 
-export default class LaserGun extends GridObject {
-  public image: Phaser.GameObjects.Image;
+export default class LaserGun extends GridObjectStatic {
   private color: LaserColor;
 
   constructor(x: integer, y: integer, grid: LevelGrid, color: LaserColor) {
-    super(x, y, grid);
+    super(x, y, grid, color.name + '_gun');
     this.color = color;
-
-    this.image = grid.levelScene.add.image(
-      this.position.realX(),
-      this.position.realY(),
-      color.name + '_gun'
-    );
-    this.image.setDisplaySize(128, 128);
   }
 
-  Init() {
+  OnInit() {
     this.AddGridTag(GridTags.WALL);
     this.AddGridTag(GridTags.DESTROY_BULLETS);
-  }
-
-  Remove() {
-    this.image.destroy();
-    super.Remove();
   }
 
   OnBeginStepTrigger(): void {

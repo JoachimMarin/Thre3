@@ -6,12 +6,15 @@ import GridPoint from '../Math/GridPoint';
 export default abstract class GridObjectStatic extends GridObject {
   public image: Phaser.GameObjects.Image;
 
-  constructor(x: integer, y: integer, grid: LevelGrid) {
+  constructor(x: integer, y: integer, grid: LevelGrid, imageKey: string = '') {
     super(x, y, grid);
+    if (imageKey == '' && typeof this['GetImageKey'] === 'function') {
+      imageKey = this['GetImageKey']();
+    }
     this.image = grid.levelScene.add.image(
       this.position.realX(),
       this.position.realY(),
-      this.GetImageKey()
+      imageKey
     );
     this.image.setDisplaySize(128, 128);
   }
@@ -21,10 +24,7 @@ export default abstract class GridObjectStatic extends GridObject {
     this.image.setPosition(position.realX(), position.realY());
   }
 
-  Remove() {
+  OnRemove() {
     this.image.destroy();
-    super.Remove();
   }
-
-  abstract GetImageKey(): string;
 }

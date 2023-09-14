@@ -17,7 +17,7 @@ export default class Goal extends GridObject {
     this.image.setDisplaySize(128, 128);
   }
 
-  Init() {
+  OnInit() {
     this.AddGridTag(GridTags.DESTROY_BULLETS);
   }
 
