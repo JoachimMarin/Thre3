@@ -1,7 +1,7 @@
 import LevelGrid from 'LevelGrid';
-import GridObjectStatic from 'GridObjects/GridObjectStatic';
+import GameObjectImage from 'GameObjects/BaseClasses/GameObjectImage';
 
-export default class TimedImage extends GridObjectStatic {
+export default class TimedImage extends GameObjectImage {
   private duration: number;
 
   constructor(
@@ -10,11 +10,11 @@ export default class TimedImage extends GridObjectStatic {
     grid: LevelGrid,
     imageKey: string,
     duration: number = 1,
-    size: number = 128
+    sizeX: number = 128,
+    sizeY: number = 128
   ) {
-    super(x, y, grid, imageKey);
+    super(x, y, grid, imageKey, sizeX, sizeY);
     this.duration = duration * 1000;
-    this.image.setSize(size, size);
   }
 
   OnUpdate(delta: number): void {

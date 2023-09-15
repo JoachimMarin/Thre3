@@ -1,7 +1,7 @@
 import LevelGrid from 'LevelGrid';
-import GridObjectStatic from 'GridObjects/GridObjectStatic';
+import GameObjectImage from './BaseClasses/GameObjectImage';
 
-export default class PopUp extends GridObjectStatic {
+export default class PopUp extends GameObjectImage {
   private rotationAngle: number = 0;
   private readonly rotationSpeed: number;
   private readonly rotationAngleMax: number;

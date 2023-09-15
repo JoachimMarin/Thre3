@@ -1,16 +1,17 @@
-import GridObject from 'GridObjects/GridObject';
-import { GridTags } from 'Constants/GridTags';
+import GridObject from 'GameObjects/BaseClasses/GridObject';
+import ObjectTag from 'Constants/ObjectTag';
 import LevelScene from 'LevelScene';
 import GridPoint from 'Math/GridPoint';
-import { GridObjectEvent } from 'Constants/GridObjectEvent';
-import Player from 'GridObjects/PrePlaced/Player';
+import GameObjectEvent from 'Constants/GridObjectEvent';
+import Player from 'GameObjects/PrePlaced/Player';
 import Inventory from 'Inventory';
+import GameObject from 'GameObjects/BaseClasses/GameObject';
 
 class EventGroup {
-  public objects: Set<GridObject> = new Set<GridObject>();
-  public condition: (obj: GridObject) => boolean;
+  public objects: Set<GameObject> = new Set<GameObject>();
+  public condition: (obj: GameObject) => boolean;
 
-  constructor(condition: (obj: GridObject) => boolean) {
+  constructor(condition: (obj: GameObject) => boolean) {
     this.condition = condition;
   }
 }
@@ -25,8 +26,8 @@ export default class LevelGrid {
 
   public readonly width: integer;
   public readonly height: integer;
-  private objectGroups: Map<GridObjectEvent, EventGroup> = new Map<
-    GridObjectEvent,
+  private objectGroups: Map<GameObjectEvent, EventGroup> = new Map<
+    GameObjectEvent,
     EventGroup
   >();
 
@@ -51,24 +52,24 @@ export default class LevelGrid {
       const first = functionString.indexOf('{}');
       return first == -1 || first != functionString.lastIndexOf('{}');
     };
-    this.DefineEventGroup(GridObjectEvent.UPDATE, (obj) =>
+    this.DefineEventGroup(GameObjectEvent.UPDATE, (obj) =>
       hasEvent(obj.OnUpdate)
     );
-    this.DefineEventGroup(GridObjectEvent.BEGIN_STEP_ALL, (obj) =>
+    this.DefineEventGroup(GameObjectEvent.BEGIN_STEP_ALL, (obj) =>
       hasEvent(obj.OnBeginStep)
     );
-    this.DefineEventGroup(GridObjectEvent.BEGIN_STEP_TRIGGER, (obj) =>
+    this.DefineEventGroup(GameObjectEvent.BEGIN_STEP_TRIGGER, (obj) =>
       hasEvent(obj.OnBeginStepTrigger)
     );
-    this.DefineEventGroup(GridObjectEvent.END_STEP_ALL, (obj) =>
+    this.DefineEventGroup(GameObjectEvent.END_STEP_ALL, (obj) =>
       hasEvent(obj.OnEndStep)
     );
-    this.DefineEventGroup(GridObjectEvent.END_STEP_TRIGGER, (obj) =>
+    this.DefineEventGroup(GameObjectEvent.END_STEP_TRIGGER, (obj) =>
       hasEvent(obj.OnEndStepTrigger)
     );
   }
 
-  SetupEventGroups(obj: GridObject) {
+  SetupEventGroups(obj: GameObject) {
     for (const objectGroup of this.objectGroups.values()) {
       if (objectGroup.condition(obj)) {
         objectGroup.objects.add(obj);
@@ -76,21 +77,21 @@ export default class LevelGrid {
     }
   }
 
-  ClearEventGroups(obj: GridObject) {
+  ClearEventGroups(obj: GameObject) {
     for (const objectGroup of this.objectGroups.values()) {
       objectGroup.objects.delete(obj);
     }
   }
 
-  ForEventGroup(key: GridObjectEvent, func: (obj: GridObject) => void) {
+  ForEventGroup(key: GameObjectEvent, func: (obj: GameObject) => void) {
     for (const object of this.objectGroups.get(key).objects) {
       func(object);
     }
   }
 
   DefineEventGroup(
-    key: GridObjectEvent,
-    condition: (obj: GridObject) => boolean
+    key: GameObjectEvent,
+    condition: (obj: GameObject) => boolean
   ) {
     this.objectGroups.set(key, new EventGroup(condition));
   }
@@ -102,37 +103,37 @@ export default class LevelGrid {
     return this.IsInBoundsXY(point.x, point.y);
   }
 
-  HasGridTagXY(x: integer, y: integer, tag: GridTags) {
+  HasGridTagXY(x: integer, y: integer, tag: ObjectTag) {
     const objectsAtGridPosition = this.at[x][y];
     for (const object of objectsAtGridPosition) {
-      if (object.HasGridTag(tag)) {
+      if (object.HasTag(tag)) {
         return true;
       }
     }
     return false;
   }
 
-  HasGridTag(point: GridPoint, tag: GridTags) {
+  HasGridTag(point: GridPoint, tag: ObjectTag) {
     return this.HasGridTagXY(point.x, point.y, tag);
   }
 
-  GetByTagXY(x: integer, y: integer, tag: GridTags): GridObject[] {
+  GetByTagXY(x: integer, y: integer, tag: ObjectTag): GridObject[] {
     const objectsAtGridPosition = this.at[x][y];
     const array = [];
     for (const object of objectsAtGridPosition) {
-      if (object.HasGridTag(tag)) {
+      if (object.HasTag(tag)) {
         array.push(object);
       }
     }
     return array;
   }
 
-  GetByTag(point: GridPoint, tag: GridTags): GridObject[] {
+  GetByTag(point: GridPoint, tag: ObjectTag): GridObject[] {
     return this.GetByTagXY(point.x, point.y, tag);
   }
 
   Update(delta: number) {
-    this.ForEventGroup(GridObjectEvent.UPDATE, (obj) => obj.OnUpdate(delta));
+    this.ForEventGroup(GameObjectEvent.UPDATE, (obj) => obj.OnUpdate(delta));
   }
 
   BeginPlayerStep() {
@@ -143,11 +144,11 @@ export default class LevelGrid {
     } else if (this.playerStep < 0) {
       this.playerStep = this.playerMaxStep - 1;
     }
-    this.ForEventGroup(GridObjectEvent.BEGIN_STEP_ALL, (obj) =>
+    this.ForEventGroup(GameObjectEvent.BEGIN_STEP_ALL, (obj) =>
       obj.OnBeginStep(trigger)
     );
     if (trigger) {
-      this.ForEventGroup(GridObjectEvent.BEGIN_STEP_TRIGGER, (obj) =>
+      this.ForEventGroup(GameObjectEvent.BEGIN_STEP_TRIGGER, (obj) =>
         obj.OnBeginStepTrigger()
       );
     }
@@ -155,11 +156,11 @@ export default class LevelGrid {
 
   EndPlayerStep() {
     const trigger = this.playerStep == 0;
-    this.ForEventGroup(GridObjectEvent.END_STEP_ALL, (obj) =>
+    this.ForEventGroup(GameObjectEvent.END_STEP_ALL, (obj) =>
       obj.OnEndStep(trigger)
     );
     if (trigger) {
-      this.ForEventGroup(GridObjectEvent.END_STEP_TRIGGER, (obj) =>
+      this.ForEventGroup(GameObjectEvent.END_STEP_TRIGGER, (obj) =>
         obj.OnEndStepTrigger()
       );
     }

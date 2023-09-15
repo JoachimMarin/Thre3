@@ -1,4 +1,4 @@
-import GridObject from 'GridObjects/GridObject';
+import GridObject from 'GameObjects/BaseClasses/GridObject';
 import LevelGrid from 'LevelGrid';
 import ImageKey from 'Constants/ImageKey';
 

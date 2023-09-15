@@ -1,10 +1,9 @@
-import { GridTags } from 'Constants/GridTags';
+import ObjectTag from 'Constants/ObjectTag';
 import LevelGrid from 'LevelGrid';
 import ItemType from 'Constants/ItemType';
-import GridObjectStatic from 'GridObjects/GridObjectStatic';
+import GridObjectImage from 'GameObjects/BaseClasses/GridObjectImage';
 
-export default class Item extends GridObjectStatic {
-  public image: Phaser.GameObjects.Image;
+export default class Item extends GridObjectImage {
   public readonly itemType: ItemType;
 
   constructor(x: integer, y: integer, grid: LevelGrid, itemType: ItemType) {
@@ -14,6 +13,6 @@ export default class Item extends GridObjectStatic {
   }
 
   OnInit(): void {
-    this.AddGridTag(GridTags.ITEM);
+    this.AddTag(ObjectTag.ITEM);
   }
 }

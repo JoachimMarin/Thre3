@@ -1,11 +1,11 @@
-import { GridTags } from 'Constants/GridTags';
+import ObjectTag from 'Constants/ObjectTag';
 import LevelGrid from 'LevelGrid';
 import { Direction } from 'Constants/Direction';
 import { getAllEnumValues } from 'enum-for';
-import GridObjectStatic from 'GridObjects/GridObjectStatic';
-import GridObject from 'GridObjects/GridObject';
+import GridObject from 'GameObjects/BaseClasses/GridObject';
 import GridPoint from 'Math/GridPoint';
 import ImageKey from 'Constants/ImageKey';
+import GridObjectImage from 'GameObjects/BaseClasses/GridObjectImage';
 
 export class LaserColor {
   public readonly name: string;
@@ -52,7 +52,7 @@ export class LaserProjectile extends GridObject {
       const nextPoint = this.position.Translate(direction);
       if (
         this.grid.IsInBounds(nextPoint) &&
-        !this.grid.HasGridTag(nextPoint, GridTags.DESTROY_BULLETS)
+        !this.grid.HasGridTag(nextPoint, ObjectTag.DESTROY_BULLETS)
       ) {
         end = false;
         new LaserProjectile(
@@ -79,8 +79,8 @@ export class LaserProjectile extends GridObject {
     }, 150);
   }
   OnInit() {
-    this.AddGridTag(GridTags.DEADLY);
-    this.AddGridTag(GridTags.CAN_BE_REFLECTED);
+    this.AddTag(ObjectTag.DEADLY);
+    this.AddTag(ObjectTag.CAN_BE_REFLECTED);
   }
 
   Remove() {
@@ -93,7 +93,7 @@ export class LaserProjectile extends GridObject {
   }
 }
 
-export default class LaserGun extends GridObjectStatic {
+export default class LaserGun extends GridObjectImage {
   private color: LaserColor;
 
   constructor(x: integer, y: integer, grid: LevelGrid, color: LaserColor) {
@@ -102,8 +102,8 @@ export default class LaserGun extends GridObjectStatic {
   }
 
   OnInit() {
-    this.AddGridTag(GridTags.WALL);
-    this.AddGridTag(GridTags.DESTROY_BULLETS);
+    this.AddTag(ObjectTag.WALL);
+    this.AddTag(ObjectTag.DESTROY_BULLETS);
   }
 
   OnBeginStepTrigger(): void {
@@ -111,7 +111,7 @@ export default class LaserGun extends GridObjectStatic {
       const nextPoint = this.position.Translate(dir);
       if (
         this.grid.IsInBounds(nextPoint) &&
-        !this.grid.HasGridTag(nextPoint, GridTags.DESTROY_BULLETS)
+        !this.grid.HasGridTag(nextPoint, ObjectTag.DESTROY_BULLETS)
       ) {
         new LaserProjectile(
           nextPoint.x,

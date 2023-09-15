@@ -1,35 +1,29 @@
 import * as Phaser from 'phaser';
-import GridObject from 'GridObjects/GridObject';
+import GridObjectImage from 'GameObjects/BaseClasses/GridObjectImage';
 import { Direction } from 'Constants/Direction';
-import { GridTags } from 'Constants/GridTags';
+import ObjectTag from 'Constants/ObjectTag';
 import LevelGrid from 'LevelGrid';
 import GridPoint from 'Math/GridPoint';
-import Item from 'GridObjects/PrePlaced/Item';
-import PopUp from 'GridObjects/PopUp';
-import TimedImage from 'GridObjects/TimedImage';
+import Item from './Item';
+import PopUp from 'GameObjects/PopUp';
+import TimedImage from 'GameObjects/TimedImage';
 import ItemDefinitions from 'Constants/Definitions/ItemDefinitions';
 import ImageDefinitions from 'Constants/Definitions/ImageDefinitions';
+import GameObjectPosition from 'GameObjects/BaseClasses/GameObjectPosition';
 
-export default class Player extends GridObject {
+export default class Player extends GridObjectImage {
   static imageKey = 'player';
 
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private moving: boolean = false;
   private direction: Direction = Direction.DOWN;
   private destination: GridPoint;
-  private sprite: Phaser.Physics.Arcade.Sprite;
   private gameOver: boolean = false;
 
   constructor(x: integer, y: integer, grid: LevelGrid) {
-    super(x, y, grid);
+    super(x, y, grid, Player.imageKey);
     this.grid.player = this;
     this.cursors = grid.levelScene.cursors;
-    this.sprite = grid.levelScene.physics.add.sprite(
-      this.position.realX(),
-      this.position.realY(),
-      Player.imageKey
-    );
-    this.sprite.setDisplaySize(128, 128);
   }
 
   GameOver() {
@@ -42,7 +36,7 @@ export default class Player extends GridObject {
   EndPlayerStep() {
     this.grid.EndPlayerStep();
 
-    const itemList = this.grid.GetByTag(this.position, GridTags.ITEM);
+    const itemList = this.grid.GetByTag(this.position, ObjectTag.ITEM);
     for (const item of itemList) {
       if (item instanceof Item) {
         item.Remove();
@@ -50,12 +44,12 @@ export default class Player extends GridObject {
       }
     }
 
-    const deadlyList = this.grid.GetByTag(this.position, GridTags.DEADLY);
+    const deadlyList = this.grid.GetByTag(this.position, ObjectTag.DEADLY);
     let useMirror = false;
     let useShield = false;
     for (const deadly of deadlyList) {
       let blocked = false;
-      if (deadly.HasGridTag(GridTags.CAN_BE_REFLECTED)) {
+      if (deadly.HasTag(ObjectTag.CAN_BE_REFLECTED)) {
         if (!useMirror && this.grid.inventory.HasItem(ItemDefinitions.MIRROR)) {
           this.grid.inventory.RemoveItem(ItemDefinitions.MIRROR);
           useMirror = true;
@@ -82,15 +76,17 @@ export default class Player extends GridObject {
         }
         if (useMirror) {
           for (const parent of deadly.parents) {
-            parent.Remove();
-            new TimedImage(
-              parent.position.x,
-              parent.position.y,
-              this.grid,
-              ImageDefinitions.EXPLOSION.imageKey,
-              0.3,
-              160
-            );
+            if (parent instanceof GameObjectPosition) {
+              parent.Remove();
+              new TimedImage(
+                parent.position.x,
+                parent.position.y,
+                this.grid,
+                ImageDefinitions.EXPLOSION.imageKey,
+                0.3,
+                160
+              );
+            }
           }
 
           blocked = true;
@@ -108,12 +104,12 @@ export default class Player extends GridObject {
     const speed = 0.6;
     if (this.moving) {
       const translationVector = GridPoint.TranslationVector(this.direction);
-      this.sprite.x += speed * delta * translationVector.x;
-      this.sprite.y += speed * delta * translationVector.y;
+      this.image.x += speed * delta * translationVector.x;
+      this.image.y += speed * delta * translationVector.y;
       if (
-        translationVector.x * this.sprite.x >=
+        translationVector.x * this.image.x >=
           translationVector.x * this.destination.realX() &&
-        translationVector.y * this.sprite.y >=
+        translationVector.y * this.image.y >=
           translationVector.y * this.destination.realY()
       ) {
         this.moving = false;
@@ -140,21 +136,15 @@ export default class Player extends GridObject {
         this.destination = this.position.Translate(this.direction);
         if (
           !this.grid.IsInBounds(this.destination) ||
-          this.grid.HasGridTag(this.destination, GridTags.WALL)
+          this.grid.HasGridTag(this.destination, ObjectTag.WALL)
         ) {
           this.moving = false;
         }
       }
       if (this.moving) {
-        this.sprite.setAngle(GridPoint.DirectionToAngle(this.direction));
+        this.image.setAngle(GridPoint.DirectionToAngle(this.direction));
         this.grid.BeginPlayerStep();
       }
-    }
-    if (!this.moving) {
-      this.sprite.setPosition(
-        this.position.x * 128 + 64,
-        this.position.y * 128 + 64
-      );
     }
   }
 }

@@ -1,9 +1,9 @@
 import Tile from 'Constants/Tile';
-import Player from 'GridObjects/PrePlaced/Player';
-import BlueWall from 'GridObjects/PrePlaced/BlueWall';
-import ProtectiveWall from 'GridObjects/PrePlaced/ProtectiveWall';
-import Goal from 'GridObjects/PrePlaced/Goal';
-import LaserGun, { LaserColor } from 'GridObjects/PrePlaced/LaserGun';
+import Player from 'GameObjects/PrePlaced/Player';
+import BlueWall from 'GameObjects/PrePlaced/BlueWall';
+import ProtectiveWall from 'GameObjects/PrePlaced/ProtectiveWall';
+import Goal from 'GameObjects/PrePlaced/Goal';
+import LaserGun, { LaserColor } from 'GameObjects/PrePlaced/LaserGun';
 
 const TileDefinitions = {
   PLAYER: new Tile(Player.imageKey, (x, y, grid) => new Player(x, y, grid)),
