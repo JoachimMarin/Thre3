@@ -1,15 +1,19 @@
 import * as Phaser from 'phaser';
-import GridObject from './GridObject';
-import LevelGrid from '../LevelGrid';
-import GridPoint from '../Math/GridPoint';
+import GridObject from 'GridObjects/GridObject';
+import LevelGrid from 'LevelGrid';
+import GridPoint from 'Math/GridPoint';
 
 export default abstract class GridObjectStatic extends GridObject {
   public image: Phaser.GameObjects.Image;
 
   constructor(x: integer, y: integer, grid: LevelGrid, imageKey: string = '') {
     super(x, y, grid);
-    if (imageKey == '' && typeof this['GetImageKey'] === 'function') {
-      imageKey = this['GetImageKey']();
+
+    if (
+      imageKey == '' &&
+      typeof (this as unknown).constructor['imageKey'] === 'string'
+    ) {
+      imageKey = (this as unknown).constructor['imageKey'];
     }
     this.image = grid.levelScene.add.image(
       this.position.realX(),

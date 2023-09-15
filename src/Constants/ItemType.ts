@@ -1,13 +1,11 @@
-export default class ItemType {
+import ImageKey from 'Constants/ImageKey';
+
+export default class ItemType extends ImageKey {
   public readonly imageKey: string;
 
   constructor(imageKey: string) {
-    this.imageKey = imageKey;
-    ItemType.ITEM_TYPES.add(this);
+    super(imageKey);
+    ItemType.ALL.add(this);
   }
-  static readonly ITEM_TYPES = new Set<ItemType>();
-
-  static readonly MIRROR = new ItemType('mirror');
-  static readonly SHIELD = new ItemType('shield');
-  static readonly SHOVEL = new ItemType('shovel');
+  static readonly ALL = new Set<ItemType>();
 }

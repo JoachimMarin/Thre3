@@ -1,10 +1,8 @@
-import GridObjectStatic from './GridObjectStatic';
-import { GridTags } from '../Constants/GridTags';
+import GridObjectStatic from 'GridObjects/GridObjectStatic';
+import { GridTags } from 'Constants/GridTags';
 
 export default class ProtectiveWall extends GridObjectStatic {
-  GetImageKey() {
-    return 'protective_wall';
-  }
+  static imageKey = 'protective_wall';
 
   OnInit() {
     this.AddGridTag(GridTags.WALL);

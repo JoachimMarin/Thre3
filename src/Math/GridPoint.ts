@@ -1,4 +1,4 @@
-import { Direction } from '../Constants/Direction';
+import { Direction } from 'Constants/Direction';
 
 export default class GridPoint {
   public readonly x: integer;

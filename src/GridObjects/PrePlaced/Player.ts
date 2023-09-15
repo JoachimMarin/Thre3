@@ -1,14 +1,18 @@
 import * as Phaser from 'phaser';
-import GridObject from './GridObject';
-import { Direction } from '../Constants/Direction';
-import { GridTags } from '../Constants/GridTags';
-import LevelGrid from '../LevelGrid';
-import GridPoint from '../Math/GridPoint';
-import LaserProjectile from './LaserProjectile';
-import Item from './Item';
-import ItemType from '../Constants/ItemType';
+import GridObject from 'GridObjects/GridObject';
+import { Direction } from 'Constants/Direction';
+import { GridTags } from 'Constants/GridTags';
+import LevelGrid from 'LevelGrid';
+import GridPoint from 'Math/GridPoint';
+import Item from 'GridObjects/PrePlaced/Item';
+import PopUp from 'GridObjects/PopUp';
+import TimedImage from 'GridObjects/TimedImage';
+import ItemDefinitions from 'Constants/Definitions/ItemDefinitions';
+import ImageDefinitions from 'Constants/Definitions/ImageDefinitions';
 
 export default class Player extends GridObject {
+  static imageKey = 'player';
+
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private moving: boolean = false;
   private direction: Direction = Direction.DOWN;
@@ -23,7 +27,7 @@ export default class Player extends GridObject {
     this.sprite = grid.levelScene.physics.add.sprite(
       this.position.realX(),
       this.position.realY(),
-      'player'
+      Player.imageKey
     );
     this.sprite.setDisplaySize(128, 128);
   }
@@ -48,21 +52,55 @@ export default class Player extends GridObject {
 
     const deadlyList = this.grid.GetByTag(this.position, GridTags.DEADLY);
     let useMirror = false;
+    let useShield = false;
     for (const deadly of deadlyList) {
-      if (
-        deadly instanceof LaserProjectile &&
-        this.grid.inventory.HasItem(ItemType.MIRROR)
-      ) {
-        deadly.owner.Remove();
-        useMirror = true;
-      }
+      let blocked = false;
+      if (deadly.HasGridTag(GridTags.CAN_BE_REFLECTED)) {
+        if (!useMirror && this.grid.inventory.HasItem(ItemDefinitions.MIRROR)) {
+          this.grid.inventory.RemoveItem(ItemDefinitions.MIRROR);
+          useMirror = true;
+          new PopUp(
+            this.position.x,
+            this.position.y,
+            this.grid,
+            ItemDefinitions.MIRROR.imageKey
+          );
+        }
+        if (
+          !useMirror &&
+          !useShield &&
+          this.grid.inventory.HasItem(ItemDefinitions.SHIELD)
+        ) {
+          this.grid.inventory.RemoveItem(ItemDefinitions.SHIELD);
+          useShield = true;
+          new PopUp(
+            this.position.x,
+            this.position.y,
+            this.grid,
+            ItemDefinitions.SHIELD.imageKey
+          );
+        }
+        if (useMirror) {
+          for (const parent of deadly.parents) {
+            parent.Remove();
+            new TimedImage(
+              parent.position.x,
+              parent.position.y,
+              this.grid,
+              ImageDefinitions.EXPLOSION.imageKey,
+              0.3,
+              160
+            );
+          }
 
-      if (!useMirror) {
+          blocked = true;
+        } else if (useShield) {
+          blocked = true;
+        }
+      }
+      if (!blocked) {
         this.GameOver();
       }
-    }
-    if (useMirror) {
-      this.grid.inventory.RemoveItem(ItemType.MIRROR);
     }
   }
 

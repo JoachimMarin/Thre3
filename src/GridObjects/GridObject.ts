@@ -1,6 +1,6 @@
-import { GridTags } from '../Constants/GridTags';
-import LevelGrid from '../LevelGrid';
-import GridPoint from '../Math/GridPoint';
+import { GridTags } from 'Constants/GridTags';
+import LevelGrid from 'LevelGrid';
+import GridPoint from 'Math/GridPoint';
 
 export default abstract class GridObject {
   public position: GridPoint;

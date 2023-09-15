@@ -1,9 +1,8 @@
 {
-    "compilerOptions": {
-        "target": "es6",
-        "moduleResolution": "node"
-    },
-    "include": [
-        "./src/**/*"
-    ]
+  "compilerOptions": {
+    "target": "es6",
+    "moduleResolution": "node",
+    "baseUrl": "./src"
+  },
+  "include": ["./src/**/*"]
 }

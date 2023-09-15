@@ -1,7 +1,7 @@
-import { GridTags } from '../Constants/GridTags';
-import LevelGrid from '../LevelGrid';
-import ItemType from '../Constants/ItemType';
-import GridObjectStatic from './GridObjectStatic';
+import { GridTags } from 'Constants/GridTags';
+import LevelGrid from 'LevelGrid';
+import ItemType from 'Constants/ItemType';
+import GridObjectStatic from 'GridObjects/GridObjectStatic';
 
 export default class Item extends GridObjectStatic {
   public image: Phaser.GameObjects.Image;

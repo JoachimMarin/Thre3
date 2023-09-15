@@ -1,10 +1,10 @@
-import GridObject from './GridObjects/GridObject';
-import { GridTags } from './Constants/GridTags';
-import LevelScene from './LevelScene';
-import GridPoint from './Math/GridPoint';
-import { GridObjectEvent } from './Constants/GridObjectEvent';
-import Player from './GridObjects/Player';
-import Inventory from './Inventory';
+import GridObject from 'GridObjects/GridObject';
+import { GridTags } from 'Constants/GridTags';
+import LevelScene from 'LevelScene';
+import GridPoint from 'Math/GridPoint';
+import { GridObjectEvent } from 'Constants/GridObjectEvent';
+import Player from 'GridObjects/PrePlaced/Player';
+import Inventory from 'Inventory';
 
 class EventGroup {
   public objects: Set<GridObject> = new Set<GridObject>();

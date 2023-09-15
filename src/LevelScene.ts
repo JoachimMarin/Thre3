@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 
-import LevelGrid from './LevelGrid';
-import { LevelParser } from './LevelParser';
+import LevelGrid from 'LevelGrid';
+import LevelParser from 'LevelParser';
 
 export default class LevelScene extends Phaser.Scene {
   public cursors!: Phaser.Types.Input.Keyboard.CursorKeys;

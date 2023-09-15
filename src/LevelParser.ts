@@ -1,16 +1,16 @@
-import LevelScene from './LevelScene';
-import GridObject from './GridObjects/GridObject';
-import LaserColor from './Constants/LaserColor';
-import Player from './GridObjects/Player';
-import LevelGrid from './LevelGrid';
-import BlueWall from './GridObjects/BlueWall';
-import ProtectiveWall from './GridObjects/ProtectiveWall';
-import LaserGun from './GridObjects/LaserGun';
-import Goal from './GridObjects/Goal';
-import Item from './GridObjects/Item';
-import ItemType from './Constants/ItemType';
+import LevelScene from 'LevelScene';
+import GridObject from 'GridObjects/GridObject';
+import LevelGrid from 'LevelGrid';
+import Item from 'GridObjects/PrePlaced/Item';
+import ItemType from 'Constants/ItemType';
+import ImageKey from 'Constants/ImageKey';
+import Tile from 'Constants/Tile';
 
-export class TilesFile {
+import ImageDefinitions from 'Constants/Definitions/ImageDefinitions';
+import ItemDefinitions from 'Constants/Definitions/ItemDefinitions';
+import TileDefinitions from 'Constants/Definitions/TileDefinitions';
+
+class TilesFile {
   public tileDict: { [key: integer]: string } = {};
 
   constructor(data: XMLDocument) {
@@ -29,7 +29,7 @@ export class TilesFile {
   }
 }
 
-export class LevelFile {
+class LevelFile {
   public readonly width: integer = 0;
   public readonly height: integer = 0;
   public readonly objects: integer[][][] = [];
@@ -82,11 +82,13 @@ export class LevelFile {
   }
 }
 
-export class LevelParser {
+export default class LevelParser {
   private level_scene: LevelScene;
   private tileDict: {
     [key: string]: (x: integer, y: integer, grid: LevelGrid) => GridObject;
   } = {};
+
+  ImportAssets(..._args: object[]) {}
 
   RegisterAsset(key: string) {
     this.level_scene.load.image(key, 'assets/' + key + '.png');
@@ -102,36 +104,27 @@ export class LevelParser {
     key: string,
     fun: (x: integer, y: integer, grid: LevelGrid) => GridObject
   ) {
-    this.RegisterAsset(key);
     this.tileDict[key] = fun;
   }
 
   Preload(level_scene: LevelScene) {
     this.level_scene = level_scene;
 
-    this.RegisterTile('player', (x, y, grid) => new Player(x, y, grid));
-    this.RegisterTile('blue_wall', (x, y, grid) => new BlueWall(x, y, grid));
-    this.RegisterTile(
-      'protective_wall',
-      (x, y, grid) => new ProtectiveWall(x, y, grid)
-    );
-    this.RegisterTile('goal', (x, y, grid) => new Goal(x, y, grid));
-    this.RegisterSheet('goal_sheet', 256);
+    this.ImportAssets(TileDefinitions, ImageDefinitions, ItemDefinitions);
 
-    for (const itemType of ItemType.ITEM_TYPES) {
+    for (const tile of Tile.ALL) {
+      this.RegisterTile(tile.imageKey, tile.fun);
+    }
+
+    for (const itemType of ItemType.ALL) {
       this.RegisterTile(
         itemType.imageKey,
         (x, y, grid) => new Item(x, y, grid, itemType)
       );
     }
 
-    for (const color of LaserColor.ALL) {
-      this.RegisterTile(
-        color.name + '_gun',
-        (x, y, grid) => new LaserGun(x, y, grid, color)
-      );
-      this.RegisterAsset(color.name + '_projectile');
-      this.RegisterAsset(color.name + '_projectile_end');
+    for (const imageKey of ImageKey.ALL) {
+      this.RegisterAsset(imageKey.imageKey);
     }
 
     this.level_scene.load.xml('tiles', 'assets/tiles.tsx');
@@ -154,7 +147,11 @@ export class LevelParser {
       for (let x = 0; x < levelFile.width; x++) {
         for (const objectId of levelFile.objects[x][y]) {
           const key = tilesFile.tileDict[objectId];
-          this.tileDict[key](x, y, grid);
+          if (key in this.tileDict) {
+            this.tileDict[key](x, y, grid);
+          } else {
+            console.error('key <' + key + '> was not found.');
+          }
         }
       }
     }

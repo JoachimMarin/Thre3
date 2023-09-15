@@ -1,6 +1,6 @@
-import ItemType from './Constants/ItemType';
-import LevelScene from './LevelScene';
-import GridPoint from './Math/GridPoint';
+import ItemType from 'Constants/ItemType';
+import LevelScene from 'LevelScene';
+import GridPoint from 'Math/GridPoint';
 
 class InventoryEntry {
   public itemType: ItemType;
