@@ -5,6 +5,7 @@ import Item from 'GameObjects/PrePlaced/Item';
 import ItemType from 'Constants/ItemType';
 import ImageKey from 'Constants/ImageKey';
 import Tile from 'Constants/Tile';
+import { IGridPoint } from 'Math/GridPoint';
 
 import ImageDefinitions from 'Constants/Definitions/ImageDefinitions';
 import ItemDefinitions from 'Constants/Definitions/ItemDefinitions';
@@ -85,7 +86,7 @@ class LevelFile {
 export default class LevelParser {
   private level_scene: LevelScene;
   private tileDict: {
-    [key: string]: (x: integer, y: integer, grid: LevelGrid) => GridObject;
+    [key: string]: (point: IGridPoint, grid: LevelGrid) => GridObject;
   } = {};
 
   ImportAssets(..._args: object[]) {}
@@ -102,7 +103,7 @@ export default class LevelParser {
 
   RegisterTile(
     key: string,
-    fun: (x: integer, y: integer, grid: LevelGrid) => GridObject
+    fun: (point: IGridPoint, grid: LevelGrid) => GridObject
   ) {
     this.tileDict[key] = fun;
   }
@@ -119,7 +120,7 @@ export default class LevelParser {
     for (const itemType of ItemType.ALL) {
       this.RegisterTile(
         itemType.imageKey,
-        (x, y, grid) => new Item(x, y, grid, itemType)
+        (point, grid) => new Item(point, grid, itemType)
       );
     }
 
@@ -148,7 +149,7 @@ export default class LevelParser {
         for (const objectId of levelFile.objects[x][y]) {
           const key = tilesFile.tileDict[objectId];
           if (key in this.tileDict) {
-            this.tileDict[key](x, y, grid);
+            this.tileDict[key]([x, y], grid);
           } else {
             console.error('key <' + key + '> was not found.');
           }

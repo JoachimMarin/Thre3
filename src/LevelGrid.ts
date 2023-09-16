@@ -1,7 +1,7 @@
 import GridObject from 'GameObjects/BaseClasses/GridObject';
 import ObjectTag from 'Constants/ObjectTag';
 import LevelScene from 'LevelScene';
-import GridPoint from 'Math/GridPoint';
+import { IGridPoint, GridPoint } from 'Math/GridPoint';
 import GameObjectEvent from 'Constants/GridObjectEvent';
 import Player from 'GameObjects/PrePlaced/Player';
 import Inventory from 'Inventory';
@@ -96,15 +96,18 @@ export default class LevelGrid {
     this.objectGroups.set(key, new EventGroup(condition));
   }
 
-  IsInBoundsXY(x: integer, y: integer) {
-    return x >= 0 && y >= 0 && x < this.width && y < this.height;
+  IsInBounds(point: IGridPoint) {
+    const gridPoint = GridPoint.AsGridPoint(point);
+    return (
+      gridPoint.x >= 0 &&
+      gridPoint.y >= 0 &&
+      gridPoint.x < this.width &&
+      gridPoint.y < this.height
+    );
   }
-  IsInBounds(point: GridPoint) {
-    return this.IsInBoundsXY(point.x, point.y);
-  }
-
-  HasGridTagXY(x: integer, y: integer, tag: ObjectTag) {
-    const objectsAtGridPosition = this.at[x][y];
+  HasGridTag(point: IGridPoint, tag: ObjectTag) {
+    const gridPoint = GridPoint.AsGridPoint(point);
+    const objectsAtGridPosition = this.at[gridPoint.x][gridPoint.y];
     for (const object of objectsAtGridPosition) {
       if (object.HasTag(tag)) {
         return true;
@@ -113,12 +116,9 @@ export default class LevelGrid {
     return false;
   }
 
-  HasGridTag(point: GridPoint, tag: ObjectTag) {
-    return this.HasGridTagXY(point.x, point.y, tag);
-  }
-
-  GetByTagXY(x: integer, y: integer, tag: ObjectTag): GridObject[] {
-    const objectsAtGridPosition = this.at[x][y];
+  GetByTag(point: IGridPoint, tag: ObjectTag): GridObject[] {
+    const gridPoint = GridPoint.AsGridPoint(point);
+    const objectsAtGridPosition = this.at[gridPoint.x][gridPoint.y];
     const array = [];
     for (const object of objectsAtGridPosition) {
       if (object.HasTag(tag)) {
@@ -126,10 +126,6 @@ export default class LevelGrid {
       }
     }
     return array;
-  }
-
-  GetByTag(point: GridPoint, tag: ObjectTag): GridObject[] {
-    return this.GetByTagXY(point.x, point.y, tag);
   }
 
   Update(delta: number) {

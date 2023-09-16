@@ -1,6 +1,6 @@
 import GameObject from './GameObject';
 import LevelGrid from 'LevelGrid';
-import GridPoint from 'Math/GridPoint';
+import { IGridPoint, GridPoint } from 'Math/GridPoint';
 
 /**
  * GameObjectPosition:
@@ -9,12 +9,12 @@ import GridPoint from 'Math/GridPoint';
 export default abstract class GameObjectPosition extends GameObject {
   public position: GridPoint;
 
-  constructor(x: integer, y: integer, grid: LevelGrid) {
+  constructor(point: IGridPoint, grid: LevelGrid) {
     super(grid);
-    this.position = new GridPoint(x, y);
+    this.position = GridPoint.AsGridPoint(point);
   }
 
-  SetGridPosition(position: GridPoint) {
-    this.position = position;
+  SetGridPosition(position: IGridPoint) {
+    this.position = GridPoint.AsGridPoint(position);
   }
 }

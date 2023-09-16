@@ -1,5 +1,5 @@
 import LevelGrid from 'LevelGrid';
-import GridPoint from 'Math/GridPoint';
+import { IGridPoint } from 'Math/GridPoint';
 import GridObject from 'GameObjects/BaseClasses/GridObject';
 
 /**
@@ -8,18 +8,15 @@ import GridObject from 'GameObjects/BaseClasses/GridObject';
  */
 export default abstract class GridObjectImage extends GridObject {
   public image: Phaser.GameObjects.Image;
-  public position: GridPoint;
 
   constructor(
-    x: integer,
-    y: integer,
+    point: IGridPoint,
     grid: LevelGrid,
     imageKey: string = '',
     sizeX: integer = 128,
     sizeY: integer = 128
   ) {
-    super(x, y, grid);
-    this.position = new GridPoint(x, y);
+    super(point, grid);
     if (
       imageKey == '' &&
       typeof (this as unknown).constructor['imageKey'] === 'string'
@@ -39,7 +36,7 @@ export default abstract class GridObjectImage extends GridObject {
     this.image.destroy();
   }
 
-  SetGridPosition(position: GridPoint) {
+  override SetGridPosition(position: IGridPoint) {
     super.SetGridPosition(position);
     this.image.setPosition(this.position.realX(), this.position.realY());
   }

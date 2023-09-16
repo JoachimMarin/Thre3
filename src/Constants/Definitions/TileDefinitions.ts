@@ -6,24 +6,24 @@ import Goal from 'GameObjects/PrePlaced/Goal';
 import LaserGun, { LaserColor } from 'GameObjects/PrePlaced/LaserGun';
 
 const TileDefinitions = {
-  PLAYER: new Tile(Player.imageKey, (x, y, grid) => new Player(x, y, grid)),
+  PLAYER: new Tile(Player.imageKey, (point, grid) => new Player(point, grid)),
   BLUE_WALL: new Tile(
     BlueWall.imageKey,
-    (x, y, grid) => new BlueWall(x, y, grid)
+    (point, grid) => new BlueWall(point, grid)
   ),
   PROTECTIVE_WALL: new Tile(
     ProtectiveWall.imageKey,
-    (x, y, grid) => new ProtectiveWall(x, y, grid)
+    (point, grid) => new ProtectiveWall(point, grid)
   ),
-  GOAL: new Tile(Goal.imageKey, (x, y, grid) => new Goal(x, y, grid)),
+  GOAL: new Tile(Goal.imageKey, (point, grid) => new Goal(point, grid)),
 
   LASERS: (() => {
     const r = new Map<LaserColor, Tile>();
     for (const color of LaserColor.ALL) {
       r.set(
         color,
-        new Tile(color.gunImageKey, (x, y, grid) => {
-          return new LaserGun(x, y, grid, color);
+        new Tile(color.gunImageKey, (point, grid) => {
+          return new LaserGun(point, grid, color);
         })
       );
     }

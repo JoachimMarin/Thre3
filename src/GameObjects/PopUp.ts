@@ -1,5 +1,6 @@
 import LevelGrid from 'LevelGrid';
 import GameObjectImage from './BaseClasses/GameObjectImage';
+import { IGridPoint } from 'Math/GridPoint';
 
 export default class PopUp extends GameObjectImage {
   private rotationAngle: number = 0;
@@ -7,14 +8,13 @@ export default class PopUp extends GameObjectImage {
   private readonly rotationAngleMax: number;
 
   constructor(
-    x: integer,
-    y: integer,
+    point: IGridPoint,
     grid: LevelGrid,
     imageKey: string,
     rotationSpeed: number = 1,
     numRotations: number = 1
   ) {
-    super(x, y, grid, imageKey);
+    super(point, grid, imageKey);
     this.rotationSpeed = rotationSpeed;
     this.rotationAngleMax = numRotations * 360;
   }

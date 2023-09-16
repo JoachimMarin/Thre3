@@ -1,10 +1,22 @@
-import { Direction } from 'Constants/Direction';
+import Direction from 'Math/Direction';
 
-export default class GridPoint {
+export type IGridPoint = GridPoint | [integer, integer];
+
+export class GridPoint {
   public readonly x: integer;
   public readonly y: integer;
 
-  constructor(x: integer, y: integer) {
+  static AsGridPoint(arg: IGridPoint) {
+    if (arg instanceof GridPoint) {
+      return arg;
+    }
+    if (Array.isArray(arg)) {
+      return new GridPoint(arg[0], arg[1]);
+    }
+    console.error('Cannot convert to GridPoint: <' + arg + '>');
+  }
+
+  private constructor(x: integer, y: integer) {
     this.x = x;
     this.y = y;
   }
@@ -39,10 +51,6 @@ export default class GridPoint {
 
   static Zero() {
     return new GridPoint(0, 0);
-  }
-
-  static DirectionToAngle(direction: Direction) {
-    return this.TranslationVector(direction).Angle();
   }
 
   static TranslationVector(direction: Direction, length: integer = 1) {

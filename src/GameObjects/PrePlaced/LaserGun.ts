@@ -1,9 +1,9 @@
 import ObjectTag from 'Constants/ObjectTag';
 import LevelGrid from 'LevelGrid';
-import { Direction } from 'Constants/Direction';
+import Direction from 'Math/Direction';
 import { getAllEnumValues } from 'enum-for';
 import GridObject from 'GameObjects/BaseClasses/GridObject';
-import GridPoint from 'Math/GridPoint';
+import { IGridPoint } from 'Math/GridPoint';
 import ImageKey from 'Constants/ImageKey';
 import GridObjectImage from 'GameObjects/BaseClasses/GridObjectImage';
 
@@ -36,15 +36,14 @@ export class LaserProjectile extends GridObject {
   public owner: GridObject;
 
   constructor(
-    x: integer,
-    y: integer,
+    point: IGridPoint,
     grid: LevelGrid,
     direction: Direction,
     length: integer,
     color: LaserColor,
     owner: GridObject
   ) {
-    super(x, y, grid);
+    super(point, grid);
     this.owner = owner;
     this.owner.AddChild(this);
     let end = true;
@@ -56,8 +55,7 @@ export class LaserProjectile extends GridObject {
       ) {
         end = false;
         new LaserProjectile(
-          nextPoint.x,
-          nextPoint.y,
+          nextPoint,
           this.grid,
           direction,
           length - 1,
@@ -72,7 +70,7 @@ export class LaserProjectile extends GridObject {
       end ? color.projectileEnd.imageKey : color.projectile.imageKey
     );
     this.image.setDisplaySize(128, 128);
-    this.image.setAngle(GridPoint.DirectionToAngle(direction));
+    this.image.setAngle(direction.ToAngle());
     this.image.setVisible(false);
     setTimeout(() => {
       this.image.setVisible(true);
@@ -96,8 +94,8 @@ export class LaserProjectile extends GridObject {
 export default class LaserGun extends GridObjectImage {
   private color: LaserColor;
 
-  constructor(x: integer, y: integer, grid: LevelGrid, color: LaserColor) {
-    super(x, y, grid, color.gunImageKey);
+  constructor(point: IGridPoint, grid: LevelGrid, color: LaserColor) {
+    super(point, grid, color.gunImageKey);
     this.color = color;
   }
 
@@ -114,8 +112,7 @@ export default class LaserGun extends GridObjectImage {
         !this.grid.HasGridTag(nextPoint, ObjectTag.DESTROY_BULLETS)
       ) {
         new LaserProjectile(
-          nextPoint.x,
-          nextPoint.y,
+          nextPoint,
           this.grid,
           dir,
           this.color.length,

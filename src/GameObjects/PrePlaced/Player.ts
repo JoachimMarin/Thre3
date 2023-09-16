@@ -1,9 +1,9 @@
 import * as Phaser from 'phaser';
 import GridObjectImage from 'GameObjects/BaseClasses/GridObjectImage';
-import { Direction } from 'Constants/Direction';
+import Direction from 'Math/Direction';
 import ObjectTag from 'Constants/ObjectTag';
 import LevelGrid from 'LevelGrid';
-import GridPoint from 'Math/GridPoint';
+import { IGridPoint, GridPoint } from 'Math/GridPoint';
 import Item from './Item';
 import PopUp from 'GameObjects/PopUp';
 import TimedImage from 'GameObjects/TimedImage';
@@ -20,8 +20,8 @@ export default class Player extends GridObjectImage {
   private destination: GridPoint;
   private gameOver: boolean = false;
 
-  constructor(x: integer, y: integer, grid: LevelGrid) {
-    super(x, y, grid, Player.imageKey);
+  constructor(point: IGridPoint, grid: LevelGrid) {
+    super(point, grid, Player.imageKey);
     this.grid.player = this;
     this.cursors = grid.levelScene.cursors;
   }
@@ -53,12 +53,7 @@ export default class Player extends GridObjectImage {
         if (!useMirror && this.grid.inventory.HasItem(ItemDefinitions.MIRROR)) {
           this.grid.inventory.RemoveItem(ItemDefinitions.MIRROR);
           useMirror = true;
-          new PopUp(
-            this.position.x,
-            this.position.y,
-            this.grid,
-            ItemDefinitions.MIRROR.imageKey
-          );
+          new PopUp(this.position, this.grid, ItemDefinitions.MIRROR.imageKey);
         }
         if (
           !useMirror &&
@@ -67,20 +62,14 @@ export default class Player extends GridObjectImage {
         ) {
           this.grid.inventory.RemoveItem(ItemDefinitions.SHIELD);
           useShield = true;
-          new PopUp(
-            this.position.x,
-            this.position.y,
-            this.grid,
-            ItemDefinitions.SHIELD.imageKey
-          );
+          new PopUp(this.position, this.grid, ItemDefinitions.SHIELD.imageKey);
         }
         if (useMirror) {
           for (const parent of deadly.parents) {
             if (parent instanceof GameObjectPosition) {
               parent.Remove();
               new TimedImage(
-                parent.position.x,
-                parent.position.y,
+                parent.position,
                 this.grid,
                 ImageDefinitions.EXPLOSION.imageKey,
                 0.3,
@@ -142,7 +131,7 @@ export default class Player extends GridObjectImage {
         }
       }
       if (this.moving) {
-        this.image.setAngle(GridPoint.DirectionToAngle(this.direction));
+        this.image.setAngle(this.direction.ToAngle());
         this.grid.BeginPlayerStep();
       }
     }
