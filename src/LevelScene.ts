@@ -11,7 +11,6 @@ import { IGridPoint } from 'Math/GridPoint';
 import ImageDefinitions from 'Constants/Definitions/ImageDefinitions';
 import ItemDefinitions from 'Constants/Definitions/ItemDefinitions';
 import TileDefinitions from 'Constants/Definitions/TileDefinitions';
-import UserInterfaceScene from 'UserInterfaceScene';
 
 class TilesFile {
   public tileDict: { [key: integer]: string } = {};
@@ -182,9 +181,9 @@ export default class LevelScene extends Phaser.Scene {
 
   public static index: integer = 0;
 
-  constructor() {
+  private constructor() {
     super('level');
-    this.levelParser = new LevelParser(this, [UserInterfaceScene.SCENE]);
+    this.levelParser = new LevelParser(this, []);
   }
 
   init() {
@@ -198,7 +197,7 @@ export default class LevelScene extends Phaser.Scene {
   create() {
     this.camera = this.cameras.main;
     this.grid = this.levelParser.BuildLevel();
-    this.scene.launch('userinterface');
+    this.scene.launch('user-interface');
   }
 
   update(_time: number, delta: number) {

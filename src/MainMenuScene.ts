@@ -9,7 +9,11 @@ export default class MainMenuScene extends Phaser.Scene {
   private selectedButtonIndex = 0;
   private buttonSelector!: Phaser.GameObjects.Image;
 
-  public static readonly SCENE = new MainMenuScene('main-menu');
+  public static readonly SCENE = new MainMenuScene();
+
+  private constructor() {
+    super('main-menu');
+  }
 
   init() {
     this.cursors = this.input.keyboard.createCursorKeys();

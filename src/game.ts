@@ -5,8 +5,8 @@ import Scenes from 'Scenes';
 const config = {
   type: Phaser.AUTO,
   backgroundColor: '#777777',
-  width: 3840,
-  height: 2560,
+  width: window.innerWidth,
+  height: window.innerHeight,
   physics: {
     default: 'arcade',
     arcade: {
@@ -15,7 +15,7 @@ const config = {
   },
   scene: Scenes.ALL,
   scale: {
-    mode: Phaser.Scale.FIT,
+    mode: Phaser.Scale.RESIZE,
     parent: 'gameDiv',
     autoCenter: Phaser.Scale.CENTER_BOTH
   }
