@@ -136,4 +136,78 @@ export default class Player extends GridObjectImage {
       }
     }
   }
+
+  LimitCamera() {
+    const width = 128 * this.grid.width;
+    const height = 128 * this.grid.height;
+
+    let cameraSize = 2560 / this.grid.levelScene.camera.zoom;
+    if (cameraSize > width && cameraSize > height) {
+      this.grid.levelScene.camera.zoom = 2560 / Math.max(width, height);
+      cameraSize = 2560 / this.grid.levelScene.camera.zoom;
+    }
+
+    let diff = width - cameraSize;
+    let maxX = (1 / this.grid.levelScene.camera.zoom - 1) * 1920;
+    let minX = maxX + diff;
+    if (maxX < minX) {
+      const tmp = minX;
+      minX = maxX;
+      maxX = tmp;
+    }
+
+    diff = height - cameraSize;
+    let maxY = (1 / this.grid.levelScene.camera.zoom - 1) * 1280;
+    let minY = maxY + diff;
+    if (maxY < minY) {
+      const tmp = minY;
+      minY = maxY;
+      maxY = tmp;
+    }
+
+    this.grid.levelScene.camera.scrollX = Math.min(
+      maxX,
+      Math.max(minX, this.grid.levelScene.camera.scrollX)
+    );
+    this.grid.levelScene.camera.scrollY = Math.min(
+      maxY,
+      Math.max(minY, this.grid.levelScene.camera.scrollY)
+    );
+  }
+
+  OnInit(): void {
+    this.grid.levelScene.camera.centerOn(this.image.x, this.image.y);
+    this.grid.levelScene.input.on(
+      'wheel',
+      (_pointer, _gameObjects, _deltaX, deltaY, _deltaZ) => {
+        if (deltaY > 0) {
+          this.grid.levelScene.camera.zoom = Math.max(
+            this.grid.levelScene.camera.zoom - 0.25,
+            0.25
+          );
+        }
+
+        if (deltaY < 0) {
+          this.grid.levelScene.camera.zoom = Math.min(
+            this.grid.levelScene.camera.zoom + 0.25,
+            2
+          );
+        }
+        this.LimitCamera();
+      }
+    );
+
+    this.grid.levelScene.input.on('pointermove', (pointer) => {
+      if (!pointer.isDown) return;
+
+      this.grid.levelScene.camera.scrollX -=
+        ((pointer.x - pointer.prevPosition.x) * 4) /
+        this.grid.levelScene.camera.zoom;
+      this.grid.levelScene.camera.scrollY -=
+        ((pointer.y - pointer.prevPosition.y) * 4) /
+        this.grid.levelScene.camera.zoom;
+      this.LimitCamera();
+    });
+    this.LimitCamera();
+  }
 }

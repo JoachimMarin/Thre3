@@ -1,5 +1,5 @@
-import * as Phaser from 'phaser';
 import LevelScene from 'LevelScene';
+import * as Phaser from 'phaser';
 
 const numLevels = 10;
 
@@ -9,17 +9,7 @@ export default class MainMenuScene extends Phaser.Scene {
   private selectedButtonIndex = 0;
   private buttonSelector!: Phaser.GameObjects.Image;
 
-  static GetLevels() {
-    const levels = [];
-    for (let i = 0; i < numLevels; i++) {
-      levels.push(new LevelScene(i));
-    }
-    return levels;
-  }
-
-  constructor() {
-    super('main-menu');
-  }
+  public static readonly SCENE = new MainMenuScene('main-menu');
 
   init() {
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -44,7 +34,8 @@ export default class MainMenuScene extends Phaser.Scene {
       const tmp = i;
       btn.on('selected', () => {
         console.log(tmp.toString());
-        this.scene.start('level-' + tmp.toString());
+        LevelScene.index = tmp;
+        this.scene.start('level');
       });
       this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
         btn.off('selected');

@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 
-import MainMenuScene from 'MainMenuScene';
+import Scenes from 'Scenes';
 
 const config = {
   type: Phaser.AUTO,
@@ -13,7 +13,7 @@ const config = {
       debug: false
     }
   },
-  scene: [MainMenuScene].concat(MainMenuScene.GetLevels()),
+  scene: Scenes.ALL,
   scale: {
     mode: Phaser.Scale.FIT,
     parent: 'gameDiv',
