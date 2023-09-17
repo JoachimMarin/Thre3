@@ -91,6 +91,7 @@ out
 .nuxt
 dist/*
 !dist/assets/
+!dist/index.html
 
 # Gatsby files
 .cache/
