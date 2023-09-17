@@ -3,7 +3,8 @@ enum GameObjectEvent {
   BEGIN_STEP_TRIGGER,
   END_STEP_ALL,
   END_STEP_TRIGGER,
-  UPDATE
+  UPDATE,
+  GLOBAL_SCENE
 }
 
 export default GameObjectEvent;

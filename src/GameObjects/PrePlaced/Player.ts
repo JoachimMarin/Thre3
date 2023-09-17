@@ -30,7 +30,7 @@ export default class Player extends GridObjectImage {
     if (!this.gameOver) {
       this.gameOver = true;
       setTimeout(() => {
-        this.grid.levelScene.scene.restart();
+        this.grid.levelScene.loadLevel();
       }, 2000);
     }
   }

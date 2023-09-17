@@ -80,13 +80,14 @@ export default class Inventory {
       entry.count = remaining;
       entry.Update();
     } else if (remaining == 0) {
-      const index = this.itemMap.get(itemKey);
-      this.itemList[index].Remove();
-      this.itemList.splice(index, 1);
-      for (let i = index; i < this.itemList.length; i++) {
+      const listIndex = this.itemMap.get(itemKey);
+      this.itemList[listIndex].Remove();
+      this.itemList.splice(listIndex, 1);
+      for (let i = listIndex; i < this.itemList.length; i++) {
         const entry = this.itemList[i];
         entry.index = i;
         entry.Update();
+        this.itemMap.set(entry.itemType.imageKey, i);
       }
       this.itemMap.delete(itemKey);
     } else {
@@ -96,9 +97,15 @@ export default class Inventory {
 
   GetCount(item: ItemType) {
     const itemKey = item.imageKey;
-    console.log(itemKey);
     if (this.itemMap.has(itemKey)) {
-      return this.itemList[this.itemMap.get(itemKey)].count;
+      const listIndex = this.itemMap.get(itemKey);
+      if (this.itemList.length > listIndex) {
+        return this.itemList[listIndex].count;
+      }
+      console.error('error GetCount ' + itemKey);
+      console.log('list index = ' + listIndex);
+      console.log('list length = ' + this.itemList.length);
+      return 0;
     } else {
       return 0;
     }
@@ -106,5 +113,13 @@ export default class Inventory {
 
   HasItem(item: ItemType) {
     return this.GetCount(item) > 0;
+  }
+
+  Clear() {
+    for (const inventoryEntry of this.itemList) {
+      inventoryEntry.Remove();
+    }
+    this.itemList = [];
+    this.itemMap.clear();
   }
 }

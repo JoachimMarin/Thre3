@@ -52,6 +52,7 @@ export default class LevelGrid {
       const first = functionString.indexOf('{}');
       return first == -1 || first != functionString.lastIndexOf('{}');
     };
+    this.DefineEventGroup(GameObjectEvent.GLOBAL_SCENE, (_obj) => true);
     this.DefineEventGroup(GameObjectEvent.UPDATE, (obj) =>
       hasEvent(obj.OnUpdate)
     );
@@ -160,5 +161,12 @@ export default class LevelGrid {
         obj.OnEndStepTrigger()
       );
     }
+  }
+
+  Remove() {
+    this.ForEventGroup(GameObjectEvent.GLOBAL_SCENE, (obj) => {
+      obj.Remove();
+    });
+    this.inventory.Clear();
   }
 }

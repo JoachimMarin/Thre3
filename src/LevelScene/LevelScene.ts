@@ -85,6 +85,8 @@ class LevelParser {
 
   private scenes: Phaser.Scene[];
   private levelScene: LevelScene;
+  public tilesFile: TilesFile;
+  public levelFile: LevelFile;
 
   constructor(levelScene: LevelScene, additionalScenes: Phaser.Scene[]) {
     this.levelScene = levelScene;
@@ -131,19 +133,16 @@ class LevelParser {
     );
   }
 
-  BuildLevel() {
-    const tilesFile = new TilesFile(this.levelScene.cache.xml.get('tiles'));
-    const levelFile = new LevelFile(this.levelScene.cache.xml.get('level'));
-    const grid = new LevelGrid(
-      this.scenes[0] as LevelScene,
-      levelFile.width,
-      levelFile.height
-    );
+  LoadLevelInfo() {
+    this.tilesFile = new TilesFile(this.levelScene.cache.xml.get('tiles'));
+    this.levelFile = new LevelFile(this.levelScene.cache.xml.get('level'));
+  }
 
-    for (let y = 0; y < levelFile.height; y++) {
-      for (let x = 0; x < levelFile.width; x++) {
-        for (const objectId of levelFile.objects[x][y]) {
-          const key = tilesFile.tileDict[objectId];
+  BuildLevel(grid: LevelGrid) {
+    for (let y = 0; y < this.levelFile.height; y++) {
+      for (let x = 0; x < this.levelFile.width; x++) {
+        for (const objectId of this.levelFile.objects[x][y]) {
+          const key = this.tilesFile.tileDict[objectId];
           if (key in this.tileDict) {
             this.tileDict[key]([x, y], grid);
           } else {
@@ -186,10 +185,23 @@ export default class LevelScene extends Phaser.Scene {
     this.levelParser.Preload();
   }
 
-  createReady() {
-    this.ready = true;
-    this.grid = this.levelParser.BuildLevel();
+  loadLevel() {
+    if (this.grid != null) {
+      this.grid.Remove();
+    }
+    this.levelParser.LoadLevelInfo();
+    this.grid = new LevelGrid(
+      this,
+      this.levelParser.levelFile.width,
+      this.levelParser.levelFile.height
+    );
+    this.levelParser.BuildLevel(this.grid);
     this.cameraManager = new CameraManager(this.grid);
+  }
+
+  createReady() {
+    this.loadLevel();
+    this.ready = true;
   }
 
   create() {

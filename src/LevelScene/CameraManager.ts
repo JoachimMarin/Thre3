@@ -196,4 +196,9 @@ export default class CameraManager extends GameObject {
     this.UpdateCanvas();
     this.LimitCamera();
   }
+
+  OnRemove(): void {
+    this.mainScene.input.off('wheel');
+    this.mainScene.input.off('pointermove');
+  }
 }
