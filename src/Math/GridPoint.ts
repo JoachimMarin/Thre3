@@ -1,22 +1,22 @@
 import Direction from 'Math/Direction';
 
-export type IGridPoint = GridPoint | [integer, integer];
+export type IVec2 = Vec2 | [integer, integer];
 
-export class GridPoint {
-  public readonly x: integer;
-  public readonly y: integer;
+export class Vec2 {
+  public readonly x: number;
+  public readonly y: number;
 
-  static AsGridPoint(arg: IGridPoint) {
-    if (arg instanceof GridPoint) {
+  static AsVec2(arg: IVec2) {
+    if (arg instanceof Vec2) {
       return arg;
     }
     if (Array.isArray(arg)) {
-      return new GridPoint(arg[0], arg[1]);
+      return new Vec2(arg[0], arg[1]);
     }
-    console.error('Cannot convert to GridPoint: <' + arg + '>');
+    console.error('Cannot convert to Vec2: <' + arg + '>');
   }
 
-  private constructor(x: integer, y: integer) {
+  private constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
   }
@@ -29,46 +29,50 @@ export class GridPoint {
     return this.y * 128 + 64;
   }
 
-  Add(other: GridPoint) {
-    return new GridPoint(this.x + other.x, this.y + other.y);
+  Add(other: Vec2) {
+    return new Vec2(this.x + other.x, this.y + other.y);
   }
 
   Negate() {
-    return new GridPoint(-this.x, -this.y);
+    return new Vec2(-this.x, -this.y);
   }
 
-  Subtract(other: GridPoint) {
-    return new GridPoint(this.x - other.x, this.y - other.y);
+  Subtract(other: Vec2) {
+    return new Vec2(this.x - other.x, this.y - other.y);
   }
 
   Multiply(factor: integer) {
-    return new GridPoint(factor * this.x, factor * this.y);
+    return new Vec2(factor * this.x, factor * this.y);
   }
 
   Angle() {
     return (Math.atan2(this.y, this.x) * 180) / Math.PI;
   }
 
-  static Zero() {
-    return new GridPoint(0, 0);
+  Norm() {
+    return Math.sqrt(this.x * this.x + this.y * this.y);
   }
 
-  static TranslationVector(direction: Direction, length: integer = 1) {
+  static Zero() {
+    return new Vec2(0, 0);
+  }
+
+  static TranslationVector(direction: Direction, length: number = 1) {
     switch (direction) {
       case Direction.UP:
-        return new GridPoint(0, -length);
+        return new Vec2(0, -length);
       case Direction.LEFT:
-        return new GridPoint(-length, 0);
+        return new Vec2(-length, 0);
       case Direction.DOWN:
-        return new GridPoint(0, length);
+        return new Vec2(0, length);
       case Direction.RIGHT:
-        return new GridPoint(length, 0);
+        return new Vec2(length, 0);
       default:
-        return new GridPoint(0, 0);
+        return new Vec2(0, 0);
     }
   }
 
-  Translate(direction: Direction, length: integer = 1) {
-    return this.Add(GridPoint.TranslationVector(direction, length));
+  Translate(direction: Direction, length: number = 1) {
+    return this.Add(Vec2.TranslationVector(direction, length));
   }
 }

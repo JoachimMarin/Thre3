@@ -1,20 +1,20 @@
 import GameObject from './GameObject';
-import LevelGrid from 'LevelGrid';
-import { IGridPoint, GridPoint } from 'Math/GridPoint';
+import LevelGrid from 'LevelScene/LevelGrid';
+import { IVec2, Vec2 } from 'Math/GridPoint';
 
 /**
  * GameObjectPosition:
  *  has position
  */
 export default abstract class GameObjectPosition extends GameObject {
-  public position: GridPoint;
+  public position: Vec2;
 
-  constructor(point: IGridPoint, grid: LevelGrid) {
+  constructor(point: IVec2, grid: LevelGrid) {
     super(grid);
-    this.position = GridPoint.AsGridPoint(point);
+    this.position = Vec2.AsVec2(point);
   }
 
-  SetGridPosition(position: IGridPoint) {
-    this.position = GridPoint.AsGridPoint(position);
+  SetGridPosition(position: IVec2) {
+    this.position = Vec2.AsVec2(position);
   }
 }

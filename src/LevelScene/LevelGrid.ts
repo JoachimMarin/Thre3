@@ -1,10 +1,10 @@
 import GridObject from 'GameObjects/BaseClasses/GridObject';
 import ObjectTag from 'Constants/ObjectTag';
-import LevelScene from 'LevelScene';
-import { IGridPoint, GridPoint } from 'Math/GridPoint';
+import LevelScene from 'LevelScene/LevelScene';
+import { IVec2, Vec2 } from 'Math/GridPoint';
 import GameObjectEvent from 'Constants/GridObjectEvent';
 import Player from 'GameObjects/PrePlaced/Player';
-import Inventory from 'Inventory';
+import Inventory from 'LevelScene/Inventory';
 import GameObject from 'GameObjects/BaseClasses/GameObject';
 
 class EventGroup {
@@ -96,8 +96,8 @@ export default class LevelGrid {
     this.objectGroups.set(key, new EventGroup(condition));
   }
 
-  IsInBounds(point: IGridPoint) {
-    const gridPoint = GridPoint.AsGridPoint(point);
+  IsInBounds(point: IVec2) {
+    const gridPoint = Vec2.AsVec2(point);
     return (
       gridPoint.x >= 0 &&
       gridPoint.y >= 0 &&
@@ -105,8 +105,8 @@ export default class LevelGrid {
       gridPoint.y < this.height
     );
   }
-  HasGridTag(point: IGridPoint, tag: ObjectTag) {
-    const gridPoint = GridPoint.AsGridPoint(point);
+  HasGridTag(point: IVec2, tag: ObjectTag) {
+    const gridPoint = Vec2.AsVec2(point);
     const objectsAtGridPosition = this.at[gridPoint.x][gridPoint.y];
     for (const object of objectsAtGridPosition) {
       if (object.HasTag(tag)) {
@@ -116,8 +116,8 @@ export default class LevelGrid {
     return false;
   }
 
-  GetByTag(point: IGridPoint, tag: ObjectTag): GridObject[] {
-    const gridPoint = GridPoint.AsGridPoint(point);
+  GetByTag(point: IVec2, tag: ObjectTag): GridObject[] {
+    const gridPoint = Vec2.AsVec2(point);
     const objectsAtGridPosition = this.at[gridPoint.x][gridPoint.y];
     const array = [];
     for (const object of objectsAtGridPosition) {

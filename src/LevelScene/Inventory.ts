@@ -1,6 +1,6 @@
 import ItemType from 'Constants/ItemType';
-import LevelScene from 'LevelScene';
-import { GridPoint } from 'Math/GridPoint';
+import LevelScene from 'LevelScene/LevelScene';
+import { Vec2 } from 'Math/GridPoint';
 
 class InventoryEntry {
   public itemType: ItemType;
@@ -20,7 +20,7 @@ class InventoryEntry {
     this.count = count;
     this.index = index;
     this.levelScene = levelScene;
-    const position = GridPoint.AsGridPoint([21, 1 + this.index]);
+    const position = Vec2.AsVec2([21, 1 + this.index]);
     this.image = levelScene.add.image(
       position.realX(),
       position.realY(),
@@ -37,7 +37,7 @@ class InventoryEntry {
   }
 
   Update() {
-    const position = GridPoint.AsGridPoint([21, 1 + this.index]);
+    const position = Vec2.AsVec2([21, 1 + this.index]);
     this.image.setPosition(position.realX(), position.realY());
     this.text.setPosition(position.realX() + 128, position.realY());
     this.text.setText(' x ' + this.count);

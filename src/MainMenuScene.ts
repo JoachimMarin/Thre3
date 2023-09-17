@@ -1,4 +1,4 @@
-import LevelScene from 'LevelScene';
+import LevelScene from 'LevelScene/LevelScene';
 import * as Phaser from 'phaser';
 
 const numLevels = 10;

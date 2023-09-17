@@ -1,16 +1,17 @@
 import * as Phaser from 'phaser';
 
-import LevelGrid from 'LevelGrid';
+import LevelGrid from 'LevelScene/LevelGrid';
 import GridObject from 'GameObjects/BaseClasses/GridObject';
 import Item from 'GameObjects/PrePlaced/Item';
 import ItemType from 'Constants/ItemType';
 import ImageKey from 'Constants/ImageKey';
 import Tile from 'Constants/Tile';
-import { IGridPoint } from 'Math/GridPoint';
+import { IVec2 } from 'Math/GridPoint';
 
 import ImageDefinitions from 'Constants/Definitions/ImageDefinitions';
 import ItemDefinitions from 'Constants/Definitions/ItemDefinitions';
 import TileDefinitions from 'Constants/Definitions/TileDefinitions';
+import CameraManager from './CameraManager';
 
 class TilesFile {
   public tileDict: { [key: integer]: string } = {};
@@ -86,7 +87,7 @@ class LevelFile {
 
 class LevelParser {
   private tileDict: {
-    [key: string]: (point: IGridPoint, grid: LevelGrid) => GridObject;
+    [key: string]: (point: IVec2, grid: LevelGrid) => GridObject;
   } = {};
 
   private scenes: Phaser.Scene[];
@@ -115,7 +116,7 @@ class LevelParser {
 
   RegisterTile(
     key: string,
-    fun: (point: IGridPoint, grid: LevelGrid) => GridObject
+    fun: (point: IVec2, grid: LevelGrid) => GridObject
   ) {
     this.tileDict[key] = fun;
   }
@@ -175,7 +176,7 @@ export default class LevelScene extends Phaser.Scene {
   public cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private grid: LevelGrid;
   private levelParser: LevelParser;
-  public camera: Phaser.Cameras.Scene2D.Camera;
+  public cameraManager: CameraManager;
 
   public static readonly SCENE = new LevelScene();
 
@@ -195,9 +196,11 @@ export default class LevelScene extends Phaser.Scene {
   }
 
   create() {
-    this.camera = this.cameras.main;
+    this.scene.launch('side-user-interface');
+    this.scene.launch('grid-user-interface');
+
     this.grid = this.levelParser.BuildLevel();
-    this.scene.launch('user-interface');
+    this.cameraManager = new CameraManager(this.grid);
   }
 
   update(_time: number, delta: number) {

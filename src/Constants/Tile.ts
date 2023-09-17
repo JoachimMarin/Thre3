@@ -1,14 +1,14 @@
 import GridObject from 'GameObjects/BaseClasses/GridObject';
-import LevelGrid from 'LevelGrid';
+import LevelGrid from 'LevelScene/LevelGrid';
 import ImageKey from 'Constants/ImageKey';
-import { IGridPoint } from 'Math/GridPoint';
+import { IVec2 } from 'Math/GridPoint';
 
 export default class Tile extends ImageKey {
-  public readonly fun: (point: IGridPoint, grid: LevelGrid) => GridObject;
+  public readonly fun: (point: IVec2, grid: LevelGrid) => GridObject;
 
   constructor(
     imageKey: string,
-    fun: (point: IGridPoint, grid: LevelGrid) => GridObject
+    fun: (point: IVec2, grid: LevelGrid) => GridObject
   ) {
     super(imageKey);
     this.fun = fun;

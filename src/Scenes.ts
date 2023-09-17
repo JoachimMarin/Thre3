@@ -1,11 +1,13 @@
-import LevelScene from 'LevelScene';
+import LevelScene from 'LevelScene/LevelScene';
 import MainMenuScene from 'MainMenuScene';
-import UserInterfaceScene from 'UserInterfaceScene';
+import SideUserInterfaceScene from 'LevelScene/SideUserInterfaceScene';
+import GridUserInterfaceScene from 'LevelScene/GridUserInterfaceScene';
 
 export default abstract class Scenes {
   static ALL = [
     MainMenuScene.SCENE,
     LevelScene.SCENE,
-    UserInterfaceScene.SCENE
+    SideUserInterfaceScene.SCENE,
+    GridUserInterfaceScene.SCENE
   ];
 }

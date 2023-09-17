@@ -1,9 +1,9 @@
 import ObjectTag from 'Constants/ObjectTag';
-import LevelGrid from 'LevelGrid';
+import LevelGrid from 'LevelScene/LevelGrid';
 import Direction from 'Math/Direction';
 import { getAllEnumValues } from 'enum-for';
 import GridObject from 'GameObjects/BaseClasses/GridObject';
-import { IGridPoint } from 'Math/GridPoint';
+import { IVec2 } from 'Math/GridPoint';
 import ImageKey from 'Constants/ImageKey';
 import GridObjectImage from 'GameObjects/BaseClasses/GridObjectImage';
 
@@ -36,7 +36,7 @@ export class LaserProjectile extends GridObject {
   public owner: GridObject;
 
   constructor(
-    point: IGridPoint,
+    point: IVec2,
     grid: LevelGrid,
     direction: Direction,
     length: integer,
@@ -94,7 +94,7 @@ export class LaserProjectile extends GridObject {
 export default class LaserGun extends GridObjectImage {
   private color: LaserColor;
 
-  constructor(point: IGridPoint, grid: LevelGrid, color: LaserColor) {
+  constructor(point: IVec2, grid: LevelGrid, color: LaserColor) {
     super(point, grid, color.gunImageKey);
     this.color = color;
   }

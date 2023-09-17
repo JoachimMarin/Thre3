@@ -1,5 +1,5 @@
-import LevelGrid from 'LevelGrid';
-import { IGridPoint } from 'Math/GridPoint';
+import LevelGrid from 'LevelScene/LevelGrid';
+import { IVec2 } from 'Math/GridPoint';
 import GameObjectPosition from './GameObjectPosition';
 
 /**
@@ -7,7 +7,7 @@ import GameObjectPosition from './GameObjectPosition';
  *  has position in grid and can be retrieved from grid
  */
 export default abstract class GridObject extends GameObjectPosition {
-  constructor(point: IGridPoint, grid: LevelGrid) {
+  constructor(point: IVec2, grid: LevelGrid) {
     super(point, grid);
     this.AddToGrid();
   }
@@ -29,7 +29,7 @@ export default abstract class GridObject extends GameObjectPosition {
     objectsAtGridPosition.add(this);
   }
 
-  override SetGridPosition(position: IGridPoint) {
+  override SetGridPosition(position: IVec2) {
     this.RemoveFromGrid();
     super.SetGridPosition(position);
     this.AddToGrid();

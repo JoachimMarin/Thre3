@@ -1,12 +1,12 @@
-import LevelGrid from 'LevelGrid';
+import LevelGrid from 'LevelScene/LevelGrid';
 import GameObjectImage from 'GameObjects/BaseClasses/GameObjectImage';
-import { IGridPoint } from 'Math/GridPoint';
+import { IVec2 } from 'Math/GridPoint';
 
 export default class TimedImage extends GameObjectImage {
   private duration: number;
 
   constructor(
-    point: IGridPoint,
+    point: IVec2,
     grid: LevelGrid,
     imageKey: string,
     duration: number = 1,

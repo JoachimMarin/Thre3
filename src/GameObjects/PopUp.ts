@@ -1,6 +1,6 @@
-import LevelGrid from 'LevelGrid';
+import LevelGrid from 'LevelScene/LevelGrid';
 import GameObjectImage from './BaseClasses/GameObjectImage';
-import { IGridPoint } from 'Math/GridPoint';
+import { IVec2 } from 'Math/GridPoint';
 
 export default class PopUp extends GameObjectImage {
   private rotationAngle: number = 0;
@@ -8,7 +8,7 @@ export default class PopUp extends GameObjectImage {
   private readonly rotationAngleMax: number;
 
   constructor(
-    point: IGridPoint,
+    point: IVec2,
     grid: LevelGrid,
     imageKey: string,
     rotationSpeed: number = 1,

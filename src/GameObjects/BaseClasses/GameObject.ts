@@ -1,5 +1,5 @@
 import ObjectTag from 'Constants/ObjectTag';
-import LevelGrid from 'LevelGrid';
+import LevelGrid from 'LevelScene/LevelGrid';
 
 /**
  * GameObject:

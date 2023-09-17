@@ -2,15 +2,14 @@ import * as Phaser from 'phaser';
 import GridObjectImage from 'GameObjects/BaseClasses/GridObjectImage';
 import Direction from 'Math/Direction';
 import ObjectTag from 'Constants/ObjectTag';
-import LevelGrid from 'LevelGrid';
-import { IGridPoint, GridPoint } from 'Math/GridPoint';
+import LevelGrid from 'LevelScene/LevelGrid';
+import { IVec2, Vec2 } from 'Math/GridPoint';
 import Item from './Item';
 import PopUp from 'GameObjects/PopUp';
 import TimedImage from 'GameObjects/TimedImage';
 import ItemDefinitions from 'Constants/Definitions/ItemDefinitions';
 import ImageDefinitions from 'Constants/Definitions/ImageDefinitions';
 import GameObjectPosition from 'GameObjects/BaseClasses/GameObjectPosition';
-import UserInterfaceScene from 'UserInterfaceScene';
 
 export default class Player extends GridObjectImage {
   static imageKey = 'player';
@@ -18,10 +17,10 @@ export default class Player extends GridObjectImage {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private moving: boolean = false;
   private direction: Direction = Direction.DOWN;
-  private destination: GridPoint;
+  private destination: Vec2;
   private gameOver: boolean = false;
 
-  constructor(point: IGridPoint, grid: LevelGrid) {
+  constructor(point: IVec2, grid: LevelGrid) {
     super(point, grid, Player.imageKey);
     this.grid.player = this;
     this.cursors = grid.levelScene.cursors;
@@ -93,7 +92,7 @@ export default class Player extends GridObjectImage {
   OnUpdate(delta: number): void {
     const speed = 0.6;
     if (this.moving) {
-      const translationVector = GridPoint.TranslationVector(this.direction);
+      const translationVector = Vec2.TranslationVector(this.direction);
       this.image.x += speed * delta * translationVector.x;
       this.image.y += speed * delta * translationVector.y;
       if (
@@ -136,117 +135,5 @@ export default class Player extends GridObjectImage {
         this.grid.BeginPlayerStep();
       }
     }
-    this.LimitCamera();
-  }
-
-  LimitCamera() {
-    console.log(
-      this.grid.levelScene.sys.game.canvas.width,
-      this.grid.levelScene.sys.game.canvas.height
-    );
-
-    let canvasWidth = this.grid.levelScene.sys.game.canvas.width;
-    let canvasHeight = this.grid.levelScene.sys.game.canvas.height;
-
-    const uiCam = UserInterfaceScene.SCENE.cameras.main;
-    const gridCam = UserInterfaceScene.SCENE.gridCam;
-    if (canvasWidth >= canvasHeight) {
-      canvasWidth -= 0.67 * canvasHeight;
-
-      uiCam.setViewport(canvasWidth, 0, 0.67 * canvasHeight, canvasHeight);
-      uiCam.centerOn(10000, 0);
-      uiCam.zoom = canvasHeight / 1500;
-
-      gridCam.setZoom(canvasHeight / 1000);
-    } else {
-      canvasHeight -= 0.67 * canvasWidth;
-      const uiCam = UserInterfaceScene.SCENE.cameras.main;
-      uiCam.setViewport(0, canvasHeight, canvasWidth, 0.67 * canvasWidth);
-      uiCam.centerOn(0, -10000);
-      uiCam.zoom = canvasWidth / 1500;
-
-      gridCam.setZoom(canvasWidth / 1000);
-    }
-    gridCam.setViewport(0, 0, canvasWidth, canvasHeight);
-    gridCam.centerOn(0, 0);
-
-    this.grid.levelScene.camera.setViewport(0, 0, canvasWidth, canvasHeight);
-
-    const levelWidth = 128 * this.grid.width;
-    const levelHeight = 128 * this.grid.height;
-
-    let cameraWidth = canvasWidth / this.grid.levelScene.camera.zoom;
-    let cameraHeight = canvasHeight / this.grid.levelScene.camera.zoom;
-
-    if (cameraWidth > levelWidth && cameraHeight > levelHeight) {
-      const zoomFactor = Math.min(
-        cameraWidth / levelWidth,
-        cameraHeight / levelHeight
-      );
-      this.grid.levelScene.camera.zoom *= zoomFactor;
-      cameraWidth = canvasWidth / this.grid.levelScene.camera.zoom;
-      cameraHeight = canvasHeight / this.grid.levelScene.camera.zoom;
-    }
-
-    let diff = levelWidth - cameraWidth;
-    let maxX = ((1 / this.grid.levelScene.camera.zoom - 1) * canvasWidth) / 2;
-    let minX = maxX + diff;
-    if (maxX < minX) {
-      const tmp = minX;
-      minX = maxX;
-      maxX = tmp;
-    }
-
-    diff = levelHeight - cameraHeight;
-    let maxY = ((1 / this.grid.levelScene.camera.zoom - 1) * canvasHeight) / 2;
-    let minY = maxY + diff;
-    if (maxY < minY) {
-      const tmp = minY;
-      minY = maxY;
-      maxY = tmp;
-    }
-
-    this.grid.levelScene.camera.scrollX = Math.min(
-      maxX,
-      Math.max(minX, this.grid.levelScene.camera.scrollX)
-    );
-    this.grid.levelScene.camera.scrollY = Math.min(
-      maxY,
-      Math.max(minY, this.grid.levelScene.camera.scrollY)
-    );
-  }
-
-  ChangeZoom(factor: number) {
-    this.grid.levelScene.camera.zoom *= factor;
-  }
-
-  OnInit(): void {
-    this.grid.levelScene.camera.centerOn(this.image.x, this.image.y);
-    this.grid.levelScene.input.on(
-      'wheel',
-      (_pointer, _gameObjects, _deltaX, deltaY, _deltaZ) => {
-        if (deltaY > 0) {
-          this.ChangeZoom(1.0 / 1.2);
-        }
-
-        if (deltaY < 0) {
-          this.ChangeZoom(1.2);
-        }
-        this.LimitCamera();
-      }
-    );
-
-    this.grid.levelScene.input.on('pointermove', (pointer) => {
-      if (!pointer.isDown) return;
-
-      this.grid.levelScene.camera.scrollX -=
-        ((pointer.x - pointer.prevPosition.x) * 4) /
-        this.grid.levelScene.camera.zoom;
-      this.grid.levelScene.camera.scrollY -=
-        ((pointer.y - pointer.prevPosition.y) * 4) /
-        this.grid.levelScene.camera.zoom;
-      this.LimitCamera();
-    });
-    this.LimitCamera();
   }
 }

@@ -1,5 +1,5 @@
-import LevelGrid from 'LevelGrid';
-import { IGridPoint } from 'Math/GridPoint';
+import LevelGrid from 'LevelScene/LevelGrid';
+import { IVec2 } from 'Math/GridPoint';
 import GameObjectPosition from './GameObjectPosition';
 
 /**
@@ -10,7 +10,7 @@ export default abstract class GameObjectImage extends GameObjectPosition {
   public image: Phaser.GameObjects.Image;
 
   constructor(
-    point: IGridPoint,
+    point: IVec2,
     grid: LevelGrid,
     imageKey: string = '',
     sizeX: integer = 128,
@@ -36,7 +36,7 @@ export default abstract class GameObjectImage extends GameObjectPosition {
     this.image.destroy();
   }
 
-  SetGridPosition(position: IGridPoint) {
+  SetGridPosition(position: IVec2) {
     super.SetGridPosition(position);
     this.image.setPosition(this.position.realX(), this.position.realY());
   }
