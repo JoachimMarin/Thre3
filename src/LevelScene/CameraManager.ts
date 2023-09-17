@@ -6,6 +6,8 @@ import GridUserInterfaceScene from './GridUserInterfaceScene';
 import { Vec2 } from 'Math/GridPoint';
 import LevelGrid from './LevelGrid';
 
+const maxZoomInTiles = 4;
+
 export default class CameraManager extends GameObject {
   private canvasSize: Vec2 = Vec2.AsVec2([0, 0]);
   private uiCanvasSize: Vec2 = Vec2.AsVec2([0, 0]);
@@ -60,9 +62,6 @@ export default class CameraManager extends GameObject {
       this.sideUICam.centerOn(10000, 0);
       this.sideUICam.zoom =
         this.uiCanvasSize.y / SideUserInterfaceScene.SCENE.longSide;
-      this.gridUICam.setZoom(
-        this.uiCanvasSize.y / GridUserInterfaceScene.SCENE.side
-      );
     } else {
       // portrait mode
       this.uiCanvasSize = Vec2.AsVec2([
@@ -84,12 +83,14 @@ export default class CameraManager extends GameObject {
       this.sideUICam.centerOn(0, -10000);
       this.sideUICam.zoom =
         this.uiCanvasSize.x / SideUserInterfaceScene.SCENE.longSide;
-
-      this.gridUICam.setZoom(
-        this.mainCanvasSize.x / GridUserInterfaceScene.SCENE.side
-      );
     }
 
+    this.gridUICam.setZoom(
+      Math.min(
+        this.mainCanvasSize.x / GridUserInterfaceScene.SCENE.side,
+        this.mainCanvasSize.y / GridUserInterfaceScene.SCENE.side
+      )
+    );
     this.gridUICam.setViewport(
       0,
       0,
@@ -114,10 +115,24 @@ export default class CameraManager extends GameObject {
     let cameraWidth = this.mainCanvasSize.x / this.mainCam.zoom;
     let cameraHeight = this.mainCanvasSize.y / this.mainCam.zoom;
 
+    // limit zoom out
     if (cameraWidth > levelWidth && cameraHeight > levelHeight) {
       const zoomFactor = Math.min(
         cameraWidth / levelWidth,
         cameraHeight / levelHeight
+      );
+      this.mainCam.zoom *= zoomFactor;
+      cameraWidth = this.mainCanvasSize.x / this.mainCam.zoom;
+      cameraHeight = this.mainCanvasSize.y / this.mainCam.zoom;
+    }
+    // limit zoom in
+    if (
+      cameraWidth < 128 * maxZoomInTiles ||
+      cameraHeight < 128 * maxZoomInTiles
+    ) {
+      const zoomFactor = Math.min(
+        cameraWidth / 128 / maxZoomInTiles,
+        cameraHeight / 128 / maxZoomInTiles
       );
       this.mainCam.zoom *= zoomFactor;
       cameraWidth = this.mainCanvasSize.x / this.mainCam.zoom;
@@ -151,6 +166,13 @@ export default class CameraManager extends GameObject {
   }
 
   OnInit(): void {
+    this.UpdateCanvas();
+    this.mainCam.setZoom(0.00001);
+    this.mainCam.centerOn(
+      (this.grid.width / 2) * 128,
+      (this.grid.height / 2) * 128
+    );
+    this.LimitCamera();
     this.mainScene.input.on(
       'wheel',
       (_pointer, _gameObjects, _deltaX, deltaY, _deltaZ) => {
@@ -174,7 +196,6 @@ export default class CameraManager extends GameObject {
         ((pointer.y - pointer.prevPosition.y) * 4) / this.mainCam.zoom;
       this.LimitCamera();
     });
-    this.LimitCamera();
   }
 
   OnUpdate(_delta: number): void {

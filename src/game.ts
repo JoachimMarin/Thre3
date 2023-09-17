@@ -18,7 +18,8 @@ const config = {
     mode: Phaser.Scale.RESIZE,
     parent: 'gameDiv',
     autoCenter: Phaser.Scale.CENTER_BOTH
-  }
+  },
+  renderer: { mipmapFilter: 'LINEAR_MIPMAP_LINEAR' }
 };
 
 new Phaser.Game(config);

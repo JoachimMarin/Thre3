@@ -106,14 +106,6 @@ class LevelParser {
     }
   }
 
-  RegisterSheet(key: string, width: integer) {
-    for (const scene of this.scenes) {
-      scene.load.spritesheet(key, 'assets/' + key + '.png', {
-        frameWidth: width
-      });
-    }
-  }
-
   RegisterTile(
     key: string,
     fun: (point: IVec2, grid: LevelGrid) => GridObject

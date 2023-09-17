@@ -92,6 +92,7 @@ out
 dist/*
 !dist/assets/
 !dist/index.html
+!dist/favicon.ico
 
 # Gatsby files
 .cache/
