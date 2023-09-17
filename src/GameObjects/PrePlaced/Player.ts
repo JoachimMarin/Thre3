@@ -27,10 +27,12 @@ export default class Player extends GridObjectImage {
   }
 
   GameOver() {
-    this.gameOver = true;
-    setTimeout(() => {
-      this.grid.levelScene.scene.restart();
-    }, 2000);
+    if (!this.gameOver) {
+      this.gameOver = true;
+      setTimeout(() => {
+        this.grid.levelScene.scene.restart();
+      }, 2000);
+    }
   }
 
   EndPlayerStep() {
@@ -73,7 +75,8 @@ export default class Player extends GridObjectImage {
                 this.grid,
                 ImageDefinitions.EXPLOSION.imageKey,
                 0.3,
-                160
+                1.25,
+                1.25
               );
             }
           }
@@ -90,7 +93,7 @@ export default class Player extends GridObjectImage {
   }
 
   OnUpdate(delta: number): void {
-    const speed = 0.6;
+    const speed = 0.004;
     if (this.moving) {
       const translationVector = Vec2.TranslationVector(this.direction);
       this.image.x += speed * delta * translationVector.x;

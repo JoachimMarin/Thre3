@@ -1,61 +1,59 @@
 import ItemType from 'Constants/ItemType';
-import LevelScene from 'LevelScene/LevelScene';
-import { Vec2 } from 'Math/GridPoint';
+import SideUserInterfaceScene from './SideUserInterfaceScene';
+import Constants from 'Constants/Constants';
+
+let sideUI: SideUserInterfaceScene;
 
 class InventoryEntry {
   public itemType: ItemType;
   public count: integer;
   public index: integer;
-  private levelScene: LevelScene;
-  public image: Phaser.GameObjects.Image;
-  public text: Phaser.GameObjects.Text;
+  public imageL: Phaser.GameObjects.Image;
+  public textL: Phaser.GameObjects.Text;
 
-  constructor(
-    itemType: ItemType,
-    count: integer,
-    index: integer,
-    levelScene: LevelScene
-  ) {
+  constructor(itemType: ItemType, count: integer, index: integer) {
     this.itemType = itemType;
     this.count = count;
     this.index = index;
-    this.levelScene = levelScene;
-    const position = Vec2.AsVec2([21, 1 + this.index]);
-    this.image = levelScene.add.image(
-      position.realX(),
-      position.realY(),
-      itemType.imageKey
-    );
-    this.image.setDisplaySize(128, 128);
+    this.imageL = sideUI.add
+      .image(0, 0, itemType.imageKey)
+      .setDisplaySize(6, 6)
+      .setOrigin(0, 0);
 
-    this.text = this.levelScene.add
-      .text(position.realX() + 128, position.realY(), ' x ' + this.count)
-      .setFont('Verdana')
-      .setFontSize(160)
-      .setColor('black')
+    this.textL = sideUI.add
+      .text(0, 0, '')
+      .setFontSize(Constants.fontSize)
+      .setScale(3 / Constants.fontSize)
       .setOrigin(0, 0.5);
+    sideUI.setTextStyle(this.textL);
+    this.Update();
   }
 
   Update() {
-    const position = Vec2.AsVec2([21, 1 + this.index]);
-    this.image.setPosition(position.realX(), position.realY());
-    this.text.setPosition(position.realX() + 128, position.realY());
-    this.text.setText(' x ' + this.count);
+    const indexX = this.index % 2;
+    const indexY = Math.floor(this.index / 2);
+    const x = sideUI.landscapeX(2.5 + indexX * 13);
+    const y = sideUI.landscapeY(8 + indexY * 7.5);
+    const textX = sideUI.landscapeX(8.75 + indexX * 13);
+    const textY = sideUI.landscapeY(11 + indexY * 7.5);
+
+    this.imageL.setPosition(x, y);
+    this.textL.setPosition(textX, textY);
+    this.textL.setText('x' + this.count);
   }
 
   Remove() {
-    this.image.destroy();
-    this.text.destroy();
+    this.imageL.destroy();
+    this.textL.destroy();
   }
 }
 
 export default class Inventory {
   private itemList: InventoryEntry[] = [];
   private itemMap: Map<string, integer> = new Map<string, integer>();
-  private levelScene: LevelScene;
 
-  constructor(levelScene: LevelScene) {
-    this.levelScene = levelScene;
+  constructor() {
+    sideUI = SideUserInterfaceScene.SCENE;
   }
 
   AddItem(item: ItemType, count: integer = 1) {
@@ -63,7 +61,7 @@ export default class Inventory {
     console.log(itemKey);
     if (!this.itemMap.has(itemKey)) {
       const index = this.itemList.length;
-      const entry = new InventoryEntry(item, count, index, this.levelScene);
+      const entry = new InventoryEntry(item, count, index);
       this.itemList.push(entry);
       this.itemMap.set(itemKey, index);
       entry.Update();

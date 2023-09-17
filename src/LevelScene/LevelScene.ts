@@ -12,6 +12,8 @@ import ImageDefinitions from 'Constants/Definitions/ImageDefinitions';
 import ItemDefinitions from 'Constants/Definitions/ItemDefinitions';
 import TileDefinitions from 'Constants/Definitions/TileDefinitions';
 import CameraManager from './CameraManager';
+import SideUserInterfaceScene from './SideUserInterfaceScene';
+import GridUserInterfaceScene from './GridUserInterfaceScene';
 
 class TilesFile {
   public tileDict: { [key: integer]: string } = {};
@@ -27,8 +29,6 @@ class TilesFile {
       const source: string = image.getAttribute('source');
       this.tileDict[id] = source.substring(0, source.length - 4);
     }
-
-    console.log(this.tileDict);
   }
 }
 
@@ -38,14 +38,10 @@ class LevelFile {
   public readonly objects: integer[][][] = [];
 
   constructor(data: XMLDocument) {
-    console.log(data);
     const tilemaps = data.getElementsByTagName('map');
-    console.log(tilemaps);
     const tilemap = tilemaps[0];
-    console.log(tilemap);
 
     const layers = tilemap.getElementsByTagName('layer');
-    console.log(layers);
     for (const layer of layers) {
       this.width = Math.max(this.width, parseInt(layer.getAttribute('width')));
       this.height = Math.max(
@@ -53,8 +49,6 @@ class LevelFile {
         parseInt(layer.getAttribute('height'))
       );
     }
-    console.log(this.width);
-    console.log(this.height);
 
     this.objects = [];
     for (let x = 0; x < this.width; x++) {
@@ -81,7 +75,6 @@ class LevelFile {
         }
       }
     }
-    console.log(this.objects);
   }
 }
 
@@ -169,6 +162,8 @@ export default class LevelScene extends Phaser.Scene {
   private grid: LevelGrid;
   private levelParser: LevelParser;
   public cameraManager: CameraManager;
+  private ready: boolean = false;
+  private additionalScenes: Phaser.Scene[];
 
   public static readonly SCENE = new LevelScene();
 
@@ -176,6 +171,10 @@ export default class LevelScene extends Phaser.Scene {
 
   private constructor() {
     super('level');
+    this.additionalScenes = [
+      SideUserInterfaceScene.SCENE,
+      GridUserInterfaceScene.SCENE
+    ];
     this.levelParser = new LevelParser(this, []);
   }
 
@@ -187,15 +186,36 @@ export default class LevelScene extends Phaser.Scene {
     this.levelParser.Preload();
   }
 
-  create() {
-    this.scene.launch('side-user-interface');
-    this.scene.launch('grid-user-interface');
-
+  createReady() {
+    this.ready = true;
     this.grid = this.levelParser.BuildLevel();
     this.cameraManager = new CameraManager(this.grid);
   }
 
+  create() {
+    this.ready = false;
+    for (const scene of this.additionalScenes) {
+      this.scene.launch(scene);
+    }
+
+    // wait until additional scenes have run "create"
+    // this allows us to fully interact with them
+    // for example accessing their cameras with CameraManager
+    const waitForScenes = setInterval(() => {
+      for (const scene of this.additionalScenes) {
+        if (this.scene.getStatus(scene) != 5) {
+          return;
+        }
+      }
+
+      clearInterval(waitForScenes);
+      this.createReady();
+    }, 5);
+  }
+
   update(_time: number, delta: number) {
-    this.grid.Update(delta);
+    if (this.ready) {
+      this.grid.Update(delta);
+    }
   }
 }

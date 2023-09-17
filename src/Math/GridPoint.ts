@@ -22,11 +22,11 @@ export class Vec2 {
   }
 
   realX() {
-    return this.x * 128 + 64;
+    return this.x + 0.5;
   }
 
   realY() {
-    return this.y * 128 + 64;
+    return this.y + 0.5;
   }
 
   Add(other: Vec2) {

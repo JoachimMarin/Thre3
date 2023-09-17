@@ -33,7 +33,7 @@ export default class LevelGrid {
 
   constructor(levelScene: LevelScene, width: integer, height: integer) {
     this.levelScene = levelScene;
-    this.inventory = new Inventory(levelScene);
+    this.inventory = new Inventory();
     this.width = width;
     this.height = height;
     this.at = [];

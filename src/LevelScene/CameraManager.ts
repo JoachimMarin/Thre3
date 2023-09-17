@@ -97,7 +97,7 @@ export default class CameraManager extends GameObject {
       this.mainCanvasSize.x,
       this.mainCanvasSize.y
     );
-    this.gridUICam.centerOn(0, 0);
+    this.gridUICam.centerOn(-10000, 0);
 
     // this camera shows the grid view
     this.mainCam.setViewport(
@@ -109,8 +109,8 @@ export default class CameraManager extends GameObject {
   }
 
   LimitCamera() {
-    const levelWidth = 128 * this.grid.width;
-    const levelHeight = 128 * this.grid.height;
+    const levelWidth = this.grid.width;
+    const levelHeight = this.grid.height;
 
     let cameraWidth = this.mainCanvasSize.x / this.mainCam.zoom;
     let cameraHeight = this.mainCanvasSize.y / this.mainCam.zoom;
@@ -126,13 +126,10 @@ export default class CameraManager extends GameObject {
       cameraHeight = this.mainCanvasSize.y / this.mainCam.zoom;
     }
     // limit zoom in
-    if (
-      cameraWidth < 128 * maxZoomInTiles ||
-      cameraHeight < 128 * maxZoomInTiles
-    ) {
+    if (cameraWidth < maxZoomInTiles || cameraHeight < maxZoomInTiles) {
       const zoomFactor = Math.min(
-        cameraWidth / 128 / maxZoomInTiles,
-        cameraHeight / 128 / maxZoomInTiles
+        cameraWidth / maxZoomInTiles,
+        cameraHeight / maxZoomInTiles
       );
       this.mainCam.zoom *= zoomFactor;
       cameraWidth = this.mainCanvasSize.x / this.mainCam.zoom;
@@ -168,10 +165,7 @@ export default class CameraManager extends GameObject {
   OnInit(): void {
     this.UpdateCanvas();
     this.mainCam.setZoom(0.00001);
-    this.mainCam.centerOn(
-      (this.grid.width / 2) * 128,
-      (this.grid.height / 2) * 128
-    );
+    this.mainCam.centerOn(this.grid.width / 2, this.grid.height / 2);
     this.LimitCamera();
     this.mainScene.input.on(
       'wheel',

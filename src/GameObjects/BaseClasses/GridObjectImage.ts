@@ -13,8 +13,8 @@ export default abstract class GridObjectImage extends GridObject {
     point: IVec2,
     grid: LevelGrid,
     imageKey: string = '',
-    sizeX: integer = 128,
-    sizeY: integer = 128
+    sizeX: integer = 1,
+    sizeY: integer = 1
   ) {
     super(point, grid);
     if (

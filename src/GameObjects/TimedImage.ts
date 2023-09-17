@@ -10,8 +10,8 @@ export default class TimedImage extends GameObjectImage {
     grid: LevelGrid,
     imageKey: string,
     duration: number = 1,
-    sizeX: number = 128,
-    sizeY: number = 128
+    sizeX: number = 1,
+    sizeY: number = 1
   ) {
     super(point, grid, imageKey, sizeX, sizeY);
     this.duration = duration * 1000;

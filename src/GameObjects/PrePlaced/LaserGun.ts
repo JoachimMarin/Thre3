@@ -69,7 +69,7 @@ export class LaserProjectile extends GridObject {
       this.position.realY(),
       end ? color.projectileEnd.imageKey : color.projectile.imageKey
     );
-    this.image.setDisplaySize(128, 128);
+    this.image.setDisplaySize(1, 1);
     this.image.setAngle(direction.ToAngle());
     this.image.setVisible(false);
     setTimeout(() => {

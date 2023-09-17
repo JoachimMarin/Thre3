@@ -28,7 +28,7 @@ export default class PopUp extends GameObjectImage {
     const xScale = Math.cos(displayAngleRad);
 
     this.image.flipX = xScale < 0;
-    this.image.setDisplaySize(128 * Math.abs(xScale), 128);
+    this.image.setDisplaySize(Math.abs(xScale), 1);
   }
 
   OnUpdate(delta: number): void {
