@@ -5,7 +5,7 @@ import Scenes from 'Scenes';
 const config = {
   type: Phaser.AUTO,
   antialias: true,
-  backgroundColor: '#777777',
+  backgroundColor: '#000000',
   width: window.innerWidth,
   height: window.innerHeight,
   physics: {

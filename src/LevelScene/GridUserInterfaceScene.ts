@@ -9,7 +9,5 @@ export default class GridUserInterfaceScene extends Phaser.Scene {
 
   static readonly SCENE = new GridUserInterfaceScene();
 
-  create() {
-    this.add.image(-10000, 0, 'blue_wall').setDisplaySize(this.side, this.side);
-  }
+  create() {}
 }

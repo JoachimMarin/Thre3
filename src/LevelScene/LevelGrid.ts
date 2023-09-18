@@ -23,6 +23,7 @@ export default class LevelGrid {
   private playerMaxStep = 3;
   public player: Player = null;
   public readonly inventory: Inventory;
+  private background: Phaser.GameObjects.Rectangle;
 
   public readonly width: integer;
   public readonly height: integer;
@@ -44,6 +45,10 @@ export default class LevelGrid {
       }
     }
     this.DefineEventGroups();
+
+    this.background = levelScene.add
+      .rectangle(0, 0, width, height, 0xaabbcc)
+      .setOrigin(0, 0);
   }
 
   DefineEventGroups() {
@@ -169,5 +174,6 @@ export default class LevelGrid {
       obj.Remove();
     });
     this.inventory.Clear();
+    this.background.destroy();
   }
 }
