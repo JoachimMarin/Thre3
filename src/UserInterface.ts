@@ -1,6 +1,23 @@
 import * as Phaser from 'phaser';
 
+export const Const = {
+  BackGroundColor: 0x6a8bab,
+  AccentColor: 0x1a529b,
+  FontSize: 64
+};
+
+export function TextStyle(text: Phaser.GameObjects.Text) {
+  const style = text.style;
+  style.setColor('black');
+  style.setFontFamily('cursive');
+  style.setFontStyle('bold');
+  style.setFill('white');
+  style.setFontSize(Const.FontSize);
+  style.setStroke('black', 8);
+}
+
 export class Box {
+  private backgroundBlack: Phaser.GameObjects.Rectangle;
   private background: Phaser.GameObjects.Rectangle;
   private sides: Phaser.GameObjects.Image[] = [];
   private corners: Phaser.GameObjects.Image[] = [];
@@ -14,23 +31,31 @@ export class Box {
   ) {
     const transparencyFix = (130 / 128) * borderWidth;
 
-    this.background.x = minX;
-    this.background.y = minY;
-    this.background.width = maxX - minX;
-    this.background.height = maxY - minY;
+    this.backgroundBlack.x = minX;
+    this.backgroundBlack.y = minY;
+    this.backgroundBlack.width = maxX - minX;
+    this.backgroundBlack.height = maxY - minY;
 
+    this.background.x = minX + borderWidth / 4;
+    this.background.y = minY + borderWidth / 4;
+    this.background.width = maxX - minX - borderWidth / 2;
+    this.background.height = maxY - minY - borderWidth / 2;
+
+    // the correct length would be max - min - 2 * borderWidth to account for borders on both sides
+    // this can lead to small artifacts at the connections between the corners and the sides
+    // so the sides are made longer and the parts that are too long will be hidden under the corners
     this.sides[0]
       .setPosition(minX, (minY + maxY) / 2)
-      .setDisplaySize(transparencyFix, maxY - minY);
+      .setDisplaySize(transparencyFix, maxY - minY - borderWidth);
     this.sides[1]
       .setPosition(maxX, (minY + maxY) / 2)
-      .setDisplaySize(transparencyFix, maxY - minY);
+      .setDisplaySize(transparencyFix, maxY - minY - borderWidth);
     this.sides[2]
       .setPosition((minX + maxX) / 2, minY)
-      .setDisplaySize(transparencyFix, maxX - minX);
+      .setDisplaySize(transparencyFix, maxX - minX - borderWidth);
     this.sides[3]
       .setPosition((minX + maxX) / 2, maxY)
-      .setDisplaySize(transparencyFix, maxX - minX);
+      .setDisplaySize(transparencyFix, maxX - minX - borderWidth);
 
     this.corners[0].setPosition(minX, minY);
     this.corners[1].setPosition(maxX, minY);
@@ -44,14 +69,15 @@ export class Box {
 
   constructor(
     scene: Phaser.Scene,
-    backgroundColor: number = UserInterface.BackGroundColor,
-    accentColor: number = UserInterface.AccentColor,
     minX: number = 0,
     minY: number = 0,
     maxX: number = 100,
     maxY: number = 100,
-    borderWidth: number = 10
+    borderWidth: number = 10,
+    backgroundColor: number = Const.BackGroundColor,
+    accentColor: number = Const.AccentColor
   ) {
+    this.backgroundBlack = scene.add.rectangle(0, 0, 1, 1, 0).setOrigin(0, 0);
     this.background = scene.add
       .rectangle(0, 0, 1, 1, backgroundColor)
       .setOrigin(0, 0);
@@ -74,19 +100,5 @@ export class Box {
       corner.setOrigin(1, 0).setTint(accentColor);
     }
     this.update(minX, minY, maxX, maxY, borderWidth);
-  }
-}
-
-export default abstract class UserInterface {
-  public static readonly BackGroundColor: number = 0x6a8bab;
-  public static readonly AccentColor: number = 0x1a529b;
-
-  static TextStyle(text: Phaser.GameObjects.Text) {
-    const style = text.style;
-    style.setColor('black');
-    style.setFontFamily('cursive');
-    style.setFontStyle('bold');
-    style.setFill('white');
-    style.setStroke('black', 8);
   }
 }

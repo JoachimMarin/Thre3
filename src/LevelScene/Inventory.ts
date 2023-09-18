@@ -1,6 +1,6 @@
 import ItemType from 'Constants/ItemType';
 import SideUserInterfaceScene from './SideUserInterfaceScene';
-import Constants from 'Constants/Constants';
+import * as UI from 'UserInterface';
 
 let sideUI: SideUserInterfaceScene;
 
@@ -22,10 +22,9 @@ class InventoryEntry {
 
     this.textL = sideUI.add
       .text(0, 0, '')
-      .setFontSize(Constants.fontSize)
-      .setScale(3 / Constants.fontSize)
+      .setScale(3 / UI.Const.FontSize)
       .setOrigin(0, 0.5);
-    sideUI.setTextStyle(this.textL);
+    UI.TextStyle(this.textL);
     this.Update();
   }
 

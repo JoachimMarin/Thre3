@@ -1,5 +1,5 @@
-import Constants from 'Constants/Constants';
 import * as Phaser from 'phaser';
+import * as UI from 'UserInterface';
 
 export default class SideUserInterfaceScene extends Phaser.Scene {
   public readonly longSide: number = 100;
@@ -11,15 +11,6 @@ export default class SideUserInterfaceScene extends Phaser.Scene {
   }
 
   static readonly SCENE = new SideUserInterfaceScene();
-
-  setTextStyle(text: Phaser.GameObjects.Text) {
-    const style = text.style;
-    style.setColor('black');
-    style.setFontFamily('cursive');
-    style.setFontStyle('bold');
-    style.setFill('white');
-    style.setStroke('black', 8);
-  }
 
   landscapeX(gridX: number) {
     return 10000 - this.shortSide / 2 + gridX;
@@ -40,68 +31,19 @@ export default class SideUserInterfaceScene extends Phaser.Scene {
     this.load.image('ui_side', 'assets/ui_side.png');
   }
 
-  initBorder(minX: number, minY: number, maxX: number, maxY: number) {
-    this.add
-      .rectangle(minX, minY, maxX - minX, maxY - minY, this.backgroundColor)
-      .setOrigin(0, 0);
-
-    const size = 65 / 16;
-    const sides: Phaser.GameObjects.Image[] = [];
-    sides.push(
-      this.add
-        .image(minX, (minY + maxY) / 2, 'ui_side')
-        .setAngle(180)
-        .setDisplaySize(size, maxY - minY - 8)
-    );
-    sides.push(
-      this.add
-        .image(maxX, (minY + maxY) / 2, 'ui_side')
-        .setAngle(0)
-        .setDisplaySize(size, maxY - minY - 8)
-    );
-    sides.push(
-      this.add
-        .image((minX + maxX) / 2, minY, 'ui_side')
-        .setAngle(270)
-        .setDisplaySize(size, maxX - minX - 8)
-    );
-    sides.push(
-      this.add
-        .image((minX + maxX) / 2, maxY, 'ui_side')
-        .setAngle(90)
-        .setDisplaySize(size, maxX - minX - 8)
-    );
-
-    for (const side of sides) {
-      side.setOrigin(1, 0.5).setTint(this.backgroundColor);
-    }
-
-    const corners: Phaser.GameObjects.Image[] = [];
-    corners.push(this.add.image(minX, minY, 'ui_corner').setAngle(270));
-    corners.push(this.add.image(maxX, minY, 'ui_corner').setAngle(0));
-    corners.push(this.add.image(maxX, maxY, 'ui_corner').setAngle(90));
-    corners.push(this.add.image(minX, maxY, 'ui_corner').setAngle(180));
-
-    for (const corner of corners) {
-      corner
-        .setOrigin(1, 0)
-        .setDisplaySize(size, size)
-        .setTint(this.backgroundColor);
-    }
-  }
-
   initLandscape() {
-    this.initBorder(
+    new UI.Box(
+      this,
       this.landscapeX(0),
       this.landscapeY(0),
       this.landscapeX(30),
-      this.landscapeY(100)
+      this.landscapeY(100),
+      4
     );
-    this.setTextStyle(
+    UI.TextStyle(
       this.add
         .text(this.landscapeX(15), this.landscapeY(1.25), 'Inventory:')
-        .setFontSize(Constants.fontSize)
-        .setScale(4 / Constants.fontSize)
+        .setScale(4 / UI.Const.FontSize)
         .setOrigin(0.5, 0)
     );
   }

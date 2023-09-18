@@ -1,7 +1,6 @@
-import Constants from 'Constants/Constants';
 import LevelScene from 'LevelScene/LevelScene';
 import { Vec2 } from 'Math/GridPoint';
-import { Box } from 'UserInterface';
+import * as UI from 'UserInterface';
 import * as Phaser from 'phaser';
 
 const numLevels = 120;
@@ -9,27 +8,15 @@ const numLevels = 120;
 export default class MainMenuScene extends Phaser.Scene {
   public static readonly SCENE = new MainMenuScene();
 
-  public readonly backgroundColor: number = 0x6a8bab;
-  private levelSelectionBox: Box;
-  private background: Phaser.GameObjects.Rectangle;
-  private sides: Phaser.GameObjects.Image[] = [];
-  private corners: Phaser.GameObjects.Image[] = [];
+  private levelSelectionBox: UI.Box;
   private levelButtons: Phaser.GameObjects.Image[] = [];
+  private levelTexts: Phaser.GameObjects.Text[] = [];
   private title: Phaser.GameObjects.Text;
 
   private canvasSize: Vec2 = Vec2.AsVec2([0, 0]);
 
   private constructor() {
     super('main-menu');
-  }
-
-  setTextStyle(text: Phaser.GameObjects.Text) {
-    const style = text.style;
-    style.setColor('black');
-    style.setFontFamily('cursive');
-    style.setFontStyle('bold');
-    style.setFill('white');
-    style.setStroke('black', 8);
   }
 
   distributeButtons(
@@ -90,37 +77,6 @@ export default class MainMenuScene extends Phaser.Scene {
 
     this.levelSelectionBox.update(minX, minY, maxX, maxY, borderWidth);
 
-    //const transparencyFix = (65 / 64) * borderWidth;
-
-    /*this.background.x = minX;
-    this.background.y = minY;
-    this.background.width = maxX - minX;
-    this.background.height = maxY - minY;
-
-    this.sides[0]
-      .setPosition(minX, (minY + maxY) / 2)
-      .setDisplaySize(transparencyFix, maxY - minY - borderWidth * 2);
-    this.sides[1]
-      .setPosition(maxX, (minY + maxY) / 2)
-      .setDisplaySize(transparencyFix, maxY - minY - borderWidth * 2);
-    this.sides[2]
-      .setPosition((minX + maxX) / 2, minY)
-      .setDisplaySize(transparencyFix, maxX - minX - borderWidth * 2);
-    this.sides[3]
-      .setPosition((minX + maxX) / 2, maxY)
-      .setDisplaySize(transparencyFix, maxX - minX - borderWidth * 2);
-
-    this.corners[0].setPosition(minX, minY);
-    this.corners[1].setPosition(maxX, minY);
-    this.corners[2].setPosition(maxX, maxY);
-    this.corners[3].setPosition(minX, maxY);
-
-    for (const corner of this.corners) {
-      corner.setDisplaySize(transparencyFix, transparencyFix);
-    }*/
-
-    //const mainX = borderWidth * 2;
-    //const mainY = borderWidth * 2;
     const mainWidth = maxX - minX - horizontalMargin;
     const mainHeight = maxY - minY - horizontalMargin * heightFactor;
 
@@ -142,45 +98,27 @@ export default class MainMenuScene extends Phaser.Scene {
       this.levelButtons[i]
         .setPosition(offsetX + column * sideLength, offsetY + row * sideLength)
         .setDisplaySize(sideLength, sideLength);
+      this.levelTexts[i]
+        .setPosition(
+          offsetX + (column + 0.5) * sideLength,
+          offsetY + (row + 0.5) * sideLength
+        )
+        .setScale((0.35 * sideLength) / UI.Const.FontSize);
     }
 
     this.title.setPosition((minX + maxX) / 2, verticalMargin * 0.25);
-    this.title.setScale((verticalMargin * 0.25) / Constants.fontSize);
+    this.title.setScale((verticalMargin * 0.25) / UI.Const.FontSize);
   }
 
   initBorder() {
-    this.levelSelectionBox = new Box(this);
-    /*this.background = this.add
-      .rectangle(0, 0, 1, 1, this.backgroundColor)
-      .setOrigin(0, 0);
+    this.levelSelectionBox = new UI.Box(this);
 
-    this.sides.push(this.add.image(0, 0, 'ui_side').setAngle(180));
-    this.sides.push(this.add.image(0, 0, 'ui_side').setAngle(0));
-    this.sides.push(this.add.image(0, 0, 'ui_side').setAngle(270));
-    this.sides.push(this.add.image(0, 0, 'ui_side').setAngle(90));
-
-    for (const side of this.sides) {
-      side.setOrigin(1, 0.5).setTint(this.backgroundColor).setDisplaySize(1, 1);
-    }
-
-    this.corners.push(this.add.image(0, 0, 'ui_corner').setAngle(270));
-    this.corners.push(this.add.image(0, 0, 'ui_corner').setAngle(0));
-    this.corners.push(this.add.image(0, 0, 'ui_corner').setAngle(90));
-    this.corners.push(this.add.image(0, 0, 'ui_corner').setAngle(180));
-
-    for (const corner of this.corners) {
-      corner.setOrigin(1, 0).setTint(this.backgroundColor);
-    }*/
-
-    this.title = this.add
-      .text(0, 0, 'Select Level:')
-      .setFontSize(Constants.fontSize)
-      .setOrigin(0.5, 0);
-    this.setTextStyle(this.title);
+    this.title = this.add.text(0, 0, 'Select Level:').setOrigin(0.5, 0);
+    UI.TextStyle(this.title);
 
     for (let i = 0; i < numLevels; i++) {
       const btn = this.add.image(0, 0, 'level_button').setOrigin(0, 0);
-      btn.setTint(this.backgroundColor);
+      btn.setTint(UI.Const.AccentColor);
       btn.setInteractive();
 
       // capture constant value
@@ -190,6 +128,10 @@ export default class MainMenuScene extends Phaser.Scene {
         this.scene.start(LevelScene.SCENE);
       });
       this.levelButtons.push(btn);
+
+      const text = this.add.text(0, 0, '' + i).setOrigin(0.5, 0.5);
+      UI.TextStyle(text);
+      this.levelTexts.push(text);
     }
   }
 
