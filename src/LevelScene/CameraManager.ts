@@ -136,25 +136,30 @@ export default class CameraManager extends GameObject {
       cameraHeight = this.mainCanvasSize.y / this.mainCam.zoom;
     }
 
-    let diff = levelWidth - cameraWidth;
-    let maxX = ((1 / this.mainCam.zoom - 1) * this.mainCanvasSize.x) / 2;
-    let minX = maxX + diff;
-    if (maxX < minX) {
-      const tmp = minX;
-      minX = maxX;
-      maxX = tmp;
+    let maxX: number;
+    let minX: number;
+    if (levelWidth > cameraWidth) {
+      minX = ((1 / this.mainCam.zoom - 1) * this.mainCanvasSize.x) / 2;
+      maxX = minX + levelWidth - cameraWidth;
+    } else {
+      minX =
+        ((1 / this.mainCam.zoom - 1) * this.mainCanvasSize.x) / 2 +
+        (levelWidth - cameraWidth) / 2;
+      maxX = minX;
     }
-
-    diff = levelHeight - cameraHeight;
-    let maxY = ((1 / this.mainCam.zoom - 1) * this.mainCanvasSize.y) / 2;
-    let minY = maxY + diff;
-    if (maxY < minY) {
-      const tmp = minY;
-      minY = maxY;
-      maxY = tmp;
-    }
-
     this.mainCam.scrollX = Math.min(maxX, Math.max(minX, this.mainCam.scrollX));
+
+    let maxY: number;
+    let minY: number;
+    if (levelHeight > cameraHeight) {
+      minY = ((1 / this.mainCam.zoom - 1) * this.mainCanvasSize.y) / 2;
+      maxY = minY + levelHeight - cameraHeight;
+    } else {
+      minY =
+        ((1 / this.mainCam.zoom - 1) * this.mainCanvasSize.y) / 2 +
+        (levelHeight - cameraHeight) / 2;
+      maxY = minY;
+    }
     this.mainCam.scrollY = Math.min(maxY, Math.max(minY, this.mainCam.scrollY));
   }
 
