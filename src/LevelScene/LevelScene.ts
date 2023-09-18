@@ -128,14 +128,16 @@ class LevelParser {
 
     this.levelScene.load.xml('tiles', 'assets/tiles.tsx');
     this.levelScene.load.xml(
-      'level',
-      'assets/levels/level' + LevelScene.index + '.tmx'
+      'level_file_' + LevelScene.SCENE.index,
+      'assets/levels/level' + LevelScene.SCENE.index + '.tmx'
     );
   }
 
   LoadLevelInfo() {
     this.tilesFile = new TilesFile(this.levelScene.cache.xml.get('tiles'));
-    this.levelFile = new LevelFile(this.levelScene.cache.xml.get('level'));
+    this.levelFile = new LevelFile(
+      this.levelScene.cache.xml.get('level_file_' + LevelScene.SCENE.index)
+    );
   }
 
   BuildLevel(grid: LevelGrid) {
@@ -166,7 +168,8 @@ export default class LevelScene extends Phaser.Scene {
 
   public static readonly SCENE = new LevelScene();
 
-  public static index: integer = 0;
+  public index: integer = 0;
+  public numLevels: integer = 0;
 
   private constructor() {
     super('level');
@@ -183,6 +186,24 @@ export default class LevelScene extends Phaser.Scene {
 
   preload() {
     this.levelParser.Preload();
+  }
+
+  changeSceneToLevel(current: Phaser.Scene, index: integer) {
+    this.index = index;
+    current.scene.start(this);
+  }
+
+  restartLevel() {
+    this.loadLevel();
+  }
+
+  changeToNextLevel() {
+    const next = this.index + 1;
+    if (next < this.numLevels) {
+      this.changeSceneToLevel(this, next);
+    } else {
+      console.log('you won all levels');
+    }
   }
 
   loadLevel() {

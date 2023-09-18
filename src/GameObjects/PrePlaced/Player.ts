@@ -30,7 +30,7 @@ export default class Player extends GridObjectImage {
     if (!this.gameOver) {
       this.gameOver = true;
       setTimeout(() => {
-        this.grid.levelScene.loadLevel();
+        this.grid.levelScene.restartLevel();
       }, 2000);
     }
   }
@@ -89,6 +89,9 @@ export default class Player extends GridObjectImage {
       if (!blocked) {
         this.GameOver();
       }
+    }
+    if (!this.gameOver && this.grid.HasGridTag(this.position, ObjectTag.GOAL)) {
+      this.grid.levelScene.changeToNextLevel();
     }
   }
 

@@ -5,6 +5,6 @@ export default class Goal extends GridObjectImage {
   static imageKey = 'goal';
 
   OnInit() {
-    this.AddTag(ObjectTag.DESTROY_BULLETS);
+    this.AddTag(ObjectTag.GOAL);
   }
 }

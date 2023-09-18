@@ -128,8 +128,7 @@ export default class MainMenuScene extends Phaser.Scene {
       // capture constant value
       const tmp = i;
       btn.on('pointerdown', () => {
-        LevelScene.index = tmp;
-        this.scene.start(LevelScene.SCENE);
+        LevelScene.SCENE.changeSceneToLevel(this, tmp);
       });
       this.levelButtons.push(btn);
 
@@ -156,6 +155,7 @@ export default class MainMenuScene extends Phaser.Scene {
     for (let i = 0; i < maxLevels; i++) {
       if (!this.cache.xml.has('level_file_' + i)) {
         this.numLevels = i;
+        LevelScene.SCENE.numLevels = this.numLevels;
         break;
       }
     }
