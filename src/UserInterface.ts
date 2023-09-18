@@ -3,17 +3,55 @@ import * as Phaser from 'phaser';
 export const Const = {
   BackGroundColor: 0x6a8bab,
   AccentColor: 0x1a529b,
-  FontSize: 64
+  MinimumFontSize: 32
 };
 
-export function TextStyle(text: Phaser.GameObjects.Text) {
-  const style = text.style;
-  style.setColor('black');
-  style.setFontFamily('cursive');
-  style.setFontStyle('bold');
-  style.setFill('white');
-  style.setFontSize(Const.FontSize);
-  style.setStroke('black', 8);
+export class Text {
+  private text: Phaser.GameObjects.Text;
+  private size: number;
+  private style: Phaser.GameObjects.TextStyle;
+  constructor(
+    scene: Phaser.Scene,
+    x: number = 0,
+    y: number = 0,
+    text: string = '',
+    size: number = 16
+  ) {
+    this.text = scene.add.text(x, y, text);
+    this.style = this.text.style;
+    this.size = size;
+
+    this.style.setColor('black');
+    this.style.setFontFamily('cursive');
+    this.style.setFontStyle('bold');
+    this.style.setFill('white');
+    this.Update();
+  }
+
+  Update() {
+    const zoom = this.text.scene.cameras.main.zoom;
+    const numPixels = zoom * this.size;
+    const fontSize = Math.max(Const.MinimumFontSize, numPixels);
+    const fontScale = this.size / fontSize;
+
+    this.style.setFontSize(fontSize);
+    this.style.setStroke('black', fontSize / 8);
+    this.text.setScale(fontScale);
+  }
+
+  SetSize(size: number) {
+    this.size = size;
+    this.Update();
+  }
+
+  GetTextObject() {
+    return this.text;
+  }
+
+  Remove() {
+    this.text.off('update');
+    this.text.destroy();
+  }
 }
 
 export class Box {

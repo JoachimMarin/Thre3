@@ -3,17 +3,18 @@ import { Vec2 } from 'Math/GridPoint';
 import * as UI from 'UserInterface';
 import * as Phaser from 'phaser';
 
-const numLevels = 120;
+const maxLevels = 100;
 
 export default class MainMenuScene extends Phaser.Scene {
   public static readonly SCENE = new MainMenuScene();
 
   private levelSelectionBox: UI.Box;
   private levelButtons: Phaser.GameObjects.Image[] = [];
-  private levelTexts: Phaser.GameObjects.Text[] = [];
-  private title: Phaser.GameObjects.Text;
+  private levelTexts: UI.Text[] = [];
+  private title: UI.Text;
 
   private canvasSize: Vec2 = Vec2.AsVec2([0, 0]);
+  private numLevels: integer = 0;
 
   private constructor() {
     super('main-menu');
@@ -88,7 +89,7 @@ export default class MainMenuScene extends Phaser.Scene {
     const offsetY =
       verticalMargin * 0.75 + (mainHeight - vertical * sideLength) / 2;
 
-    for (let i = 0; i < numLevels; i++) {
+    for (let i = 0; i < this.numLevels; i++) {
       const row = Math.floor(i / horizontal);
       const column = i % horizontal;
       if (row == vertical - 1 && column == 0) {
@@ -99,24 +100,27 @@ export default class MainMenuScene extends Phaser.Scene {
         .setPosition(offsetX + column * sideLength, offsetY + row * sideLength)
         .setDisplaySize(sideLength, sideLength);
       this.levelTexts[i]
+        .GetTextObject()
         .setPosition(
           offsetX + (column + 0.5) * sideLength,
           offsetY + (row + 0.5) * sideLength
-        )
-        .setScale((0.35 * sideLength) / UI.Const.FontSize);
+        );
+      this.levelTexts[i].SetSize(0.35 * sideLength);
     }
 
-    this.title.setPosition((minX + maxX) / 2, verticalMargin * 0.25);
-    this.title.setScale((verticalMargin * 0.25) / UI.Const.FontSize);
+    this.title
+      .GetTextObject()
+      .setPosition((minX + maxX) / 2, verticalMargin * 0.25);
+    this.title.SetSize(verticalMargin * 0.25);
   }
 
   initBorder() {
     this.levelSelectionBox = new UI.Box(this);
 
-    this.title = this.add.text(0, 0, 'Select Level:').setOrigin(0.5, 0);
-    UI.TextStyle(this.title);
+    this.title = new UI.Text(this, 0, 0, 'Select Level:');
+    this.title.GetTextObject().setOrigin(0.5, 0);
 
-    for (let i = 0; i < numLevels; i++) {
+    for (let i = 0; i < this.numLevels; i++) {
       const btn = this.add.image(0, 0, 'level_button').setOrigin(0, 0);
       btn.setTint(UI.Const.AccentColor);
       btn.setInteractive();
@@ -129,8 +133,8 @@ export default class MainMenuScene extends Phaser.Scene {
       });
       this.levelButtons.push(btn);
 
-      const text = this.add.text(0, 0, '' + i).setOrigin(0.5, 0.5);
-      UI.TextStyle(text);
+      const text = new UI.Text(this, 0, 0, '' + i);
+      text.GetTextObject().setOrigin(0.5, 0.5);
       this.levelTexts.push(text);
     }
   }
@@ -142,9 +146,19 @@ export default class MainMenuScene extends Phaser.Scene {
     this.load.image('ui_side', 'assets/ui_side.png');
     this.load.image('level_button', 'assets/button1x1.png');
     this.load.image('selection_arrow', 'assets/arrow.png');
+
+    for (let i = 0; i < maxLevels; i++) {
+      this.load.xml('level_file_' + i, 'assets/levels/level' + i + '.tmx');
+    }
   }
 
   create() {
+    for (let i = 0; i < maxLevels; i++) {
+      if (!this.cache.xml.has('level_file_' + i)) {
+        this.numLevels = i;
+        break;
+      }
+    }
     this.initBorder();
   }
 

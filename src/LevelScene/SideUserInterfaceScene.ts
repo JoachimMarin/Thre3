@@ -4,7 +4,8 @@ import * as UI from 'UserInterface';
 export default class SideUserInterfaceScene extends Phaser.Scene {
   public readonly longSide: number = 100;
   public readonly shortSide: number = 30;
-  public readonly backgroundColor: number = 0x6a8bab;
+
+  private inventoryTitleL: UI.Text;
 
   private constructor() {
     super('side-user-interface');
@@ -40,12 +41,15 @@ export default class SideUserInterfaceScene extends Phaser.Scene {
       this.landscapeY(100),
       4
     );
-    UI.TextStyle(
-      this.add
-        .text(this.landscapeX(15), this.landscapeY(1.25), 'Inventory:')
-        .setScale(4 / UI.Const.FontSize)
-        .setOrigin(0.5, 0)
+
+    this.inventoryTitleL = new UI.Text(
+      this,
+      this.landscapeX(15),
+      this.landscapeY(1.25),
+      'Inventory:',
+      4
     );
+    this.inventoryTitleL.GetTextObject().setOrigin(0.5, 0);
   }
 
   create() {
@@ -54,5 +58,9 @@ export default class SideUserInterfaceScene extends Phaser.Scene {
     this.add
       .image(0, -10000, 'blue_wall')
       .setDisplaySize(this.longSide, this.shortSide);
+  }
+
+  update(): void {
+    this.inventoryTitleL.Update();
   }
 }

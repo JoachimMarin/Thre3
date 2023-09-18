@@ -9,7 +9,7 @@ class InventoryEntry {
   public count: integer;
   public index: integer;
   public imageL: Phaser.GameObjects.Image;
-  public textL: Phaser.GameObjects.Text;
+  public textL: UI.Text;
 
   constructor(itemType: ItemType, count: integer, index: integer) {
     this.itemType = itemType;
@@ -20,15 +20,13 @@ class InventoryEntry {
       .setDisplaySize(6, 6)
       .setOrigin(0, 0);
 
-    this.textL = sideUI.add
-      .text(0, 0, '')
-      .setScale(3 / UI.Const.FontSize)
-      .setOrigin(0, 0.5);
-    UI.TextStyle(this.textL);
-    this.Update();
+    this.textL = new UI.Text(sideUI);
+    this.textL.SetSize(3);
+    this.textL.GetTextObject().setOrigin(0, 0.5);
+    this.OnInventoryChange();
   }
 
-  Update() {
+  OnInventoryChange() {
     const indexX = this.index % 2;
     const indexY = Math.floor(this.index / 2);
     const x = sideUI.landscapeX(2.5 + indexX * 13);
@@ -37,13 +35,18 @@ class InventoryEntry {
     const textY = sideUI.landscapeY(11 + indexY * 7.5);
 
     this.imageL.setPosition(x, y);
-    this.textL.setPosition(textX, textY);
-    this.textL.setText('x' + this.count);
+    const text = this.textL.GetTextObject();
+    text.setPosition(textX, textY);
+    text.setText('x' + this.count);
+  }
+
+  Update() {
+    this.textL.Update();
   }
 
   Remove() {
     this.imageL.destroy();
-    this.textL.destroy();
+    this.textL.Remove();
   }
 }
 
@@ -63,11 +66,11 @@ export default class Inventory {
       const entry = new InventoryEntry(item, count, index);
       this.itemList.push(entry);
       this.itemMap.set(itemKey, index);
-      entry.Update();
+      entry.OnInventoryChange();
     } else {
       const entry = this.itemList[this.itemMap.get(itemKey)];
       entry.count += count;
-      entry.Update();
+      entry.OnInventoryChange();
     }
   }
 
@@ -77,7 +80,7 @@ export default class Inventory {
     if (remaining > 0) {
       const entry = this.itemList[this.itemMap.get(itemKey)];
       entry.count = remaining;
-      entry.Update();
+      entry.OnInventoryChange();
     } else if (remaining == 0) {
       const listIndex = this.itemMap.get(itemKey);
       this.itemList[listIndex].Remove();
@@ -85,7 +88,7 @@ export default class Inventory {
       for (let i = listIndex; i < this.itemList.length; i++) {
         const entry = this.itemList[i];
         entry.index = i;
-        entry.Update();
+        entry.OnInventoryChange();
         this.itemMap.set(entry.itemType.imageKey, i);
       }
       this.itemMap.delete(itemKey);
@@ -120,5 +123,11 @@ export default class Inventory {
     }
     this.itemList = [];
     this.itemMap.clear();
+  }
+
+  Update() {
+    for (const inventoryEntry of this.itemList) {
+      inventoryEntry.Update();
+    }
   }
 }

@@ -130,6 +130,7 @@ export default class LevelGrid {
   }
 
   Update(delta: number) {
+    this.inventory.Update();
     this.ForEventGroup(GameObjectEvent.UPDATE, (obj) => obj.OnUpdate(delta));
   }
 
