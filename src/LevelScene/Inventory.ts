@@ -11,6 +11,12 @@ class InventoryEntry {
   public imageL: Phaser.GameObjects.Image;
   public textL: UI.Text;
 
+  /**
+   * Creates a new InventoryEntry.
+   * @param itemType The item type of this InventoryEntry.
+   * @param count The number of items for this item type.
+   * @param index The UI slot index. This affects the display position of the icon and text.
+   */
   constructor(itemType: ItemType, count: integer, index: integer) {
     this.itemType = itemType;
     this.count = count;
@@ -26,6 +32,9 @@ class InventoryEntry {
     this.OnInventoryChange();
   }
 
+  /**
+   * Updates inventory slot index and item count in the UI.
+   */
   OnInventoryChange() {
     const indexX = this.index % 2;
     const indexY = Math.floor(this.index / 2);
@@ -40,10 +49,16 @@ class InventoryEntry {
     text.setText('x' + this.count);
   }
 
+  /**
+   * Runs on scene update.
+   */
   Update() {
     this.textL.Update();
   }
 
+  /**
+   * Remove this InventoryEntry.
+   */
   Remove() {
     this.imageL.destroy();
     this.textL.Remove();
@@ -58,12 +73,17 @@ export default class Inventory {
     sideUI = SideUserInterfaceScene.SCENE;
   }
 
-  AddItem(item: ItemType, count: integer = 1) {
-    const itemKey = item.imageKey;
+  /**
+   * Adds items to the inventory.
+   * @param itemType The item type to be added.
+   * @param count The number of items to be added.
+   */
+  AddItem(itemType: ItemType, count: integer = 1) {
+    const itemKey = itemType.imageKey;
     console.log(itemKey);
     if (!this.itemMap.has(itemKey)) {
       const index = this.itemList.length;
-      const entry = new InventoryEntry(item, count, index);
+      const entry = new InventoryEntry(itemType, count, index);
       this.itemList.push(entry);
       this.itemMap.set(itemKey, index);
       entry.OnInventoryChange();
@@ -74,9 +94,14 @@ export default class Inventory {
     }
   }
 
-  RemoveItem(item: ItemType, count: integer = 1) {
-    const itemKey = item.imageKey;
-    const remaining = this.GetCount(item) - count;
+  /**
+   * Removes items to the inventory.
+   * @param itemType The item type to be removed.
+   * @param count The number of items to be removed.
+   */
+  RemoveItem(itemType: ItemType, count: integer = 1) {
+    const itemKey = itemType.imageKey;
+    const remaining = this.GetCount(itemType) - count;
     if (remaining > 0) {
       const entry = this.itemList[this.itemMap.get(itemKey)];
       entry.count = remaining;
@@ -97,8 +122,13 @@ export default class Inventory {
     }
   }
 
-  GetCount(item: ItemType) {
-    const itemKey = item.imageKey;
+  /**
+   * Returns the number of items of the specified itemType contained in the inventory.
+   * @param itemType
+   * @returns
+   */
+  GetCount(itemType: ItemType) {
+    const itemKey = itemType.imageKey;
     if (this.itemMap.has(itemKey)) {
       const listIndex = this.itemMap.get(itemKey);
       if (this.itemList.length > listIndex) {
@@ -113,10 +143,18 @@ export default class Inventory {
     }
   }
 
-  HasItem(item: ItemType) {
-    return this.GetCount(item) > 0;
+  /**
+   * Returns true, if the inventory contains at least one item of the specified itemType.
+   * @param itemType
+   * @returns
+   */
+  HasItem(itemType: ItemType) {
+    return this.GetCount(itemType) > 0;
   }
 
+  /**
+   * Removes all items from the inventory.
+   */
   Clear() {
     for (const inventoryEntry of this.itemList) {
       inventoryEntry.Remove();
@@ -125,6 +163,9 @@ export default class Inventory {
     this.itemMap.clear();
   }
 
+  /**
+   * Runs on scene update.
+   */
   Update() {
     for (const inventoryEntry of this.itemList) {
       inventoryEntry.Update();

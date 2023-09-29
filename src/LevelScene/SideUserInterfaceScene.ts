@@ -1,6 +1,14 @@
 import * as Phaser from 'phaser';
 import * as UI from 'UserInterface';
 
+/**
+ * SideUserInterfaceScene is displayed on the right or bottom of the canvas depending on the aspect ratio.
+ * The SideUserInterfaceScene itself has a fixed aspect ratio of 3x10 or 10x3.
+ * This is implemented using two different camera positions, centered on:
+ *  (10000, 0) for landscapde mode
+ *  (0, -10000) for portrait mode
+ * As a result, all UI elements need to placed twice.
+ */
 export default class SideUserInterfaceScene extends Phaser.Scene {
   public readonly longSide: number = 100;
   public readonly shortSide: number = 30;

@@ -7,6 +7,10 @@ import Player from 'GameObjects/PrePlaced/Player';
 import Inventory from 'LevelScene/Inventory';
 import GameObject from 'GameObjects/BaseClasses/GameObject';
 
+/**
+ * An EventGroup is a set of GameObjects that share a certain event.
+ * @see GameObjectEvent
+ */
 class EventGroup {
   public objects: Set<GameObject> = new Set<GameObject>();
   public condition: (obj: GameObject) => boolean;
@@ -16,6 +20,9 @@ class EventGroup {
   }
 }
 
+/**
+ * Contains all game objects and manages level related gameplay.
+ */
 export default class LevelGrid {
   public at: Set<GridObject>[][];
   public readonly levelScene: LevelScene;
@@ -27,7 +34,7 @@ export default class LevelGrid {
 
   public readonly width: integer;
   public readonly height: integer;
-  private objectGroups: Map<GameObjectEvent, EventGroup> = new Map<
+  private eventGroups: Map<GameObjectEvent, EventGroup> = new Map<
     GameObjectEvent,
     EventGroup
   >();
@@ -51,57 +58,89 @@ export default class LevelGrid {
       .setOrigin(0, 0);
   }
 
+  /**
+   * Defines a new EventGroup for GameObjectEvent key for GameObjects fulfilling condition.
+   * @param key
+   * @param condition
+   */
+  DefineEventGroup(
+    key: GameObjectEvent,
+    condition: (obj: GameObject) => boolean
+  ) {
+    this.eventGroups.set(key, new EventGroup(condition));
+  }
+
   DefineEventGroups() {
+    // Check whether a GameObject has a certain event
+    // This is done by checking whether the function body of the event function contains any code
     const hasEvent = (func: (...args: any[]) => void) => {
       const functionString: string = func.toString().replace(/\s/g, '');
       const first = functionString.indexOf('{}');
       return first == -1 || first != functionString.lastIndexOf('{}');
     };
+    // All GameObjects in the scene
     this.DefineEventGroup(GameObjectEvent.GLOBAL_SCENE, (_obj) => true);
+    // GameObjects that override an event function:
+    // .OnUpdate
     this.DefineEventGroup(GameObjectEvent.UPDATE, (obj) =>
       hasEvent(obj.OnUpdate)
     );
+    // .OnBeginStep
     this.DefineEventGroup(GameObjectEvent.BEGIN_STEP_ALL, (obj) =>
       hasEvent(obj.OnBeginStep)
     );
+    // .OnBeginStepTrigger
     this.DefineEventGroup(GameObjectEvent.BEGIN_STEP_TRIGGER, (obj) =>
       hasEvent(obj.OnBeginStepTrigger)
     );
+    // .OnEndStep
     this.DefineEventGroup(GameObjectEvent.END_STEP_ALL, (obj) =>
       hasEvent(obj.OnEndStep)
     );
+    // .OnEndStepTrigger
     this.DefineEventGroup(GameObjectEvent.END_STEP_TRIGGER, (obj) =>
       hasEvent(obj.OnEndStepTrigger)
     );
   }
 
+  /**
+   * Adds Gameobject obj to all relevant EventGroups
+   * @param obj
+   */
   SetupEventGroups(obj: GameObject) {
-    for (const objectGroup of this.objectGroups.values()) {
-      if (objectGroup.condition(obj)) {
-        objectGroup.objects.add(obj);
+    for (const eventGroup of this.eventGroups.values()) {
+      if (eventGroup.condition(obj)) {
+        eventGroup.objects.add(obj);
       }
     }
   }
 
+  /**
+   * Removes Gameobject obj from all EventGroups
+   * @param obj
+   */
   ClearEventGroups(obj: GameObject) {
-    for (const objectGroup of this.objectGroups.values()) {
-      objectGroup.objects.delete(obj);
+    for (const eventGroup of this.eventGroups.values()) {
+      eventGroup.objects.delete(obj);
     }
   }
 
+  /**
+   * Runs function func for every obj that has GameObjectEvent key.
+   * @param key
+   * @param func
+   */
   ForEventGroup(key: GameObjectEvent, func: (obj: GameObject) => void) {
-    for (const object of this.objectGroups.get(key).objects) {
+    for (const object of this.eventGroups.get(key).objects) {
       func(object);
     }
   }
 
-  DefineEventGroup(
-    key: GameObjectEvent,
-    condition: (obj: GameObject) => boolean
-  ) {
-    this.objectGroups.set(key, new EventGroup(condition));
-  }
-
+  /**
+   * Returns true, if point is inside the level bounds.
+   * @param point
+   * @returns
+   */
   IsInBounds(point: IVec2) {
     const gridPoint = Vec2.AsVec2(point);
     return (
@@ -111,6 +150,12 @@ export default class LevelGrid {
       gridPoint.y < this.height
     );
   }
+  /**
+   * Returns true, if any GridObject located at point has ObjectTag tag.
+   * @param point
+   * @param tag
+   * @returns
+   */
   HasGridTag(point: IVec2, tag: ObjectTag) {
     const gridPoint = Vec2.AsVec2(point);
     const objectsAtGridPosition = this.at[gridPoint.x][gridPoint.y];
@@ -122,6 +167,12 @@ export default class LevelGrid {
     return false;
   }
 
+  /**
+   * Returns an array of GridObjects located at point that have ObjectTag tag.
+   * @param point
+   * @param tag
+   * @returns
+   */
   GetByTag(point: IVec2, tag: ObjectTag): GridObject[] {
     const gridPoint = Vec2.AsVec2(point);
     const objectsAtGridPosition = this.at[gridPoint.x][gridPoint.y];
@@ -134,11 +185,18 @@ export default class LevelGrid {
     return array;
   }
 
+  /**
+   * Runs on cene update.
+   * @param delta Time since the last scene update.
+   */
   Update(delta: number) {
     this.inventory.Update();
     this.ForEventGroup(GameObjectEvent.UPDATE, (obj) => obj.OnUpdate(delta));
   }
 
+  /**
+   * The player starts moving away from a tile.
+   */
   BeginPlayerStep() {
     let trigger = false;
     this.playerStep--;
@@ -157,6 +215,9 @@ export default class LevelGrid {
     }
   }
 
+  /**
+   * The player reaches a tile.
+   */
   EndPlayerStep() {
     const trigger = this.playerStep == 0;
     this.ForEventGroup(GameObjectEvent.END_STEP_ALL, (obj) =>
@@ -169,6 +230,9 @@ export default class LevelGrid {
     }
   }
 
+  /**
+   * Removes all data governed by this LevelGrid.
+   */
   Remove() {
     this.ForEventGroup(GameObjectEvent.GLOBAL_SCENE, (obj) => {
       obj.Remove();

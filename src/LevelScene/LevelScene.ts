@@ -15,6 +15,10 @@ import CameraManager from './CameraManager';
 import SideUserInterfaceScene from './SideUserInterfaceScene';
 import GridUserInterfaceScene from './GridUserInterfaceScene';
 
+/**
+ * TilesFile parses the .tsx file from the Tiled level editor.
+ * This file contains a mapping from image path to tile id.
+ */
 class TilesFile {
   public tileDict: { [key: integer]: string } = {};
 
@@ -32,6 +36,10 @@ class TilesFile {
   }
 }
 
+/**
+ * LevelFile parses the .tmx from the Tiled level editor.
+ * This file contains a matrix listing the tile found at each grid point.
+ */
 class LevelFile {
   public readonly width: integer = 0;
   public readonly height: integer = 0;
@@ -78,6 +86,12 @@ class LevelFile {
   }
 }
 
+/**
+ * LevelParser handles asset management for level scenes. This includes:
+ *  image files
+ *  .tsx file @see TilesFile
+ *  .tmx file @see LevelFile
+ */
 class LevelParser {
   private tileDict: {
     [key: string]: (point: IVec2, grid: LevelGrid) => GridObject;
@@ -134,6 +148,9 @@ class LevelParser {
   }
 
   LoadLevelInfo() {
+    /**
+     * Loads level information from the loaded .tsx and .tmx files.
+     */
     this.tilesFile = new TilesFile(this.levelScene.cache.xml.get('tiles'));
     this.levelFile = new LevelFile(
       this.levelScene.cache.xml.get('level_file_' + LevelScene.SCENE.index)
@@ -141,6 +158,10 @@ class LevelParser {
   }
 
   BuildLevel(grid: LevelGrid) {
+    /**
+     * Fills the grid with tiles as specified by the loaded .tsx and .tmx files.
+     * @param grid:
+     */
     for (let y = 0; y < this.levelFile.height; y++) {
       for (let x = 0; x < this.levelFile.width; x++) {
         for (const objectId of this.levelFile.objects[x][y]) {
