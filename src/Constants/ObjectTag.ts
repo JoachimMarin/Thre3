@@ -1,5 +1,6 @@
 enum ObjectTag {
   WALL,
+  CONDITIONAL_WALL,
   DESTROY_BULLETS,
   DEADLY,
   ITEM,

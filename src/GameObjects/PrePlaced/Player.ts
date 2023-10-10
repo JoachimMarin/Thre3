@@ -17,7 +17,7 @@ export default class Player extends GridObjectImage {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private moving: boolean = false;
   private direction: Direction = Direction.DOWN;
-  private destination: Vec2;
+  public destination: Vec2;
   private gameOver: boolean = false;
 
   constructor(point: IVec2, grid: LevelGrid) {
@@ -95,6 +95,27 @@ export default class Player extends GridObjectImage {
     }
   }
 
+  CanMoveTo(point: IVec2) {
+    if (!this.grid.IsInBounds(point)) {
+      return false;
+    }
+    if (this.grid.HasGridTag(point, ObjectTag.WALL)) {
+      return false;
+    }
+    if (this.grid.HasGridTag(point, ObjectTag.CONDITIONAL_WALL)) {
+      const conditionalWalls = this.grid.GetByTag(
+        point,
+        ObjectTag.CONDITIONAL_WALL
+      );
+      for (const wall of conditionalWalls) {
+        if (wall.IsWall()) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   OnUpdate(delta: number): void {
     const speed = 0.004;
     if (this.moving) {
@@ -129,10 +150,7 @@ export default class Player extends GridObjectImage {
       }
       if (this.moving) {
         this.destination = this.position.Translate(this.direction);
-        if (
-          !this.grid.IsInBounds(this.destination) ||
-          this.grid.HasGridTag(this.destination, ObjectTag.WALL)
-        ) {
+        if (!this.CanMoveTo(this.destination)) {
           this.moving = false;
         }
       }

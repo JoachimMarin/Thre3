@@ -34,4 +34,8 @@ export default abstract class GridObject extends GameObjectPosition {
     super.SetGridPosition(position);
     this.AddToGrid();
   }
+
+  IsWall() {
+    return false;
+  }
 }
