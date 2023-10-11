@@ -1,9 +1,8 @@
+import LevelList from 'Constants/Definitions/LevelList';
 import LevelScene from 'LevelScene/LevelScene';
 import { Vec2 } from 'Math/GridPoint';
 import * as UI from 'UserInterface';
 import * as Phaser from 'phaser';
-
-const maxLevels = 100;
 
 export default class MainMenuScene extends Phaser.Scene {
   public static readonly SCENE = new MainMenuScene();
@@ -14,7 +13,6 @@ export default class MainMenuScene extends Phaser.Scene {
   private title: UI.Text;
 
   private canvasSize: Vec2 = Vec2.AsVec2([0, 0]);
-  private numLevels: integer = 0;
 
   private constructor() {
     super('main-menu');
@@ -89,7 +87,7 @@ export default class MainMenuScene extends Phaser.Scene {
     const offsetY =
       verticalMargin * 0.75 + (mainHeight - vertical * sideLength) / 2;
 
-    for (let i = 0; i < this.numLevels; i++) {
+    for (let i = 0; i < LevelList.length; i++) {
       const row = Math.floor(i / horizontal);
       const column = i % horizontal;
       if (row == vertical - 1 && column == 0) {
@@ -120,7 +118,7 @@ export default class MainMenuScene extends Phaser.Scene {
     this.title = new UI.Text(this, 0, 0, 'Select Level:');
     this.title.GetTextObject().setOrigin(0.5, 0);
 
-    for (let i = 0; i < this.numLevels; i++) {
+    for (let i = 0; i < LevelList.length; i++) {
       const btn = this.add.image(0, 0, 'level_button').setOrigin(0, 0);
       btn.setTint(UI.Const.AccentColor);
       btn.setInteractive();
@@ -145,20 +143,9 @@ export default class MainMenuScene extends Phaser.Scene {
     this.load.image('ui_side', 'assets/ui_side.png');
     this.load.image('level_button', 'assets/button1x1.png');
     this.load.image('selection_arrow', 'assets/arrow.png');
-
-    for (let i = 0; i < maxLevels; i++) {
-      this.load.xml('level_file_' + i, 'assets/levels/level' + i + '.tmx');
-    }
   }
 
   create() {
-    for (let i = 0; i < maxLevels; i++) {
-      if (!this.cache.xml.has('level_file_' + i)) {
-        this.numLevels = i;
-        LevelScene.SCENE.numLevels = this.numLevels;
-        break;
-      }
-    }
     this.initBorder();
   }
 

@@ -14,6 +14,7 @@ import TileDefinitions from 'Constants/Definitions/TileDefinitions';
 import CameraManager from './CameraManager';
 import SideUserInterfaceScene from './SideUserInterfaceScene';
 import GridUserInterfaceScene from './GridUserInterfaceScene';
+import LevelList from 'Constants/Definitions/LevelList';
 
 /**
  * TilesFile parses the .tsx file from the Tiled level editor.
@@ -142,8 +143,8 @@ class LevelParser {
 
     this.levelScene.load.xml('tiles', 'assets/tiles.tsx');
     this.levelScene.load.xml(
-      'level_file_' + LevelScene.SCENE.index,
-      'assets/levels/level' + LevelScene.SCENE.index + '.tmx'
+      LevelList[LevelScene.SCENE.index].fileName,
+      'assets/levels/' + LevelList[LevelScene.SCENE.index].fileName + '.tmx'
     );
   }
 
@@ -153,7 +154,7 @@ class LevelParser {
      */
     this.tilesFile = new TilesFile(this.levelScene.cache.xml.get('tiles'));
     this.levelFile = new LevelFile(
-      this.levelScene.cache.xml.get('level_file_' + LevelScene.SCENE.index)
+      this.levelScene.cache.xml.get(LevelList[LevelScene.SCENE.index].fileName)
     );
   }
 
@@ -190,7 +191,6 @@ export default class LevelScene extends Phaser.Scene {
   public static readonly SCENE = new LevelScene();
 
   public index: integer = 0;
-  public numLevels: integer = 0;
 
   private constructor() {
     super('level');
@@ -220,7 +220,7 @@ export default class LevelScene extends Phaser.Scene {
 
   changeToNextLevel() {
     const next = this.index + 1;
-    if (next < this.numLevels) {
+    if (next < LevelList.length) {
       this.changeSceneToLevel(this, next);
     } else {
       console.log('you won all levels');
