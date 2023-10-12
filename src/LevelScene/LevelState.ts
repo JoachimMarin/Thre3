@@ -6,6 +6,7 @@ import GameObjectEvent from 'Constants/GridObjectEvent';
 import Player from 'GameObjects/PrePlaced/Player';
 import Inventory from 'LevelScene/Inventory';
 import GameObject from 'GameObjects/BaseClasses/GameObject';
+import ClassUtils from 'Utils/ClassUtils';
 
 /**
  * An EventGroup is a set of GameObjects that share a certain event.
@@ -129,34 +130,28 @@ export default class LevelState {
 
   DefineEventGroups() {
     // Check whether a GameObject has a certain event
-    // This is done by checking whether the function body of the event function contains any code
-    const hasEvent = (func: (...args: any[]) => void) => {
-      const functionString: string = func.toString().replace(/\s/g, '');
-      const first = functionString.indexOf('{}');
-      return first == -1 || first != functionString.lastIndexOf('{}');
-    };
     // All GameObjects in the scene
     this.DefineEventGroup(GameObjectEvent.GLOBAL_SCENE, (_obj) => true);
     // GameObjects that override an event function:
     // .OnUpdate
     this.DefineEventGroup(GameObjectEvent.UPDATE, (obj) =>
-      hasEvent(obj.OnUpdate)
+      ClassUtils.IsImplemented(obj.OnUpdate)
     );
     // .OnBeginStep
     this.DefineEventGroup(GameObjectEvent.BEGIN_STEP_ALL, (obj) =>
-      hasEvent(obj.OnBeginStep)
+      ClassUtils.IsImplemented(obj.OnBeginStep)
     );
     // .OnBeginStepTrigger
     this.DefineEventGroup(GameObjectEvent.BEGIN_STEP_TRIGGER, (obj) =>
-      hasEvent(obj.OnBeginStepTrigger)
+      ClassUtils.IsImplemented(obj.OnBeginStepTrigger)
     );
     // .OnEndStep
     this.DefineEventGroup(GameObjectEvent.END_STEP_ALL, (obj) =>
-      hasEvent(obj.OnEndStep)
+      ClassUtils.IsImplemented(obj.OnEndStep)
     );
     // .OnEndStepTrigger
     this.DefineEventGroup(GameObjectEvent.END_STEP_TRIGGER, (obj) =>
-      hasEvent(obj.OnEndStepTrigger)
+      ClassUtils.IsImplemented(obj.OnEndStepTrigger)
     );
   }
 

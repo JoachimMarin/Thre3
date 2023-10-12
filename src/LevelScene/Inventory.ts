@@ -96,7 +96,7 @@ export default class Inventory {
     const copy = new Inventory(true);
     for (const inventoryEntry of this.itemList) {
       copy.itemList.push(
-        new InventoryEntry(
+        new VirtualInventoryEntry(
           inventoryEntry.itemType,
           inventoryEntry.count,
           inventoryEntry.count

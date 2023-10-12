@@ -9,7 +9,7 @@ import LevelState from 'LevelScene/LevelState';
  */
 export default abstract class GameObject {
   public grid: LevelState;
-  public tags: { [id: string]: boolean } = {};
+  public tags = new Set<ObjectTag>();
   public children: Set<GameObject> = new Set<GameObject>();
   public parents: Set<GameObject> = new Set<GameObject>();
   private removed: boolean = false;
@@ -48,13 +48,13 @@ export default abstract class GameObject {
   }
 
   HasTag(tag: ObjectTag) {
-    return tag.toString() in this.tags;
+    return this.tags.has(tag);
   }
   AddTag(tag: ObjectTag) {
-    this.tags[tag.toString()] = true;
+    this.tags.add(tag);
   }
   RemoveTag(tag: ObjectTag) {
-    delete this.tags[tag.toString()];
+    this.tags.delete(tag);
   }
 
   OnInit() {}
