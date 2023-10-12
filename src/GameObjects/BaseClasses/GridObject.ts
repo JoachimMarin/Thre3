@@ -22,20 +22,21 @@ export default abstract class GridObject extends GameObjectPosition {
   }
 
   private RemoveFromGrid() {
-    const objectsAtGridPosition =
-      this.grid.at[this.position.x][this.position.y];
-    objectsAtGridPosition.delete(this);
+    this.grid.at.get(LevelState.GridKeyPoint(this.position)).delete(this);
     if (this.UpdateGridKey()) {
-      this.grid.ComputeGridKey();
+      this.grid.ComputeGridString();
     }
   }
 
   private AddToGrid() {
-    const objectsAtGridPosition =
-      this.grid.at[this.position.x][this.position.y];
-    objectsAtGridPosition.add(this);
+    const gridKey = LevelState.GridKeyPoint(this.position);
+    if (!this.grid.at.has(gridKey)) {
+      this.grid.at.set(gridKey, new Set<GridObject>());
+    }
+    this.grid.at.get(gridKey).add(this);
+
     if (this.UpdateGridKey()) {
-      this.grid.ComputeGridKey();
+      this.grid.ComputeGridString();
     }
   }
 
