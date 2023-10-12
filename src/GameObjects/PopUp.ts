@@ -1,4 +1,4 @@
-import LevelGrid from 'LevelScene/LevelGrid';
+import LevelState from 'LevelScene/LevelState';
 import GameObjectImage from './BaseClasses/GameObjectImage';
 import { IVec2 } from 'Math/GridPoint';
 
@@ -9,7 +9,7 @@ export default class PopUp extends GameObjectImage {
 
   constructor(
     point: IVec2,
-    grid: LevelGrid,
+    grid: LevelState,
     imageKey: string,
     rotationSpeed: number = 1,
     numRotations: number = 1
@@ -17,6 +17,10 @@ export default class PopUp extends GameObjectImage {
     super(point, grid, imageKey);
     this.rotationSpeed = rotationSpeed;
     this.rotationAngleMax = numRotations * 360;
+    this.PostConstruct();
+    if (this.grid.virtual) {
+      this.Remove();
+    }
   }
 
   Rotate(angle: number) {

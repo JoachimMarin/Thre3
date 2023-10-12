@@ -1,4 +1,4 @@
-import LevelGrid from 'LevelScene/LevelGrid';
+import LevelState from 'LevelScene/LevelState';
 import { IVec2 } from 'Math/GridPoint';
 import GameObjectPosition from './GameObjectPosition';
 
@@ -7,9 +7,13 @@ import GameObjectPosition from './GameObjectPosition';
  *  has position in grid and can be retrieved from grid
  */
 export default abstract class GridObject extends GameObjectPosition {
-  constructor(point: IVec2, grid: LevelGrid) {
-    super(point, grid);
+  constructor(point: IVec2, state: LevelState) {
+    super(point, state);
     this.AddToGrid();
+  }
+
+  UpdateGridKey() {
+    return true;
   }
 
   Remove() {
@@ -21,12 +25,18 @@ export default abstract class GridObject extends GameObjectPosition {
     const objectsAtGridPosition =
       this.grid.at[this.position.x][this.position.y];
     objectsAtGridPosition.delete(this);
+    if (this.UpdateGridKey()) {
+      this.grid.ComputeGridKey();
+    }
   }
 
   private AddToGrid() {
     const objectsAtGridPosition =
       this.grid.at[this.position.x][this.position.y];
     objectsAtGridPosition.add(this);
+    if (this.UpdateGridKey()) {
+      this.grid.ComputeGridKey();
+    }
   }
 
   override SetGridPosition(position: IVec2) {
@@ -34,6 +44,8 @@ export default abstract class GridObject extends GameObjectPosition {
     super.SetGridPosition(position);
     this.AddToGrid();
   }
+
+  abstract DeepCopy(state: LevelState): void;
 
   IsWall() {
     return false;

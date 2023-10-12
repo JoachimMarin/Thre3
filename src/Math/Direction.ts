@@ -1,16 +1,22 @@
 export default class Direction {
-  private angle: integer;
+  private readonly angle: integer;
+  private readonly name: string;
 
-  private constructor(angle: integer) {
+  private constructor(angle: integer, name: string) {
     this.angle = angle;
+    this.name = name;
   }
 
   ToAngle() {
     return this.angle;
   }
 
-  static readonly RIGHT = new Direction(0);
-  static readonly UP = new Direction(270);
-  static readonly LEFT = new Direction(180);
-  static readonly DOWN = new Direction(90);
+  toString() {
+    return this.name;
+  }
+
+  static readonly RIGHT = new Direction(0, 'RIGHT');
+  static readonly UP = new Direction(270, 'UP');
+  static readonly LEFT = new Direction(180, 'LEFT');
+  static readonly DOWN = new Direction(90, 'DOWN');
 }

@@ -1,5 +1,5 @@
 import GameObject from './GameObject';
-import LevelGrid from 'LevelScene/LevelGrid';
+import LevelState from 'LevelScene/LevelState';
 import { IVec2, Vec2 } from 'Math/GridPoint';
 
 /**
@@ -9,7 +9,7 @@ import { IVec2, Vec2 } from 'Math/GridPoint';
 export default abstract class GameObjectPosition extends GameObject {
   public position: Vec2;
 
-  constructor(point: IVec2, grid: LevelGrid) {
+  constructor(point: IVec2, grid: LevelState) {
     super(grid);
     this.position = Vec2.AsVec2(point);
   }

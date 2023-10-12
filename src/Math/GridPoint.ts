@@ -21,6 +21,10 @@ export class Vec2 {
     this.y = y;
   }
 
+  toString() {
+    return '[' + this.x + ', ' + this.y + ']';
+  }
+
   realX() {
     return this.x + 0.5;
   }

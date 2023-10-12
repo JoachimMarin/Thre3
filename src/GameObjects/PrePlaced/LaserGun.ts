@@ -1,5 +1,5 @@
 import ObjectTag from 'Constants/ObjectTag';
-import LevelGrid from 'LevelScene/LevelGrid';
+import LevelState from 'LevelScene/LevelState';
 import Direction from 'Math/Direction';
 import { getAllEnumValues } from 'enum-for';
 import GridObject from 'GameObjects/BaseClasses/GridObject';
@@ -37,7 +37,7 @@ export class LaserProjectile extends GridObject {
 
   constructor(
     point: IVec2,
-    grid: LevelGrid,
+    grid: LevelState,
     direction: Direction,
     length: integer,
     color: LaserColor,
@@ -64,25 +64,33 @@ export class LaserProjectile extends GridObject {
         );
       }
     }
-    this.image = grid.levelScene.add.image(
-      this.position.realX(),
-      this.position.realY(),
-      end ? color.projectileEnd.imageKey : color.projectile.imageKey
-    );
-    this.image.setDisplaySize(1, 1);
-    this.image.setAngle(direction.ToAngle());
-    this.image.setVisible(false);
-    setTimeout(() => {
-      this.image.setVisible(true);
-    }, 150);
-  }
-  OnInit() {
+    if (!this.grid.virtual) {
+      this.image = grid.levelScene.add.image(
+        this.position.realX(),
+        this.position.realY(),
+        end ? color.projectileEnd.imageKey : color.projectile.imageKey
+      );
+      this.image.setDisplaySize(1, 1);
+      this.image.setAngle(direction.ToAngle());
+      this.image.setVisible(false);
+      setTimeout(() => {
+        this.image.setVisible(true);
+      }, 150);
+    }
     this.AddTag(ObjectTag.DEADLY);
     this.AddTag(ObjectTag.CAN_BE_REFLECTED);
+    this.PostConstruct();
   }
 
+  override UpdateGridKey(): boolean {
+    return false;
+  }
+  override DeepCopy(_state: LevelState) {}
+
   Remove() {
-    this.image.destroy();
+    if (!this.grid.virtual) {
+      this.image.destroy();
+    }
     super.Remove();
   }
 
@@ -94,9 +102,16 @@ export class LaserProjectile extends GridObject {
 export default class LaserGun extends GridObjectImage {
   private color: LaserColor;
 
-  constructor(point: IVec2, grid: LevelGrid, color: LaserColor) {
+  constructor(point: IVec2, grid: LevelState, color: LaserColor) {
     super(point, grid, color.gunImageKey);
     this.color = color;
+    this.AddTag(ObjectTag.WALL);
+    this.AddTag(ObjectTag.DESTROY_BULLETS);
+    this.PostConstruct();
+  }
+
+  override DeepCopy(state: LevelState) {
+    return new LaserGun(this.position, state, this.color);
   }
 
   OnInit() {

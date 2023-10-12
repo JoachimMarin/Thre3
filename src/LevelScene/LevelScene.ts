@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 
-import LevelGrid from 'LevelScene/LevelGrid';
+import LevelState from 'LevelScene/LevelState';
 import GridObject from 'GameObjects/BaseClasses/GridObject';
 import Item from 'GameObjects/PrePlaced/Item';
 import ItemType from 'Constants/ItemType';
@@ -15,6 +15,7 @@ import CameraManager from './CameraManager';
 import SideUserInterfaceScene from './SideUserInterfaceScene';
 import GridUserInterfaceScene from './GridUserInterfaceScene';
 import LevelList from 'Constants/Definitions/LevelList';
+import Solver from './Solver';
 
 /**
  * TilesFile parses the .tsx file from the Tiled level editor.
@@ -95,7 +96,7 @@ class LevelFile {
  */
 class LevelParser {
   private tileDict: {
-    [key: string]: (point: IVec2, grid: LevelGrid) => GridObject;
+    [key: string]: (point: IVec2, grid: LevelState) => GridObject;
   } = {};
 
   private scenes: Phaser.Scene[];
@@ -118,7 +119,7 @@ class LevelParser {
 
   RegisterTile(
     key: string,
-    fun: (point: IVec2, grid: LevelGrid) => GridObject
+    fun: (point: IVec2, grid: LevelState) => GridObject
   ) {
     this.tileDict[key] = fun;
   }
@@ -158,11 +159,12 @@ class LevelParser {
     );
   }
 
-  BuildLevel(grid: LevelGrid) {
+  BuildLevel(grid: LevelState) {
     /**
      * Fills the grid with tiles as specified by the loaded .tsx and .tmx files.
      * @param grid:
      */
+    grid.lockGridKey = true;
     for (let y = 0; y < this.levelFile.height; y++) {
       for (let x = 0; x < this.levelFile.width; x++) {
         for (const objectId of this.levelFile.objects[x][y]) {
@@ -175,6 +177,8 @@ class LevelParser {
         }
       }
     }
+    grid.lockGridKey = false;
+    grid.ComputeGridKey();
 
     return grid;
   }
@@ -182,7 +186,7 @@ class LevelParser {
 
 export default class LevelScene extends Phaser.Scene {
   public cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private grid: LevelGrid;
+  private grid: LevelState;
   private levelParser: LevelParser;
   public cameraManager: CameraManager;
   private ready: boolean = false;
@@ -232,13 +236,15 @@ export default class LevelScene extends Phaser.Scene {
       this.grid.Remove();
     }
     this.levelParser.LoadLevelInfo();
-    this.grid = new LevelGrid(
+    this.grid = new LevelState(
       this,
       this.levelParser.levelFile.width,
       this.levelParser.levelFile.height
     );
     this.levelParser.BuildLevel(this.grid);
     this.cameraManager = new CameraManager(this.grid);
+    const solver = new Solver(this.grid);
+    solver.ReportVictoryPaths();
   }
 
   createReady() {

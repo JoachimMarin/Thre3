@@ -4,12 +4,10 @@ import * as UI from 'UserInterface';
 
 let sideUI: SideUserInterfaceScene;
 
-class InventoryEntry {
+class VirtualInventoryEntry {
   public itemType: ItemType;
   public count: integer;
   public index: integer;
-  public imageL: Phaser.GameObjects.Image;
-  public textL: UI.Text;
 
   /**
    * Creates a new InventoryEntry.
@@ -21,6 +19,25 @@ class InventoryEntry {
     this.itemType = itemType;
     this.count = count;
     this.index = index;
+  }
+
+  OnInventoryChange() {}
+  Update() {}
+  Remove() {}
+}
+
+class InventoryEntry extends VirtualInventoryEntry {
+  public imageL: Phaser.GameObjects.Image;
+  public textL: UI.Text;
+
+  /**
+   * Creates a new InventoryEntry.
+   * @param itemType The item type of this InventoryEntry.
+   * @param count The number of items for this item type.
+   * @param index The UI slot index. This affects the display position of the icon and text.
+   */
+  constructor(itemType: ItemType, count: integer, index: integer) {
+    super(itemType, count, index);
     this.imageL = sideUI.add
       .image(0, 0, itemType.imageKey)
       .setDisplaySize(6, 6)
@@ -35,7 +52,7 @@ class InventoryEntry {
   /**
    * Updates inventory slot index and item count in the UI.
    */
-  OnInventoryChange() {
+  override OnInventoryChange() {
     const indexX = this.index % 2;
     const indexY = Math.floor(this.index / 2);
     const x = sideUI.landscapeX(2.5 + indexX * 13);
@@ -52,25 +69,58 @@ class InventoryEntry {
   /**
    * Runs on scene update.
    */
-  Update() {
+  override Update() {
     this.textL.Update();
   }
 
   /**
    * Remove this InventoryEntry.
    */
-  Remove() {
+  override Remove() {
     this.imageL.destroy();
     this.textL.Remove();
   }
 }
 
 export default class Inventory {
-  private itemList: InventoryEntry[] = [];
+  private itemList: VirtualInventoryEntry[] = [];
   private itemMap: Map<string, integer> = new Map<string, integer>();
+  public readonly virtual: boolean;
 
-  constructor() {
+  constructor(virtual: boolean) {
+    this.virtual = virtual;
     sideUI = SideUserInterfaceScene.SCENE;
+  }
+
+  DeepVirtualCopy() {
+    const copy = new Inventory(true);
+    for (const inventoryEntry of this.itemList) {
+      copy.itemList.push(
+        new InventoryEntry(
+          inventoryEntry.itemType,
+          inventoryEntry.count,
+          inventoryEntry.count
+        )
+      );
+    }
+    for (const [key, value] of this.itemMap) {
+      copy.itemMap.set(key, value);
+    }
+    return copy;
+  }
+
+  GetKey() {
+    let inventoryKey = '';
+    const keys = [];
+    for (const key of this.itemMap.keys()) {
+      keys.push(key);
+    }
+    keys.sort();
+    for (const key of keys) {
+      inventoryKey +=
+        key + '=' + this.itemList[this.itemMap.get(key)].count + '|';
+    }
+    return inventoryKey;
   }
 
   /**
@@ -83,7 +133,9 @@ export default class Inventory {
     console.log(itemKey);
     if (!this.itemMap.has(itemKey)) {
       const index = this.itemList.length;
-      const entry = new InventoryEntry(itemType, count, index);
+      const entry = this.virtual
+        ? new VirtualInventoryEntry(itemType, count, index)
+        : new InventoryEntry(itemType, count, index);
       this.itemList.push(entry);
       this.itemMap.set(itemKey, index);
       entry.OnInventoryChange();
