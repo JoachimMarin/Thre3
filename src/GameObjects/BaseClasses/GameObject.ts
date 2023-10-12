@@ -8,10 +8,13 @@ import LevelState from 'LevelScene/LevelState';
  *  can have tags
  */
 export default abstract class GameObject {
+  public static EMPTY_TAG_SET = new Set<ObjectTag>();
+  public static EMPTY_OBJECT_SET = new Set<GameObject>();
+
   public grid: LevelState;
-  public tags = new Set<ObjectTag>();
-  public children: Set<GameObject> = new Set<GameObject>();
-  public parents: Set<GameObject> = new Set<GameObject>();
+  private tags: Set<ObjectTag> | null = null;
+  private children: Set<GameObject> | null = null;
+  private parents: Set<GameObject> | null = null;
   private removed: boolean = false;
 
   constructor(grid: LevelState) {
@@ -23,8 +26,34 @@ export default abstract class GameObject {
     this.OnInit();
   }
 
+  GetStaticTags() {
+    return GameObject.EMPTY_TAG_SET;
+  }
+
+  GetChildren() {
+    if (this.children == null) {
+      return GameObject.EMPTY_OBJECT_SET;
+    } else {
+      return this.children;
+    }
+  }
+
+  GetParents() {
+    if (this.parents == null) {
+      return GameObject.EMPTY_OBJECT_SET;
+    } else {
+      return this.parents;
+    }
+  }
+
   AddChild(child: GameObject) {
+    if (this.children == null) {
+      this.children = new Set<GameObject>();
+    }
     this.children.add(child);
+    if (child.parents == null) {
+      child.parents = new Set<GameObject>();
+    }
     child.parents.add(this);
   }
   RemoveChild(child: GameObject) {
@@ -38,19 +67,28 @@ export default abstract class GameObject {
     }
     this.removed = true;
     this.grid.ClearEventGroups(this);
-    for (const parent of this.parents) {
-      parent.RemoveChild(this);
+    if (this.parents != null) {
+      for (const parent of this.parents) {
+        parent.RemoveChild(this);
+      }
     }
-    for (const child of this.children) {
-      child.Remove();
+    if (this.children != null) {
+      for (const child of this.children) {
+        child.Remove();
+      }
     }
     this.OnRemove();
   }
 
   HasTag(tag: ObjectTag) {
-    return this.tags.has(tag);
+    return (
+      this.GetStaticTags().has(tag) || (this.tags != null && this.tags.has(tag))
+    );
   }
   AddTag(tag: ObjectTag) {
+    if (this.tags == null) {
+      this.tags = new Set<ObjectTag>();
+    }
     this.tags.add(tag);
   }
   RemoveTag(tag: ObjectTag) {

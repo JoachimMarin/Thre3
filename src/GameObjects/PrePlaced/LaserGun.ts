@@ -6,6 +6,7 @@ import GridObject from 'GameObjects/BaseClasses/GridObject';
 import { IVec2 } from 'Math/GridPoint';
 import ImageKey from 'Constants/ImageKey';
 import GridObjectImage from 'GameObjects/BaseClasses/GridObjectImage';
+import GameObjectPosition from 'GameObjects/BaseClasses/GameObjectPosition';
 
 export class LaserColor {
   public readonly name: string;
@@ -31,7 +32,12 @@ export class LaserColor {
   public static readonly PURPLE = new LaserColor('purple', 10);
 }
 
-export class LaserProjectile extends GridObject {
+export class LaserProjectile extends GameObjectPosition {
+  static tags = new Set<ObjectTag>([
+    ObjectTag.DEADLY,
+    ObjectTag.CAN_BE_REFLECTED
+  ]);
+
   public image: Phaser.GameObjects.Image;
   public owner: GridObject;
 
@@ -64,6 +70,9 @@ export class LaserProjectile extends GridObject {
         );
       }
     }
+    if (this.position.Equals(this.grid.player.destination)) {
+      this.grid.player.objectsToProcess.push(this);
+    }
     if (!this.grid.virtual) {
       this.image = grid.levelScene.add.image(
         this.position.realX(),
@@ -77,15 +86,12 @@ export class LaserProjectile extends GridObject {
         this.image.setVisible(true);
       }, 150);
     }
-    this.AddTag(ObjectTag.DEADLY);
-    this.AddTag(ObjectTag.CAN_BE_REFLECTED);
     this.PostConstruct();
   }
 
-  override UpdateGridKey(): boolean {
-    return false;
+  override GetStaticTags(): Set<ObjectTag> {
+    return LaserProjectile.tags;
   }
-  override DeepCopy(_state: LevelState) {}
 
   Remove() {
     if (!this.grid.virtual) {
@@ -100,23 +106,22 @@ export class LaserProjectile extends GridObject {
 }
 
 export default class LaserGun extends GridObjectImage {
+  static tags = new Set<ObjectTag>([ObjectTag.WALL, ObjectTag.DESTROY_BULLETS]);
+
   private color: LaserColor;
 
   constructor(point: IVec2, grid: LevelState, color: LaserColor) {
     super(point, grid, color.gunImageKey);
     this.color = color;
-    this.AddTag(ObjectTag.WALL);
-    this.AddTag(ObjectTag.DESTROY_BULLETS);
     this.PostConstruct();
+  }
+
+  override GetStaticTags(): Set<ObjectTag> {
+    return LaserGun.tags;
   }
 
   override DeepCopy(state: LevelState) {
     return new LaserGun(this.position, state, this.color);
-  }
-
-  OnInit() {
-    this.AddTag(ObjectTag.WALL);
-    this.AddTag(ObjectTag.DESTROY_BULLETS);
   }
 
   OnBeginStepTrigger(): void {

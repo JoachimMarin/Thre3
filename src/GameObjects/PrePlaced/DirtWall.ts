@@ -5,13 +5,19 @@ import LevelState from 'LevelScene/LevelState';
 import { IVec2 } from 'Math/GridPoint';
 
 export default class DirtWall extends GridObjectImage {
+  static tags = new Set<ObjectTag>([
+    ObjectTag.CONDITIONAL_WALL,
+    ObjectTag.DESTROY_BULLETS
+  ]);
   static imageKey = 'dirt_wall';
 
   constructor(point: IVec2, grid: LevelState) {
     super(point, grid);
-    this.AddTag(ObjectTag.CONDITIONAL_WALL);
-    this.AddTag(ObjectTag.DESTROY_BULLETS);
     this.PostConstruct();
+  }
+
+  override GetStaticTags(): Set<ObjectTag> {
+    return DirtWall.tags;
   }
 
   override IsWall(): boolean {
