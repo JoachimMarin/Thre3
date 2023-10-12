@@ -1,7 +1,6 @@
 import * as Phaser from 'phaser';
 
 import LevelState from 'LevelScene/LevelState';
-import GridObject from 'GameObjects/BaseClasses/GridObject';
 import Item from 'GameObjects/PrePlaced/Item';
 import ItemType from 'Constants/ItemType';
 import ImageKey from 'Constants/ImageKey';
@@ -96,7 +95,7 @@ class LevelFile {
  */
 class LevelParser {
   private tileDict: {
-    [key: string]: (point: IVec2, grid: LevelState) => GridObject;
+    [key: string]: (point: IVec2, grid: LevelState) => void;
   } = {};
 
   private scenes: Phaser.Scene[];
@@ -117,10 +116,7 @@ class LevelParser {
     }
   }
 
-  RegisterTile(
-    key: string,
-    fun: (point: IVec2, grid: LevelState) => GridObject
-  ) {
+  RegisterTile(key: string, fun: (point: IVec2, grid: LevelState) => void) {
     this.tileDict[key] = fun;
   }
 
@@ -178,7 +174,7 @@ class LevelParser {
       }
     }
     grid.lockGridKey = false;
-    grid.ComputeGridKey();
+    grid.ComputeGridString();
 
     return grid;
   }

@@ -18,7 +18,7 @@ class KnownStates {
       this.map.set(posKey, new Map<string, Vec2[]>());
     }
     const stateMap = this.map.get(posKey);
-    const stateKey = newState.GetKey();
+    const stateKey = newState.GetStateString();
     if (stateMap.has(stateKey)) {
       const currentPath = stateMap.get(stateKey);
       if (newPath.length < currentPath.length) {
@@ -50,7 +50,9 @@ export default class Solver {
   private victoryPaths: Vec2[][] = [];
 
   constructor(state: LevelState) {
-    this.VirtualStep(state, []);
+    console.time('Solver');
+    this.Solve(state, []);
+    console.timeEnd('Solver');
   }
 
   AddVictoryPath(path: Vec2[]) {
@@ -68,7 +70,7 @@ export default class Solver {
     }
   }
 
-  VirtualStep(state: LevelState, path: Vec2[]) {
+  Solve(state: LevelState, path: Vec2[]) {
     const directions = [
       Direction.RIGHT,
       Direction.DOWN,

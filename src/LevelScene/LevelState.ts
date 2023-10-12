@@ -25,7 +25,15 @@ class EventGroup {
  * Contains all game objects and manages level related gameplay.
  */
 export default class LevelState {
-  public at: Set<GridObject>[][];
+  static GridKeyXY(x: number, y: number) {
+    return x + y * 10000;
+  }
+
+  static GridKeyPoint(point: Vec2) {
+    return LevelState.GridKeyXY(point.x, point.y);
+  }
+  public at = new Map<number, Set<GridObject>>();
+  public staticTags = new Map<number, Set<ObjectTag>>();
   public readonly levelScene: LevelScene;
   public readonly virtual: boolean;
   private playerStep = 0;
@@ -33,7 +41,8 @@ export default class LevelState {
   public player: Player = null;
   public inventory: Inventory;
   private background: Phaser.GameObjects.Rectangle;
-  private gridKey: string;
+  public staticImages: Phaser.GameObjects.Image[] = [];
+  private gridString: string;
   public lockGridKey: boolean = true;
 
   public readonly width: integer;
@@ -49,13 +58,6 @@ export default class LevelState {
     this.inventory = new Inventory(this.virtual);
     this.width = width;
     this.height = height;
-    this.at = [];
-    for (let x = 0; x < width; x++) {
-      this.at[x] = [];
-      for (let y = 0; y < height; y++) {
-        this.at[x][y] = new Set<GridObject>();
-      }
-    }
     this.DefineEventGroups();
 
     if (!this.virtual) {
@@ -70,41 +72,45 @@ export default class LevelState {
     copy.playerStep = this.playerStep;
     copy.playerMaxStep = this.playerMaxStep;
     copy.inventory = this.inventory.DeepVirtualCopy();
-    copy.gridKey = this.gridKey;
+    copy.gridString = this.gridString;
     copy.lockGridKey = true;
+    copy.staticTags = this.staticTags;
 
-    for (let x = 0; x < this.width; x++) {
-      for (let y = 0; y < this.height; y++) {
-        for (const gridObject of this.at[x][y]) {
-          gridObject.DeepCopy(copy);
-        }
+    this.at.forEach((set, _) => {
+      for (const gridObject of set) {
+        gridObject.DeepCopy(copy);
       }
-    }
+    });
+
     copy.lockGridKey = false;
     return copy;
   }
 
-  ComputeGridKey() {
+  ComputeGridString() {
     if (this.lockGridKey) {
       return;
     }
-    this.gridKey = '' + this.width + '|' + this.height + '|';
+    this.gridString = '' + this.width + '|' + this.height + '|';
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
         const objectsAt: string[] = [];
-        for (const gridObject of this.at[x][y]) {
-          if (gridObject.UpdateGridKey()) {
-            objectsAt.push((gridObject as unknown).constructor.name);
+
+        const gridKey = LevelState.GridKeyXY(x, y);
+        if (this.at.has(gridKey)) {
+          for (const gridObject of this.at.get(gridKey)) {
+            if (gridObject.UpdateGridKey()) {
+              objectsAt.push((gridObject as unknown).constructor.name);
+            }
           }
         }
         objectsAt.sort();
-        this.gridKey += objectsAt.join(',').padStart(15, ' ') + '|';
+        this.gridString += objectsAt.join(',').padStart(15, ' ') + '|';
       }
-      this.gridKey += '\n';
+      this.gridString += '\n';
     }
   }
 
-  GetKey() {
+  GetStateString() {
     const playerString =
       this.player.position.x +
       '|' +
@@ -113,7 +119,7 @@ export default class LevelState {
       this.playerStep +
       '/' +
       this.playerMaxStep;
-    return this.gridKey + this.inventory.GetKey() + '|' + playerString;
+    return this.gridString + this.inventory.GetKey() + '|' + playerString;
   }
 
   /**
@@ -210,10 +216,18 @@ export default class LevelState {
    */
   HasGridTag(point: IVec2, tag: ObjectTag) {
     const gridPoint = Vec2.AsVec2(point);
-    const objectsAtGridPosition = this.at[gridPoint.x][gridPoint.y];
-    for (const object of objectsAtGridPosition) {
-      if (object.HasTag(tag)) {
+    const gridKey = LevelState.GridKeyPoint(gridPoint);
+
+    if (this.staticTags.has(gridKey)) {
+      if (this.staticTags.get(gridKey).has(tag)) {
         return true;
+      }
+    }
+    if (this.at.has(gridKey)) {
+      for (const object of this.at.get(gridKey)) {
+        if (object.HasTag(tag)) {
+          return true;
+        }
       }
     }
     return false;
@@ -227,11 +241,14 @@ export default class LevelState {
    */
   GetByTag(point: IVec2, tag: ObjectTag): GridObject[] {
     const gridPoint = Vec2.AsVec2(point);
-    const objectsAtGridPosition = this.at[gridPoint.x][gridPoint.y];
+    const gridKey = LevelState.GridKeyPoint(gridPoint);
+
     const array = [];
-    for (const object of objectsAtGridPosition) {
-      if (object.HasTag(tag)) {
-        array.push(object);
+    if (this.at.has(gridKey)) {
+      for (const object of this.at.get(gridKey)) {
+        if (object.HasTag(tag)) {
+          array.push(object);
+        }
       }
     }
     return array;
@@ -292,6 +309,9 @@ export default class LevelState {
     this.inventory.Clear();
     if (!this.virtual) {
       this.background.destroy();
+      for (const image of this.staticImages) {
+        image.destroy();
+      }
     }
   }
 }
