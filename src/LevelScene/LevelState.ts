@@ -23,14 +23,17 @@ class EventGroup {
 /**
  * Contains all game objects and manages level related gameplay.
  */
-export default class LevelGrid {
+export default class LevelState {
   public at: Set<GridObject>[][];
   public readonly levelScene: LevelScene;
+  public readonly virtual: boolean;
   private playerStep = 0;
   private playerMaxStep = 3;
   public player: Player = null;
-  public readonly inventory: Inventory;
+  public inventory: Inventory;
   private background: Phaser.GameObjects.Rectangle;
+  private gridKey: string;
+  public lockGridKey: boolean = true;
 
   public readonly width: integer;
   public readonly height: integer;
@@ -39,9 +42,10 @@ export default class LevelGrid {
     EventGroup
   >();
 
-  constructor(levelScene: LevelScene, width: integer, height: integer) {
+  constructor(levelScene: LevelScene | null, width: integer, height: integer) {
+    this.virtual = levelScene == null;
     this.levelScene = levelScene;
-    this.inventory = new Inventory();
+    this.inventory = new Inventory(this.virtual);
     this.width = width;
     this.height = height;
     this.at = [];
@@ -53,9 +57,62 @@ export default class LevelGrid {
     }
     this.DefineEventGroups();
 
-    this.background = levelScene.add
-      .rectangle(0, 0, width, height, 0xaabbcc)
-      .setOrigin(0, 0);
+    if (!this.virtual) {
+      this.background = levelScene.add
+        .rectangle(0, 0, width, height, 0xaabbcc)
+        .setOrigin(0, 0);
+    }
+  }
+
+  DeepVirtualCopy() {
+    const copy = new LevelState(null, this.width, this.height);
+    copy.playerStep = this.playerStep;
+    copy.playerMaxStep = this.playerMaxStep;
+    copy.inventory = this.inventory.DeepVirtualCopy();
+    copy.gridKey = this.gridKey;
+    copy.lockGridKey = true;
+
+    for (let x = 0; x < this.width; x++) {
+      for (let y = 0; y < this.height; y++) {
+        for (const gridObject of this.at[x][y]) {
+          gridObject.DeepCopy(copy);
+        }
+      }
+    }
+    copy.lockGridKey = false;
+    return copy;
+  }
+
+  ComputeGridKey() {
+    if (this.lockGridKey) {
+      return;
+    }
+    this.gridKey = '' + this.width + '|' + this.height + '|';
+    for (let y = 0; y < this.height; y++) {
+      for (let x = 0; x < this.width; x++) {
+        const objectsAt: string[] = [];
+        for (const gridObject of this.at[x][y]) {
+          if (gridObject.UpdateGridKey()) {
+            objectsAt.push((gridObject as unknown).constructor.name);
+          }
+        }
+        objectsAt.sort();
+        this.gridKey += objectsAt.join(',').padStart(15, ' ') + '|';
+      }
+      this.gridKey += '\n';
+    }
+  }
+
+  GetKey() {
+    const playerString =
+      this.player.position.x +
+      '|' +
+      this.player.position.y +
+      '|' +
+      this.playerStep +
+      '/' +
+      this.playerMaxStep;
+    return this.gridKey + this.inventory.GetKey() + '|' + playerString;
   }
 
   /**
@@ -231,13 +288,15 @@ export default class LevelGrid {
   }
 
   /**
-   * Removes all data governed by this LevelGrid.
+   * Removes all data governed by this LevelState.
    */
   Remove() {
     this.ForEventGroup(GameObjectEvent.GLOBAL_SCENE, (obj) => {
       obj.Remove();
     });
     this.inventory.Clear();
-    this.background.destroy();
+    if (!this.virtual) {
+      this.background.destroy();
+    }
   }
 }

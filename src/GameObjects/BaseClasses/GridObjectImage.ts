@@ -1,4 +1,4 @@
-import LevelGrid from 'LevelScene/LevelGrid';
+import LevelState from 'LevelScene/LevelState';
 import { IVec2 } from 'Math/GridPoint';
 import GridObject from 'GameObjects/BaseClasses/GridObject';
 
@@ -11,33 +11,39 @@ export default abstract class GridObjectImage extends GridObject {
 
   constructor(
     point: IVec2,
-    grid: LevelGrid,
+    grid: LevelState,
     imageKey: string = '',
     sizeX: integer = 1,
     sizeY: integer = 1
   ) {
     super(point, grid);
-    if (
-      imageKey == '' &&
-      typeof (this as unknown).constructor['imageKey'] === 'string'
-    ) {
-      imageKey = (this as unknown).constructor['imageKey'];
+    if (!this.grid.virtual) {
+      if (
+        imageKey == '' &&
+        typeof (this as unknown).constructor['imageKey'] === 'string'
+      ) {
+        imageKey = (this as unknown).constructor['imageKey'];
+      }
+      this.image = grid.levelScene.add.image(
+        this.position.realX(),
+        this.position.realY(),
+        imageKey
+      );
+      this.image.setDisplaySize(sizeX, sizeY);
     }
-    this.image = grid.levelScene.add.image(
-      this.position.realX(),
-      this.position.realY(),
-      imageKey
-    );
-    this.image.setDisplaySize(sizeX, sizeY);
   }
 
   Remove() {
     super.Remove();
-    this.image.destroy();
+    if (!this.grid.virtual) {
+      this.image.destroy();
+    }
   }
 
   override SetGridPosition(position: IVec2) {
     super.SetGridPosition(position);
-    this.image.setPosition(this.position.realX(), this.position.realY());
+    if (!this.grid.virtual) {
+      this.image.setPosition(this.position.realX(), this.position.realY());
+    }
   }
 }

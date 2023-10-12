@@ -1,4 +1,4 @@
-import LevelGrid from 'LevelScene/LevelGrid';
+import LevelState from 'LevelScene/LevelState';
 import GameObjectImage from 'GameObjects/BaseClasses/GameObjectImage';
 import { IVec2 } from 'Math/GridPoint';
 
@@ -7,7 +7,7 @@ export default class TimedImage extends GameObjectImage {
 
   constructor(
     point: IVec2,
-    grid: LevelGrid,
+    grid: LevelState,
     imageKey: string,
     duration: number = 1,
     sizeX: number = 1,
@@ -15,6 +15,10 @@ export default class TimedImage extends GameObjectImage {
   ) {
     super(point, grid, imageKey, sizeX, sizeY);
     this.duration = duration * 1000;
+    this.PostConstruct();
+    if (this.grid.virtual) {
+      this.Remove();
+    }
   }
 
   OnUpdate(delta: number): void {

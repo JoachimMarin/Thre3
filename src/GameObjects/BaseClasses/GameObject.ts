@@ -1,5 +1,5 @@
 import ObjectTag from 'Constants/ObjectTag';
-import LevelGrid from 'LevelScene/LevelGrid';
+import LevelState from 'LevelScene/LevelState';
 
 /**
  * GameObject:
@@ -8,19 +8,19 @@ import LevelGrid from 'LevelScene/LevelGrid';
  *  can have tags
  */
 export default abstract class GameObject {
-  public grid: LevelGrid;
+  public grid: LevelState;
   public tags: { [id: string]: boolean } = {};
   public children: Set<GameObject> = new Set<GameObject>();
   public parents: Set<GameObject> = new Set<GameObject>();
   private removed: boolean = false;
 
-  constructor(grid: LevelGrid) {
+  constructor(grid: LevelState) {
     this.grid = grid;
-    // run after sub class constructors
-    setTimeout(() => {
-      this.grid.SetupEventGroups(this);
-      this.OnInit();
-    }, 0);
+  }
+
+  PostConstruct() {
+    this.grid.SetupEventGroups(this);
+    this.OnInit();
   }
 
   AddChild(child: GameObject) {

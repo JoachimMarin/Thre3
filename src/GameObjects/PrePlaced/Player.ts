@@ -2,7 +2,6 @@ import * as Phaser from 'phaser';
 import GridObjectImage from 'GameObjects/BaseClasses/GridObjectImage';
 import Direction from 'Math/Direction';
 import ObjectTag from 'Constants/ObjectTag';
-import LevelGrid from 'LevelScene/LevelGrid';
 import { IVec2, Vec2 } from 'Math/GridPoint';
 import Item from './Item';
 import PopUp from 'GameObjects/PopUp';
@@ -10,28 +9,53 @@ import TimedImage from 'GameObjects/TimedImage';
 import ItemDefinitions from 'Constants/Definitions/ItemDefinitions';
 import ImageDefinitions from 'Constants/Definitions/ImageDefinitions';
 import GameObjectPosition from 'GameObjects/BaseClasses/GameObjectPosition';
+import LevelState from 'LevelScene/LevelState';
+import Solver from 'LevelScene/Solver';
 
 export default class Player extends GridObjectImage {
   static imageKey = 'player';
 
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+  private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   private moving: boolean = false;
   private direction: Direction = Direction.DOWN;
   public destination: Vec2;
   private gameOver: boolean = false;
 
-  constructor(point: IVec2, grid: LevelGrid) {
+  constructor(point: IVec2, grid: LevelState) {
     super(point, grid, Player.imageKey);
     this.grid.player = this;
-    this.cursors = grid.levelScene.cursors;
+    if (!this.grid.virtual) {
+      this.cursors = grid.levelScene.cursors;
+    }
+    this.PostConstruct();
   }
 
-  GameOver() {
+  override UpdateGridKey(): boolean {
+    return false;
+  }
+
+  override DeepCopy(state: LevelState) {
+    return new Player(this.position, state);
+  }
+
+  Defeat() {
     if (!this.gameOver) {
       this.gameOver = true;
-      setTimeout(() => {
-        this.grid.levelScene.restartLevel();
-      }, 2000);
+      if (this.grid.virtual) {
+        Solver.Defeat();
+      } else {
+        setTimeout(() => {
+          this.grid.levelScene.restartLevel();
+        }, 2000);
+      }
+    }
+  }
+
+  Victory() {
+    if (this.grid.virtual) {
+      Solver.Victory();
+    } else {
+      this.grid.levelScene.changeToNextLevel();
     }
   }
 
@@ -87,11 +111,11 @@ export default class Player extends GridObjectImage {
         }
       }
       if (!blocked) {
-        this.GameOver();
+        this.Defeat();
       }
     }
     if (!this.gameOver && this.grid.HasGridTag(this.position, ObjectTag.GOAL)) {
-      this.grid.levelScene.changeToNextLevel();
+      this.Victory();
     }
   }
 

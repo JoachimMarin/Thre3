@@ -4,7 +4,7 @@ import GameObject from 'GameObjects/BaseClasses/GameObject';
 import SideUserInterfaceScene from './SideUserInterfaceScene';
 import GridUserInterfaceScene from './GridUserInterfaceScene';
 import { Vec2 } from 'Math/GridPoint';
-import LevelGrid from './LevelGrid';
+import LevelState from './LevelState';
 
 const maxZoomInTiles = 4;
 
@@ -18,12 +18,13 @@ export default class CameraManager extends GameObject {
   private sideUICam: Phaser.Cameras.Scene2D.Camera;
   private gridUICam: Phaser.Cameras.Scene2D.Camera;
 
-  constructor(grid: LevelGrid) {
+  constructor(grid: LevelState) {
     super(grid);
     this.mainScene = grid.levelScene;
     this.mainCam = this.mainScene.cameras.main;
     this.sideUICam = SideUserInterfaceScene.SCENE.cameras.main;
     this.gridUICam = GridUserInterfaceScene.SCENE.cameras.main;
+    this.PostConstruct();
   }
 
   UpdateCanvas() {
