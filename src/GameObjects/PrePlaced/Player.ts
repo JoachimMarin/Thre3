@@ -11,6 +11,7 @@ import ImageDefinitions from 'Constants/Definitions/ImageDefinitions';
 import GameObjectPosition from 'GameObjects/BaseClasses/GameObjectPosition';
 import LevelState from 'LevelScene/LevelState';
 import Solver from 'LevelScene/Solver';
+import GameObject from 'GameObjects/BaseClasses/GameObject';
 
 export default class Player extends GridObjectImage {
   static imageKey = 'player';
@@ -20,6 +21,7 @@ export default class Player extends GridObjectImage {
   private direction: Direction = Direction.DOWN;
   public destination: Vec2;
   private gameOver: boolean = false;
+  public objectsToProcess: GameObject[] = [];
 
   constructor(point: IVec2, grid: LevelState) {
     super(point, grid, Player.imageKey);
@@ -70,7 +72,15 @@ export default class Player extends GridObjectImage {
       }
     }
 
-    const deadlyList = this.grid.GetByTag(this.position, ObjectTag.DEADLY);
+    const deadlyList: GameObject[] = this.grid.GetByTag(
+      this.position,
+      ObjectTag.DEADLY
+    );
+    for (const obj of this.objectsToProcess) {
+      if (obj.HasTag(ObjectTag.DEADLY)) {
+        deadlyList.push(obj);
+      }
+    }
     let useMirror = false;
     let useShield = false;
     for (const deadly of deadlyList) {
@@ -91,7 +101,7 @@ export default class Player extends GridObjectImage {
           new PopUp(this.position, this.grid, ItemDefinitions.SHIELD.imageKey);
         }
         if (useMirror) {
-          for (const parent of deadly.parents) {
+          for (const parent of deadly.GetParents()) {
             if (parent instanceof GameObjectPosition) {
               parent.Remove();
               new TimedImage(
@@ -117,6 +127,7 @@ export default class Player extends GridObjectImage {
     if (!this.gameOver && this.grid.HasGridTag(this.position, ObjectTag.GOAL)) {
       this.Victory();
     }
+    this.objectsToProcess = [];
   }
 
   CanMoveTo(point: IVec2) {

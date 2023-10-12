@@ -1,8 +1,5 @@
 import Tile from 'Constants/Tile';
 import Player from 'GameObjects/PrePlaced/Player';
-import BlueWall from 'GameObjects/PrePlaced/BlueWall';
-import ProtectiveWall from 'GameObjects/PrePlaced/ProtectiveWall';
-import Goal from 'GameObjects/PrePlaced/Goal';
 import LaserGun, { LaserColor } from 'GameObjects/PrePlaced/LaserGun';
 import DirtWall from 'GameObjects/PrePlaced/DirtWall';
 import { Vec2 } from 'Math/GridPoint';
@@ -35,13 +32,13 @@ class SimpleTile extends Tile {
 
 const TileDefinitions = {
   PLAYER: new Tile(Player.imageKey, (point, grid) => new Player(point, grid)),
-  BLUE_WALL: new SimpleTile(BlueWall.imageKey, ObjectTag.WALL),
+  BLUE_WALL: new SimpleTile('blue_wall', ObjectTag.WALL),
   PROTECTIVE_WALL: new SimpleTile(
-    ProtectiveWall.imageKey,
+    'protective_wall',
     ObjectTag.WALL,
     ObjectTag.DESTROY_BULLETS
   ),
-  GOAL: new SimpleTile(Goal.imageKey, ObjectTag.GOAL),
+  GOAL: new SimpleTile('goal', ObjectTag.GOAL),
 
   LASERS: (() => {
     const r = new Map<LaserColor, Tile>();
