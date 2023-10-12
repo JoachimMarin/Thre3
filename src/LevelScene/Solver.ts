@@ -79,15 +79,13 @@ export default class Solver {
     while (queue.length > 0) {
       const [state, path] = queue.shift();
       this.counter++;
-      if (this.counter % 3000 == 0) {
-        console.log('breakpoint');
-        this.counter *= 1;
+      if (this.counter % 1000 == 0) {
+        console.log(this.counter);
       }
 
       for (const dir of directions) {
         const tile = state.player.position.Translate(dir);
         if (state.player.CanMoveTo(tile)) {
-          console.log('[' + tile.x + ',' + tile.y + ']');
           Solver.result = Result.Pending;
           const newState = state.DeepVirtualCopy();
           newState.player.destination = tile;
@@ -98,16 +96,18 @@ export default class Solver {
           newPath.push(tile);
           if (Solver.result == Result.Pending) {
             if (this.knownStates.AddState(newState, newPath)) {
-              console.log('continue');
               queue.push([newState, newPath]);
-            } else {
-              console.log('already been there');
             }
           } else if (Solver.result == Result.Victory) {
-            console.log('victory');
+            console.log(
+              'Found path of length ' +
+                newPath.length +
+                ' in ' +
+                this.counter +
+                ' search steps.'
+            );
             this.AddVictoryPath(newPath);
-          } else if (Solver.result == Result.Defeat) {
-            console.log('defeat');
+            return;
           }
         }
       }
