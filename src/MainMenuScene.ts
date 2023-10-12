@@ -130,7 +130,7 @@ export default class MainMenuScene extends Phaser.Scene {
       });
       this.levelButtons.push(btn);
 
-      const text = new UI.Text(this, 0, 0, '' + i);
+      const text = new UI.Text(this, 0, 0, '' + (i + 1));
       text.GetTextObject().setOrigin(0.5, 0.5);
       this.levelTexts.push(text);
     }
