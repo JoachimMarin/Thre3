@@ -26,6 +26,7 @@ export default class CameraManager extends GameObject {
     this.mainCam = this.mainScene.cameras.main;
     this.sideUICam = SideUserInterfaceScene.SCENE.cameras.main;
     this.gridUICam = GridUserInterfaceScene.SCENE.cameras.main;
+    this.PostConstruct(state);
   }
 
   UpdateCanvas() {

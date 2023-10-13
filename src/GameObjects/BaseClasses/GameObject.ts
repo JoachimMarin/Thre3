@@ -8,9 +8,11 @@ import LevelState from 'LevelScene/LevelState';
 export default abstract class GameObject {
   Remove(state: LevelState) {
     state.ClearEventGroups(this);
+    this.OnRemove(state);
   }
   PostConstruct(state: LevelState) {
     state.SetupEventGroups(this);
+    this.OnInit(state);
   }
 
   HasTag(_state: LevelState, _tag: ObjectTag) {

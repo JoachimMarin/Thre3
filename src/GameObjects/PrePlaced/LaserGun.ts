@@ -1,5 +1,5 @@
 import ObjectTag from 'Constants/ObjectTag';
-import LevelState, { StaticState } from 'LevelScene/LevelState';
+import LevelState from 'LevelScene/LevelState';
 import Direction from 'Math/Direction';
 import { getAllEnumValues } from 'enum-for';
 import GridObject from 'GameObjects/BaseClasses/GridObject';
@@ -76,6 +76,7 @@ export class LaserProjectile extends GameObject {
     if (point.Equals(state.player.destination)) {
       state.player.objectsToProcess.push(this);
     }
+    this.PostConstruct(state);
     if (!state.virtual) {
       this.image = state.levelScene.add.image(
         point.realX(),
@@ -95,30 +96,47 @@ export class LaserProjectile extends GameObject {
     return LaserProjectile.tags.has(tag);
   }
 
-  Remove() {
+  override OnRemove(_state: LevelState) {
     if (!this.state.virtual) {
       this.image.destroy();
     }
-    super.Remove(this.state);
   }
 
-  OnBeginStep(_state: LevelState, _trigger: boolean): void {
-    this.Remove();
+  override OnBeginStep(state: LevelState, _trigger: boolean): void {
+    this.Remove(state);
   }
 }
 
 export default class LaserGun extends GridObjectStatic {
+  public image: Phaser.GameObjects.Image;
+
   static tags = new Set<ObjectTag>([ObjectTag.WALL, ObjectTag.DESTROY_BULLETS]);
 
   private color: LaserColor;
 
-  constructor(state: StaticState, point: IVec2, color: LaserColor) {
-    super(state, point);
+  constructor(state: LevelState, aPoint: IVec2, color: LaserColor) {
+    super(state, aPoint);
     this.color = color;
+
+    const point = Vec2.AsVec2(aPoint);
+    this.image = state.levelScene.add.image(
+      point.realX(),
+      point.realY(),
+      color.gunImageKey
+    );
+    this.image.setDisplaySize(1, 1);
+
+    this.PostConstructStatic(state);
   }
 
   override HasTag(_state: LevelState, tag: ObjectTag) {
     return LaserGun.tags.has(tag);
+  }
+
+  override OnRemove(state: LevelState) {
+    if (!state.virtual) {
+      this.image.destroy();
+    }
   }
 
   override OnBeginStepTrigger(state: LevelState): void {
