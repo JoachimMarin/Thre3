@@ -1,19 +1,17 @@
 import * as Phaser from 'phaser';
-import GridObjectImage from 'GameObjects/BaseClasses/GridObjectImage';
 import Direction from 'Math/Direction';
 import ObjectTag from 'Constants/ObjectTag';
 import { IVec2, Vec2 } from 'Math/GridPoint';
 import Item from './Item';
 import PopUp from 'GameObjects/PopUp';
-import TimedImage from 'GameObjects/TimedImage';
 import ItemDefinitions from 'Constants/Definitions/ItemDefinitions';
-import ImageDefinitions from 'Constants/Definitions/ImageDefinitions';
-import GameObjectPosition from 'GameObjects/BaseClasses/GameObjectPosition';
 import LevelState from 'LevelScene/LevelState';
 import Solver from 'LevelScene/Solver';
 import GameObject from 'GameObjects/BaseClasses/GameObject';
+import GridObjectDynamic from 'GameObjects/BaseClasses/GridObjectDynamic';
 
-export default class Player extends GridObjectImage {
+export default class Player extends GridObjectDynamic {
+  public image: Phaser.GameObjects.Image;
   static imageKey = 'player';
 
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -22,18 +20,21 @@ export default class Player extends GridObjectImage {
   public destination: Vec2;
   private gameOver: boolean = false;
   public objectsToProcess: GameObject[] = [];
+  private grid: LevelState;
 
   constructor(point: IVec2, grid: LevelState) {
-    super(point, grid, Player.imageKey);
+    super(grid, point);
+    this.grid = grid;
     this.grid.player = this;
     if (!this.grid.virtual) {
       this.cursors = grid.levelScene.cursors;
+      this.image = grid.levelScene.add.image(
+        this.position.realX(),
+        this.position.realY(),
+        Player.imageKey
+      );
+      this.image.setDisplaySize(1, 1);
     }
-    this.PostConstruct();
-  }
-
-  override UpdateGridKey(): boolean {
-    return false;
   }
 
   override DeepCopy(state: LevelState) {
@@ -67,7 +68,7 @@ export default class Player extends GridObjectImage {
     const itemList = this.grid.GetByTag(this.position, ObjectTag.ITEM);
     for (const item of itemList) {
       if (item instanceof Item) {
-        item.Remove();
+        item.Remove(this.grid);
         this.grid.inventory.AddItem(item.itemType, 1);
       }
     }
@@ -77,7 +78,7 @@ export default class Player extends GridObjectImage {
       ObjectTag.DEADLY
     );
     for (const obj of this.objectsToProcess) {
-      if (obj.HasTag(ObjectTag.DEADLY)) {
+      if (obj.HasTag(this.grid, ObjectTag.DEADLY)) {
         deadlyList.push(obj);
       }
     }
@@ -85,7 +86,7 @@ export default class Player extends GridObjectImage {
     let useShield = false;
     for (const deadly of deadlyList) {
       let blocked = false;
-      if (deadly.HasTag(ObjectTag.CAN_BE_REFLECTED)) {
+      if (deadly.HasTag(this.grid, ObjectTag.CAN_BE_REFLECTED)) {
         if (!useMirror && this.grid.inventory.HasItem(ItemDefinitions.MIRROR)) {
           this.grid.inventory.RemoveItem(ItemDefinitions.MIRROR);
           useMirror = true;
@@ -101,7 +102,7 @@ export default class Player extends GridObjectImage {
           new PopUp(this.position, this.grid, ItemDefinitions.SHIELD.imageKey);
         }
         if (useMirror) {
-          for (const parent of deadly.GetParents()) {
+          /*for (const parent of deadly.GetParents()) {
             if (parent instanceof GameObjectPosition) {
               parent.Remove();
               new TimedImage(
@@ -113,7 +114,7 @@ export default class Player extends GridObjectImage {
                 1.25
               );
             }
-          }
+          }*/
 
           blocked = true;
         } else if (useShield) {
@@ -143,7 +144,7 @@ export default class Player extends GridObjectImage {
         ObjectTag.CONDITIONAL_WALL
       );
       for (const wall of conditionalWalls) {
-        if (wall.IsWall()) {
+        if (wall.IsWall(this.grid)) {
           return false;
         }
       }
@@ -151,7 +152,7 @@ export default class Player extends GridObjectImage {
     return true;
   }
 
-  OnUpdate(delta: number): void {
+  OnUpdate(_state: LevelState, delta: number): void {
     const speed = 0.004;
     if (this.moving) {
       const translationVector = Vec2.TranslationVector(this.direction);

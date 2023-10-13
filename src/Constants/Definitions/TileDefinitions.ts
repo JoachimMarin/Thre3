@@ -11,11 +11,11 @@ class SimpleTile extends Tile {
     super(imageKey, (point, grid) => {
       const vec2 = Vec2.AsVec2(point);
       const gridKey = LevelState.GridKeyPoint(vec2);
-      if (!grid.staticTags.has(gridKey)) {
-        grid.staticTags.set(gridKey, new Set<ObjectTag>());
+      if (!grid.staticState.staticTags.has(gridKey)) {
+        grid.staticState.staticTags.set(gridKey, new Set<ObjectTag>());
       }
       for (const tag of tags) {
-        grid.staticTags.get(gridKey).add(tag);
+        grid.staticState.staticTags.get(gridKey).add(tag);
       }
       if (!grid.virtual) {
         const image = grid.levelScene.add.image(
@@ -46,7 +46,7 @@ const TileDefinitions = {
       r.set(
         color,
         new Tile(color.gunImageKey, (point, grid) => {
-          return new LaserGun(point, grid, color);
+          return new LaserGun(grid.staticState, point, color);
         })
       );
     }
@@ -55,7 +55,7 @@ const TileDefinitions = {
 
   DIRT_WALL: new Tile(
     DirtWall.imageKey,
-    (point, grid) => new DirtWall(point, grid)
+    (point, grid) => new DirtWall(grid.staticState, point)
   )
 };
 

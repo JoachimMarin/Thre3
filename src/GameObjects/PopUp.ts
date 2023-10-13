@@ -1,32 +1,40 @@
 import LevelState from 'LevelScene/LevelState';
-import GameObjectImage from './BaseClasses/GameObjectImage';
-import { IVec2 } from 'Math/GridPoint';
+import { IVec2, Vec2 } from 'Math/GridPoint';
+import GameObject from './BaseClasses/GameObject';
 
-export default class PopUp extends GameObjectImage {
+export default class PopUp extends GameObject {
+  private image: Phaser.GameObjects.Image;
   private rotationAngle: number = 0;
   private readonly rotationSpeed: number;
   private readonly rotationAngleMax: number;
 
   constructor(
-    point: IVec2,
-    grid: LevelState,
+    aPoint: IVec2,
+    state: LevelState,
     imageKey: string,
     rotationSpeed: number = 1,
     numRotations: number = 1
   ) {
-    super(point, grid, imageKey);
+    super();
     this.rotationSpeed = rotationSpeed;
     this.rotationAngleMax = numRotations * 360;
-    this.PostConstruct();
-    if (this.grid.virtual) {
-      this.Remove();
+    if (state.virtual) {
+      this.Remove(state);
+    } else {
+      const point = Vec2.AsVec2(aPoint);
+      this.image = state.levelScene.add.image(
+        point.realX(),
+        point.realY(),
+        imageKey
+      );
+      this.image.setDisplaySize(1, 1);
     }
   }
 
-  Rotate(angle: number) {
+  Rotate(state: LevelState, angle: number) {
     this.rotationAngle += angle;
     if (this.rotationAngle >= this.rotationAngleMax) {
-      this.Remove();
+      this.Remove(state);
     }
     const displayAngleRad = ((this.rotationAngle % 360) / 180) * Math.PI;
     const xScale = Math.cos(displayAngleRad);
@@ -35,7 +43,7 @@ export default class PopUp extends GameObjectImage {
     this.image.setDisplaySize(Math.abs(xScale), 1);
   }
 
-  OnUpdate(delta: number): void {
-    this.Rotate(delta * this.rotationSpeed);
+  OnUpdate(state: LevelState, delta: number): void {
+    this.Rotate(state, delta * this.rotationSpeed);
   }
 }

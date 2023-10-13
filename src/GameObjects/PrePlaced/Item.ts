@@ -1,26 +1,20 @@
 import ObjectTag from 'Constants/ObjectTag';
-import LevelState from 'LevelScene/LevelState';
+import LevelState, { StaticState } from 'LevelScene/LevelState';
 import ItemType from 'Constants/ItemType';
-import GridObjectImage from 'GameObjects/BaseClasses/GridObjectImage';
 import { IVec2 } from 'Math/GridPoint';
+import GridObjectStatic from 'GameObjects/BaseClasses/GridObjectStatic';
 
-export default class Item extends GridObjectImage {
+export default class Item extends GridObjectStatic {
   static tags = new Set<ObjectTag>([ObjectTag.ITEM]);
 
   public readonly itemType: ItemType;
 
-  constructor(point: IVec2, grid: LevelState, itemType: ItemType) {
-    super(point, grid, itemType.imageKey);
-
+  constructor(state: StaticState, point: IVec2, itemType: ItemType) {
+    super(state, point);
     this.itemType = itemType;
-    this.PostConstruct();
   }
 
-  override GetStaticTags(): Set<ObjectTag> {
-    return Item.tags;
-  }
-
-  override DeepCopy(state: LevelState) {
-    return new Item(this.position, state, this.itemType);
+  override HasTag(_state: LevelState, tag: ObjectTag) {
+    return Item.tags.has(tag);
   }
 }
