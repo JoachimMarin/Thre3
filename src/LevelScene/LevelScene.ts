@@ -14,7 +14,7 @@ import CameraManager from './CameraManager';
 import SideUserInterfaceScene from './SideUserInterfaceScene';
 import GridUserInterfaceScene from './GridUserInterfaceScene';
 import LevelList from 'Constants/Definitions/LevelList';
-import Solver from './Solver';
+//import Solver from './Solver';
 
 /**
  * TilesFile parses the .tsx file from the Tiled level editor.
@@ -130,7 +130,7 @@ class LevelParser {
     for (const itemType of ItemType.ALL) {
       this.RegisterTile(
         itemType.imageKey,
-        (point, grid) => new Item(point, grid, itemType)
+        (point, grid) => new Item(grid.staticState, point, itemType)
       );
     }
 
@@ -239,8 +239,8 @@ export default class LevelScene extends Phaser.Scene {
     );
     this.levelParser.BuildLevel(this.grid);
     this.cameraManager = new CameraManager(this.grid);
-    const solver = new Solver(this.grid);
-    solver.ReportVictoryPaths();
+    /*const solver = new Solver(this.grid);
+    solver.ReportVictoryPaths();*/
   }
 
   createReady() {

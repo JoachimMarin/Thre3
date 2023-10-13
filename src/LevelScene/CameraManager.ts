@@ -9,6 +9,7 @@ import LevelState from './LevelState';
 const maxZoomInTiles = 4;
 
 export default class CameraManager extends GameObject {
+  private state: LevelState;
   private canvasSize: Vec2 = Vec2.AsVec2([0, 0]);
   private uiCanvasSize: Vec2 = Vec2.AsVec2([0, 0]);
   private mainCanvasSize: Vec2 = Vec2.AsVec2([0, 0]);
@@ -18,13 +19,13 @@ export default class CameraManager extends GameObject {
   private sideUICam: Phaser.Cameras.Scene2D.Camera;
   private gridUICam: Phaser.Cameras.Scene2D.Camera;
 
-  constructor(grid: LevelState) {
-    super(grid);
-    this.mainScene = grid.levelScene;
+  constructor(state: LevelState) {
+    super();
+    this.state = state;
+    this.mainScene = state.levelScene;
     this.mainCam = this.mainScene.cameras.main;
     this.sideUICam = SideUserInterfaceScene.SCENE.cameras.main;
     this.gridUICam = GridUserInterfaceScene.SCENE.cameras.main;
-    this.PostConstruct();
   }
 
   UpdateCanvas() {
@@ -110,8 +111,8 @@ export default class CameraManager extends GameObject {
   }
 
   LimitCamera() {
-    const levelWidth = this.grid.width;
-    const levelHeight = this.grid.height;
+    const levelWidth = this.state.width;
+    const levelHeight = this.state.height;
 
     let cameraWidth = this.mainCanvasSize.x / this.mainCam.zoom;
     let cameraHeight = this.mainCanvasSize.y / this.mainCam.zoom;
@@ -171,7 +172,7 @@ export default class CameraManager extends GameObject {
   OnInit(): void {
     this.UpdateCanvas();
     this.mainCam.setZoom(0.00001);
-    this.mainCam.centerOn(this.grid.width / 2, this.grid.height / 2);
+    this.mainCam.centerOn(this.state.width / 2, this.state.height / 2);
     this.LimitCamera();
     this.mainScene.input.on(
       'wheel',
@@ -198,12 +199,12 @@ export default class CameraManager extends GameObject {
     });
   }
 
-  OnUpdate(_delta: number): void {
+  OnUpdate(_state: LevelState, _delta: number): void {
     this.UpdateCanvas();
     this.LimitCamera();
   }
 
-  OnRemove(): void {
+  OnRemove(_state: LevelState): void {
     this.mainScene.input.off('wheel');
     this.mainScene.input.off('pointermove');
   }

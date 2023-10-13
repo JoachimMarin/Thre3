@@ -1,12 +1,12 @@
 import ObjectTag from 'Constants/ObjectTag';
-import LevelState from 'LevelScene/LevelState';
+import LevelState, { StaticState } from 'LevelScene/LevelState';
 import Direction from 'Math/Direction';
 import { getAllEnumValues } from 'enum-for';
 import GridObject from 'GameObjects/BaseClasses/GridObject';
-import { IVec2 } from 'Math/GridPoint';
+import { IVec2, Vec2 } from 'Math/GridPoint';
 import ImageKey from 'Constants/ImageKey';
-import GridObjectImage from 'GameObjects/BaseClasses/GridObjectImage';
-import GameObjectPosition from 'GameObjects/BaseClasses/GameObjectPosition';
+import GameObject from 'GameObjects/BaseClasses/GameObject';
+import GridObjectStatic from 'GameObjects/BaseClasses/GridObjectStatic';
 
 export class LaserColor {
   public readonly name: string;
@@ -32,7 +32,7 @@ export class LaserColor {
   public static readonly PURPLE = new LaserColor('purple', 10);
 }
 
-export class LaserProjectile extends GameObjectPosition {
+export class LaserProjectile extends GameObject {
   static tags = new Set<ObjectTag>([
     ObjectTag.DEADLY,
     ObjectTag.CAN_BE_REFLECTED
@@ -40,29 +40,32 @@ export class LaserProjectile extends GameObjectPosition {
 
   public image: Phaser.GameObjects.Image;
   public owner: GridObject;
+  public state: LevelState;
 
   constructor(
-    point: IVec2,
-    grid: LevelState,
+    aPoint: IVec2,
+    state: LevelState,
     direction: Direction,
     length: integer,
     color: LaserColor,
     owner: GridObject
   ) {
-    super(point, grid);
+    super();
     this.owner = owner;
-    this.owner.AddChild(this);
+    this.state = state;
+    const point = Vec2.AsVec2(aPoint);
+    //this.owner.AddChild(this);
     let end = true;
     if (length > 1) {
-      const nextPoint = this.position.Translate(direction);
+      const nextPoint = point.Translate(direction);
       if (
-        this.grid.IsInBounds(nextPoint) &&
-        !this.grid.HasGridTag(nextPoint, ObjectTag.DESTROY_BULLETS)
+        state.IsInBounds(nextPoint) &&
+        !state.HasGridTag(nextPoint, ObjectTag.DESTROY_BULLETS)
       ) {
         end = false;
         new LaserProjectile(
           nextPoint,
-          this.grid,
+          state,
           direction,
           length - 1,
           color,
@@ -70,13 +73,13 @@ export class LaserProjectile extends GameObjectPosition {
         );
       }
     }
-    if (this.position.Equals(this.grid.player.destination)) {
-      this.grid.player.objectsToProcess.push(this);
+    if (point.Equals(state.player.destination)) {
+      state.player.objectsToProcess.push(this);
     }
-    if (!this.grid.virtual) {
-      this.image = grid.levelScene.add.image(
-        this.position.realX(),
-        this.position.realY(),
+    if (!state.virtual) {
+      this.image = state.levelScene.add.image(
+        point.realX(),
+        point.realY(),
         end ? color.projectileEnd.imageKey : color.projectile.imageKey
       );
       this.image.setDisplaySize(1, 1);
@@ -86,54 +89,48 @@ export class LaserProjectile extends GameObjectPosition {
         this.image.setVisible(true);
       }, 150);
     }
-    this.PostConstruct();
   }
 
-  override GetStaticTags(): Set<ObjectTag> {
-    return LaserProjectile.tags;
+  override HasTag(_state: LevelState, tag: ObjectTag) {
+    return LaserProjectile.tags.has(tag);
   }
 
   Remove() {
-    if (!this.grid.virtual) {
+    if (!this.state.virtual) {
       this.image.destroy();
     }
-    super.Remove();
+    super.Remove(this.state);
   }
 
-  OnBeginStep(_trigger: boolean): void {
+  OnBeginStep(_state: LevelState, _trigger: boolean): void {
     this.Remove();
   }
 }
 
-export default class LaserGun extends GridObjectImage {
+export default class LaserGun extends GridObjectStatic {
   static tags = new Set<ObjectTag>([ObjectTag.WALL, ObjectTag.DESTROY_BULLETS]);
 
   private color: LaserColor;
 
-  constructor(point: IVec2, grid: LevelState, color: LaserColor) {
-    super(point, grid, color.gunImageKey);
+  constructor(state: StaticState, point: IVec2, color: LaserColor) {
+    super(state, point);
     this.color = color;
-    this.PostConstruct();
   }
 
-  override GetStaticTags(): Set<ObjectTag> {
-    return LaserGun.tags;
+  override HasTag(_state: LevelState, tag: ObjectTag) {
+    return LaserGun.tags.has(tag);
   }
 
-  override DeepCopy(state: LevelState) {
-    return new LaserGun(this.position, state, this.color);
-  }
-
-  OnBeginStepTrigger(): void {
+  override OnBeginStepTrigger(state: LevelState): void {
     for (const dir of getAllEnumValues(Direction)) {
       const nextPoint = this.position.Translate(dir);
       if (
-        this.grid.IsInBounds(nextPoint) &&
-        !this.grid.HasGridTag(nextPoint, ObjectTag.DESTROY_BULLETS)
+        state.IsInBounds(nextPoint) &&
+        !state.HasGridTag(nextPoint, ObjectTag.DESTROY_BULLETS)
       ) {
         new LaserProjectile(
           nextPoint,
-          this.grid,
+          state,
           dir,
           this.color.length,
           this.color,
