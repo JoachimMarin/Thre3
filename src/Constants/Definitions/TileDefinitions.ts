@@ -46,7 +46,7 @@ const TileDefinitions = {
       r.set(
         color,
         new Tile(color.gunImageKey, (point, grid) => {
-          return new LaserGun(grid.staticState, point, color);
+          return new LaserGun(grid, point, color);
         })
       );
     }
@@ -55,7 +55,7 @@ const TileDefinitions = {
 
   DIRT_WALL: new Tile(
     DirtWall.imageKey,
-    (point, grid) => new DirtWall(grid.staticState, point)
+    (point, grid) => new DirtWall(grid, point)
   )
 };
 

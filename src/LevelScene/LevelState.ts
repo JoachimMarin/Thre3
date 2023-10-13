@@ -11,22 +11,70 @@ import GridObjectChanges from 'GameObjects/BaseClasses/GridObjectChanges';
 import GridObjectDynamic from 'GameObjects/BaseClasses/GridObjectDynamic';
 import GridObjectStatic from 'GameObjects/BaseClasses/GridObjectStatic';
 
-/**
- * An EventGroup is a set of GameObjects that share a certain event.
- * @see GameObjectEvent
- */
-class EventGroup {
-  public objects: Set<GameObject> = new Set<GameObject>();
-  public condition: (obj: GameObject) => boolean;
-
-  constructor(condition: (obj: GameObject) => boolean) {
-    this.condition = condition;
-  }
-}
-
 export class StaticState {
   public staticObjects = new Map<number, Set<GridObjectStatic>>();
   public staticTags = new Map<number, Set<ObjectTag>>();
+
+  public eventGroups = new Map<GameObjectEvent, (obj: GameObject) => boolean>();
+  public staticEventObjects = new Map<GameObjectEvent, Set<GameObject>>();
+
+  constructor() {
+    this.DefineEventGroups();
+  }
+
+  /**
+   * Adds Gameobject obj to all relevant EventGroups
+   * @param obj
+   */
+  SetupEventGroups(obj: GameObject) {
+    for (const [event, condition] of this.eventGroups) {
+      if (condition(obj)) {
+        if (!this.staticEventObjects.has(event)) {
+          this.staticEventObjects.set(event, new Set<GameObject>());
+        }
+        this.staticEventObjects.get(event).add(obj);
+      }
+    }
+  }
+
+  /**
+   * Defines a new EventGroup for GameObjectEvent key for GameObjects fulfilling condition.
+   * @param key
+   * @param condition
+   */
+  DefineEventGroup(
+    key: GameObjectEvent,
+    condition: (obj: GameObject) => boolean
+  ) {
+    this.eventGroups.set(key, condition);
+  }
+
+  DefineEventGroups() {
+    // Check whether a GameObject has a certain event
+    // All GameObjects in the scene
+    this.DefineEventGroup(GameObjectEvent.GLOBAL_SCENE, (_obj) => true);
+    // GameObjects that override an event function:
+    // .OnUpdate
+    this.DefineEventGroup(GameObjectEvent.UPDATE, (obj) =>
+      ClassUtils.IsImplemented(obj.OnUpdate)
+    );
+    // .OnBeginStep
+    this.DefineEventGroup(GameObjectEvent.BEGIN_STEP_ALL, (obj) =>
+      ClassUtils.IsImplemented(obj.OnBeginStep)
+    );
+    // .OnBeginStepTrigger
+    this.DefineEventGroup(GameObjectEvent.BEGIN_STEP_TRIGGER, (obj) =>
+      ClassUtils.IsImplemented(obj.OnBeginStepTrigger)
+    );
+    // .OnEndStep
+    this.DefineEventGroup(GameObjectEvent.END_STEP_ALL, (obj) =>
+      ClassUtils.IsImplemented(obj.OnEndStep)
+    );
+    // .OnEndStepTrigger
+    this.DefineEventGroup(GameObjectEvent.END_STEP_TRIGGER, (obj) =>
+      ClassUtils.IsImplemented(obj.OnEndStepTrigger)
+    );
+  }
 }
 
 /**
@@ -43,6 +91,7 @@ export default class LevelState {
 
   public staticObjectChanges = new Map<GridObject, GridObjectChanges>();
   public dynamicObjects = new Map<number, Set<GridObjectDynamic>>();
+  public dynamicEventObjects = new Map<GameObjectEvent, Set<GameObject>>();
   public staticState = new StaticState();
 
   public readonly levelScene: LevelScene;
@@ -58,10 +107,6 @@ export default class LevelState {
 
   public readonly width: integer;
   public readonly height: integer;
-  private eventGroups: Map<GameObjectEvent, EventGroup> = new Map<
-    GameObjectEvent,
-    EventGroup
-  >();
 
   constructor(levelScene: LevelScene | null, width: integer, height: integer) {
     this.virtual = levelScene == null;
@@ -69,7 +114,6 @@ export default class LevelState {
     this.inventory = new Inventory(this.virtual);
     this.width = width;
     this.height = height;
-    this.DefineEventGroups();
 
     if (!this.virtual) {
       this.background = levelScene.add
@@ -139,52 +183,16 @@ export default class LevelState {
   }
 
   /**
-   * Defines a new EventGroup for GameObjectEvent key for GameObjects fulfilling condition.
-   * @param key
-   * @param condition
-   */
-  DefineEventGroup(
-    key: GameObjectEvent,
-    condition: (obj: GameObject) => boolean
-  ) {
-    this.eventGroups.set(key, new EventGroup(condition));
-  }
-
-  DefineEventGroups() {
-    // Check whether a GameObject has a certain event
-    // All GameObjects in the scene
-    this.DefineEventGroup(GameObjectEvent.GLOBAL_SCENE, (_obj) => true);
-    // GameObjects that override an event function:
-    // .OnUpdate
-    this.DefineEventGroup(GameObjectEvent.UPDATE, (obj) =>
-      ClassUtils.IsImplemented(obj.OnUpdate)
-    );
-    // .OnBeginStep
-    this.DefineEventGroup(GameObjectEvent.BEGIN_STEP_ALL, (obj) =>
-      ClassUtils.IsImplemented(obj.OnBeginStep)
-    );
-    // .OnBeginStepTrigger
-    this.DefineEventGroup(GameObjectEvent.BEGIN_STEP_TRIGGER, (obj) =>
-      ClassUtils.IsImplemented(obj.OnBeginStepTrigger)
-    );
-    // .OnEndStep
-    this.DefineEventGroup(GameObjectEvent.END_STEP_ALL, (obj) =>
-      ClassUtils.IsImplemented(obj.OnEndStep)
-    );
-    // .OnEndStepTrigger
-    this.DefineEventGroup(GameObjectEvent.END_STEP_TRIGGER, (obj) =>
-      ClassUtils.IsImplemented(obj.OnEndStepTrigger)
-    );
-  }
-
-  /**
    * Adds Gameobject obj to all relevant EventGroups
    * @param obj
    */
   SetupEventGroups(obj: GameObject) {
-    for (const eventGroup of this.eventGroups.values()) {
-      if (eventGroup.condition(obj)) {
-        eventGroup.objects.add(obj);
+    for (const [event, condition] of this.staticState.eventGroups) {
+      if (condition(obj)) {
+        if (!this.dynamicEventObjects.has(event)) {
+          this.dynamicEventObjects.set(event, new Set<GameObject>());
+        }
+        this.dynamicEventObjects.get(event).add(obj);
       }
     }
   }
@@ -194,8 +202,12 @@ export default class LevelState {
    * @param obj
    */
   ClearEventGroups(obj: GameObject) {
-    for (const eventGroup of this.eventGroups.values()) {
-      eventGroup.objects.delete(obj);
+    for (const [event, condition] of this.staticState.eventGroups) {
+      if (condition(obj)) {
+        if (this.dynamicEventObjects.has(event)) {
+          this.dynamicEventObjects.get(event).delete(obj);
+        }
+      }
     }
   }
 
@@ -205,8 +217,15 @@ export default class LevelState {
    * @param func
    */
   ForEventGroup(key: GameObjectEvent, func: (obj: GameObject) => void) {
-    for (const object of this.eventGroups.get(key).objects) {
-      func(object);
+    if (this.staticState.staticEventObjects.has(key)) {
+      for (const object of this.staticState.staticEventObjects.get(key)) {
+        func(object);
+      }
+    }
+    if (this.dynamicEventObjects.has(key)) {
+      for (const object of this.dynamicEventObjects.get(key)) {
+        func(object);
+      }
     }
   }
 

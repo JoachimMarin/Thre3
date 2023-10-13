@@ -35,6 +35,7 @@ export default class Player extends GridObjectDynamic {
       );
       this.image.setDisplaySize(1, 1);
     }
+    this.PostConstruct(grid);
   }
 
   override DeepCopy(state: LevelState) {

@@ -130,7 +130,7 @@ class LevelParser {
     for (const itemType of ItemType.ALL) {
       this.RegisterTile(
         itemType.imageKey,
-        (point, grid) => new Item(grid.staticState, point, itemType)
+        (point, grid) => new Item(grid, point, itemType)
       );
     }
 
