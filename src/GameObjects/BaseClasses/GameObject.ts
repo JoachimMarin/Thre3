@@ -7,14 +7,15 @@ import LevelState from 'LevelScene/LevelState';
  */
 export default abstract class GameObject {
   Remove(state: LevelState) {
-    state.ClearEventGroups(this);
     this.OnRemove(state);
   }
   PostConstruct(state: LevelState) {
     state.SetupEventGroups(this);
     this.OnInit(state);
   }
-
+  Exists(_state: LevelState) {
+    return true;
+  }
   HasTag(_state: LevelState, _tag: ObjectTag) {
     return false;
   }

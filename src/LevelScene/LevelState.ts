@@ -16,7 +16,7 @@ export class StaticState {
   public staticTags = new Map<number, Set<ObjectTag>>();
 
   public eventGroups = new Map<GameObjectEvent, (obj: GameObject) => boolean>();
-  public staticEventObjects = new Map<GameObjectEvent, Set<GameObject>>();
+  public staticEventObjects = new Map<GameObjectEvent, Set<GridObjectStatic>>();
 
   constructor() {
     this.DefineEventGroups();
@@ -26,11 +26,11 @@ export class StaticState {
    * Adds Gameobject obj to all relevant EventGroups
    * @param obj
    */
-  SetupEventGroups(obj: GameObject) {
+  SetupEventGroups(obj: GridObjectStatic) {
     for (const [event, condition] of this.eventGroups) {
       if (condition(obj)) {
         if (!this.staticEventObjects.has(event)) {
-          this.staticEventObjects.set(event, new Set<GameObject>());
+          this.staticEventObjects.set(event, new Set<GridObjectStatic>());
         }
         this.staticEventObjects.get(event).add(obj);
       }
@@ -89,7 +89,7 @@ export default class LevelState {
     return LevelState.GridKeyXY(point.x, point.y);
   }
 
-  public staticObjectChanges = new Map<GridObject, GridObjectChanges>();
+  public staticObjectChanges = new Map<GridObjectStatic, GridObjectChanges>();
   public dynamicObjects = new Map<number, Set<GridObjectDynamic>>();
   public dynamicEventObjects = new Map<GameObjectEvent, Set<GameObject>>();
   public staticState = new StaticState();
@@ -219,7 +219,9 @@ export default class LevelState {
   ForEventGroup(key: GameObjectEvent, func: (obj: GameObject) => void) {
     if (this.staticState.staticEventObjects.has(key)) {
       for (const object of this.staticState.staticEventObjects.get(key)) {
-        func(object);
+        if (object.Exists(this)) {
+          func(object);
+        }
       }
     }
     if (this.dynamicEventObjects.has(key)) {
@@ -260,7 +262,7 @@ export default class LevelState {
     }
     if (this.staticState.staticObjects.has(gridKey)) {
       for (const object of this.staticState.staticObjects.get(gridKey)) {
-        if (object.HasTag(this, tag)) {
+        if (object.Exists(this) && object.HasTag(this, tag)) {
           return true;
         }
       }
@@ -290,7 +292,7 @@ export default class LevelState {
 
     if (this.staticState.staticObjects.has(gridKey)) {
       for (const object of this.staticState.staticObjects.get(gridKey)) {
-        if (object.HasTag(this, tag)) {
+        if (object.Exists(this) && object.HasTag(this, tag)) {
           array.push(object);
         }
       }

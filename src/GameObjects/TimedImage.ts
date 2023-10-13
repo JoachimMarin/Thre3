@@ -16,6 +16,7 @@ export default class TimedImage extends GameObject {
   ) {
     super();
     this.duration = duration * 1000;
+    this.PostConstruct(state);
     if (state.virtual) {
       this.Remove(state);
     } else {
@@ -29,7 +30,13 @@ export default class TimedImage extends GameObject {
     }
   }
 
-  OnUpdate(state: LevelState, delta: number): void {
+  override OnRemove(state: LevelState): void {
+    if (!state.virtual) {
+      this.image.destroy();
+    }
+  }
+
+  override OnUpdate(state: LevelState, delta: number): void {
     this.duration -= delta;
     if (this.duration <= 0) {
       this.Remove(state);

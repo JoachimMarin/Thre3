@@ -19,12 +19,19 @@ export default abstract class GridObjectStatic extends GridObject {
     this.OnInit(state);
   }
 
-  Remove(state: LevelState) {
+  override Exists(state: LevelState) {
+    return (
+      !state.staticObjectChanges.has(this) ||
+      !state.staticObjectChanges.get(this).disabled
+    );
+  }
+  override Remove(state: LevelState) {
     if (!state.staticObjectChanges.has(this)) {
       state.staticObjectChanges.set(this, new GridObjectChanges());
     }
     state.staticObjectChanges.get(this).disabled = true;
+    super.Remove(state);
   }
 
-  DeepCopy(_state: LevelState) {}
+  override DeepCopy(_state: LevelState) {}
 }
