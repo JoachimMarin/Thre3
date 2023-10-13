@@ -26,8 +26,10 @@ export default abstract class GridObjectDynamic extends GridObject {
     }
   }
 
-  override Remove(_state: LevelState) {
+  override Remove(state: LevelState) {
+    this.state.ClearEventGroups(this);
     this.RemoveFromGrid();
+    super.Remove(state);
   }
   override HasTag(_state: LevelState, tag: ObjectTag) {
     return this.tags != null && this.tags.has(tag);

@@ -2,7 +2,6 @@ import ObjectTag from 'Constants/ObjectTag';
 import LevelState from 'LevelScene/LevelState';
 import Direction from 'Math/Direction';
 import { getAllEnumValues } from 'enum-for';
-import GridObject from 'GameObjects/BaseClasses/GridObject';
 import { IVec2, Vec2 } from 'Math/GridPoint';
 import ImageKey from 'Constants/ImageKey';
 import GameObject from 'GameObjects/BaseClasses/GameObject';
@@ -39,7 +38,7 @@ export class LaserProjectile extends GameObject {
   ]);
 
   public image: Phaser.GameObjects.Image;
-  public owner: GridObject;
+  public owner: LaserGun;
   public state: LevelState;
 
   constructor(
@@ -48,10 +47,11 @@ export class LaserProjectile extends GameObject {
     direction: Direction,
     length: integer,
     color: LaserColor,
-    owner: GridObject
+    owner: LaserGun
   ) {
     super();
     this.owner = owner;
+    this.owner.projectiles.push(this);
     this.state = state;
     const point = Vec2.AsVec2(aPoint);
     //this.owner.AddChild(this);
@@ -113,18 +113,21 @@ export default class LaserGun extends GridObjectStatic {
   static tags = new Set<ObjectTag>([ObjectTag.WALL, ObjectTag.DESTROY_BULLETS]);
 
   private color: LaserColor;
+  public projectiles: LaserProjectile[] = [];
 
   constructor(state: LevelState, aPoint: IVec2, color: LaserColor) {
     super(state, aPoint);
     this.color = color;
 
-    const point = Vec2.AsVec2(aPoint);
-    this.image = state.levelScene.add.image(
-      point.realX(),
-      point.realY(),
-      color.gunImageKey
-    );
-    this.image.setDisplaySize(1, 1);
+    if (!state.virtual) {
+      const point = Vec2.AsVec2(aPoint);
+      this.image = state.levelScene.add.image(
+        point.realX(),
+        point.realY(),
+        color.gunImageKey
+      );
+      this.image.setDisplaySize(1, 1);
+    }
 
     this.PostConstructStatic(state);
   }
@@ -134,12 +137,16 @@ export default class LaserGun extends GridObjectStatic {
   }
 
   override OnRemove(state: LevelState) {
+    for (const projectile of this.projectiles) {
+      projectile.Remove(state);
+    }
     if (!state.virtual) {
       this.image.destroy();
     }
   }
 
   override OnBeginStepTrigger(state: LevelState): void {
+    this.projectiles = [];
     for (const dir of getAllEnumValues(Direction)) {
       const nextPoint = this.position.Translate(dir);
       if (

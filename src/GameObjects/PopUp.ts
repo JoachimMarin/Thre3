@@ -18,6 +18,7 @@ export default class PopUp extends GameObject {
     super();
     this.rotationSpeed = rotationSpeed;
     this.rotationAngleMax = numRotations * 360;
+    this.PostConstruct(state);
     if (state.virtual) {
       this.Remove(state);
     } else {
@@ -43,7 +44,13 @@ export default class PopUp extends GameObject {
     this.image.setDisplaySize(Math.abs(xScale), 1);
   }
 
-  OnUpdate(state: LevelState, delta: number): void {
+  override OnRemove(state: LevelState): void {
+    if (!state.virtual) {
+      this.image.destroy();
+    }
+  }
+
+  override OnUpdate(state: LevelState, delta: number): void {
     this.Rotate(state, delta * this.rotationSpeed);
   }
 }

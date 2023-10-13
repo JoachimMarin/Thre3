@@ -9,6 +9,9 @@ import LevelState from 'LevelScene/LevelState';
 import Solver from 'LevelScene/Solver';
 import GameObject from 'GameObjects/BaseClasses/GameObject';
 import GridObjectDynamic from 'GameObjects/BaseClasses/GridObjectDynamic';
+import { LaserProjectile } from './LaserGun';
+import TimedImage from 'GameObjects/TimedImage';
+import ImageDefinitions from 'Constants/Definitions/ImageDefinitions';
 
 export default class Player extends GridObjectDynamic {
   public image: Phaser.GameObjects.Image;
@@ -103,19 +106,17 @@ export default class Player extends GridObjectDynamic {
           new PopUp(this.position, this.grid, ItemDefinitions.SHIELD.imageKey);
         }
         if (useMirror) {
-          /*for (const parent of deadly.GetParents()) {
-            if (parent instanceof GameObjectPosition) {
-              parent.Remove();
-              new TimedImage(
-                parent.position,
-                this.grid,
-                ImageDefinitions.EXPLOSION.imageKey,
-                0.3,
-                1.25,
-                1.25
-              );
-            }
-          }*/
+          if (deadly instanceof LaserProjectile) {
+            deadly.owner.Remove(this.grid);
+            new TimedImage(
+              deadly.owner.position,
+              this.grid,
+              ImageDefinitions.EXPLOSION.imageKey,
+              0.3,
+              1.25,
+              1.25
+            );
+          }
 
           blocked = true;
         } else if (useShield) {
