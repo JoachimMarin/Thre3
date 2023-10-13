@@ -6,6 +6,9 @@ import LevelState from 'LevelScene/LevelState';
  *  recieves events
  */
 export default abstract class GameObject {
+  private static _idCounter: number = 0;
+  public _id: number = GameObject._idCounter++;
+
   Remove(state: LevelState) {
     this.OnRemove(state);
   }

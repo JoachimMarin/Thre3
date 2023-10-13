@@ -14,7 +14,7 @@ import CameraManager from './CameraManager';
 import SideUserInterfaceScene from './SideUserInterfaceScene';
 import GridUserInterfaceScene from './GridUserInterfaceScene';
 import LevelList from 'Constants/Definitions/LevelList';
-//import Solver from './Solver';
+import Solver from './Solver';
 
 /**
  * TilesFile parses the .tsx file from the Tiled level editor.
@@ -174,7 +174,7 @@ class LevelParser {
       }
     }
     grid.lockGridKey = false;
-    grid.ComputeGridString();
+    grid.UpdateGridKeyString();
 
     return grid;
   }
@@ -239,8 +239,8 @@ export default class LevelScene extends Phaser.Scene {
     );
     this.levelParser.BuildLevel(this.grid);
     this.cameraManager = new CameraManager(this.grid);
-    /*const solver = new Solver(this.grid);
-    solver.ReportVictoryPaths();*/
+    const solver = new Solver(this.grid);
+    solver.ReportVictoryPaths();
   }
 
   createReady() {
