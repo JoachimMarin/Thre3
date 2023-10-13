@@ -102,7 +102,8 @@ export default class LevelState {
   public inventory: Inventory;
   private background: Phaser.GameObjects.Rectangle;
   public staticImages: Phaser.GameObjects.Image[] = [];
-  private gridString: string;
+  private changesKeyString: string;
+  private dynamicsKeyString: string;
   public lockGridKey: boolean = true;
 
   public readonly width: integer;
@@ -127,7 +128,8 @@ export default class LevelState {
     copy.playerStep = this.playerStep;
     copy.playerMaxStep = this.playerMaxStep;
     copy.inventory = this.inventory.DeepVirtualCopy();
-    copy.gridString = this.gridString;
+    copy.changesKeyString = this.changesKeyString;
+    copy.dynamicsKeyString = this.dynamicsKeyString;
     copy.lockGridKey = true;
     copy.staticState = this.staticState;
 
@@ -145,32 +147,56 @@ export default class LevelState {
     return copy;
   }
 
-  ComputeGridString() {
-    /*if (this.lockGridKey) {
+  UpdateChangesKeyString() {
+    if (this.lockGridKey) {
       return;
     }
-    this.gridString = '' + this.width + '|' + this.height + '|';
-    for (let y = 0; y < this.height; y++) {
-      for (let x = 0; x < this.width; x++) {
-        const objectsAt: string[] = [];
 
-        const gridKey = LevelState.GridKeyXY(x, y);
-        if (this.at.has(gridKey)) {
-          for (const gridObject of this.at.get(gridKey)) {
-            if (gridObject.UpdateGridKey()) {
-              objectsAt.push((gridObject as unknown).constructor.name);
-            }
-          }
-        }
-        objectsAt.sort();
-        this.gridString += objectsAt.join(',').padStart(15, ' ') + '|';
-      }
-      this.gridString += '\n';
-    }*/
+    this.changesKeyString = 'static changes:';
+    const changedObjects: GridObjectStatic[] = [];
+    for (const changedObject of this.staticObjectChanges.keys()) {
+      changedObjects.push(changedObject);
+    }
+    changedObjects.sort((a, b) => a._id - b._id);
+    for (const changedObject of changedObjects) {
+      this.changesKeyString +=
+        '[' +
+        changedObject._id +
+        ']:' +
+        this.staticObjectChanges.get(changedObject).GetKeyString();
+    }
   }
 
-  GetStateString() {
-    /*const playerString =
+  UpdateDynamicsKeyString() {
+    if (this.lockGridKey) {
+      return;
+    }
+
+    this.dynamicsKeyString = 'dynamic:';
+    const dynamicGridKeys = [];
+    for (const gridKey of this.dynamicObjects.keys()) {
+      dynamicGridKeys.push(gridKey);
+    }
+    dynamicGridKeys.sort();
+    for (const gridKey of dynamicGridKeys) {
+      const dynamicSet = this.dynamicObjects.get(gridKey);
+      if (dynamicSet.size > 0) {
+        this.dynamicsKeyString += '[' + gridKey + ']:';
+        // TODO: use deterministic order if multiple dynamic grid objects in same location
+        for (const dynamicObjects of dynamicSet) {
+          this.dynamicsKeyString += dynamicObjects.GetKeyString() + '|';
+        }
+      }
+    }
+  }
+
+  UpdateGridKeyString() {
+    this.UpdateChangesKeyString();
+    this.UpdateDynamicsKeyString();
+  }
+
+  GetStateKeyString() {
+    const playerString =
       this.player.position.x +
       '|' +
       this.player.position.y +
@@ -178,8 +204,15 @@ export default class LevelState {
       this.playerStep +
       '/' +
       this.playerMaxStep;
-    return this.gridString + this.inventory.GetKey() + '|' + playerString;*/
-    return '';
+    return (
+      this.changesKeyString +
+      '\n' +
+      this.dynamicsKeyString +
+      '\n' +
+      this.inventory.GetKey() +
+      '\n' +
+      playerString
+    );
   }
 
   /**

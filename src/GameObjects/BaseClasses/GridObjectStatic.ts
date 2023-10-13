@@ -30,6 +30,7 @@ export default abstract class GridObjectStatic extends GridObject {
       state.staticObjectChanges.set(this, new GridObjectChanges());
     }
     state.staticObjectChanges.get(this).disabled = true;
+    state.UpdateChangesKeyString();
     super.Remove(state);
   }
 

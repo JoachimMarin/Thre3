@@ -18,7 +18,7 @@ class KnownStates {
       this.map.set(posKey, new Map<string, Vec2[]>());
     }
     const stateMap = this.map.get(posKey);
-    const stateKey = newState.GetStateString();
+    const stateKey = newState.GetStateKeyString();
     if (stateMap.has(stateKey)) {
       const currentPath = stateMap.get(stateKey);
       if (newPath.length < currentPath.length) {
