@@ -19,4 +19,11 @@ export default class Direction {
   static readonly UP = new Direction(270, 'UP');
   static readonly LEFT = new Direction(180, 'LEFT');
   static readonly DOWN = new Direction(90, 'DOWN');
+
+  static readonly ALL = [
+    Direction.RIGHT,
+    Direction.DOWN,
+    Direction.LEFT,
+    Direction.UP
+  ];
 }

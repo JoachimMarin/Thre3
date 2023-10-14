@@ -3,7 +3,7 @@ import ObjectTag from 'Constants/ObjectTag';
 import GridObjectStaticImage from 'GameObjects/BaseClasses/GridObjectStaticImage';
 import DynamicState from 'Level/DynamicState';
 import StaticState from 'Level/StaticState';
-import { IVec2, Vec2 } from 'Math/GridPoint';
+import { IVec2 } from 'Math/GridPoint';
 
 export default class DirtWall extends GridObjectStaticImage {
   static tags = new Set<ObjectTag>([
@@ -15,15 +15,6 @@ export default class DirtWall extends GridObjectStaticImage {
   constructor(state: StaticState, aPoint: IVec2) {
     super(state, aPoint, DirtWall.imageKey);
     this.PostConstructStatic(state);
-    if (!state.virtual) {
-      const point = Vec2.AsVec2(aPoint);
-      this.image = state.levelScene.add.image(
-        point.realX(),
-        point.realY(),
-        DirtWall.imageKey
-      );
-      this.image.setDisplaySize(1, 1);
-    }
   }
 
   override HasTag(_state: DynamicState, tag: ObjectTag) {
