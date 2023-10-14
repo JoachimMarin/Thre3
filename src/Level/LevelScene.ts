@@ -70,7 +70,8 @@ export default class LevelScene extends Phaser.Scene {
   }
 
   OnFullyLoaded() {
-    this.LoadLevel();
+    this.levelState = new LevelState(this);
+    this.levelState.SolveLevel(this.index, this.levelParser);
   }
 
   createReady() {

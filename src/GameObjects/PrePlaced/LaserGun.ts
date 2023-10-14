@@ -1,7 +1,6 @@
 import ObjectTag from 'Constants/ObjectTag';
 import DynamicState from 'Level/DynamicState';
 import Direction from 'Math/Direction';
-import { getAllEnumValues } from 'enum-for';
 import { IVec2, Vec2 } from 'Math/GridPoint';
 import ImageKey from 'Constants/ImageKey';
 import GridObjectStaticImage from 'GameObjects/BaseClasses/GridObjectStaticImage';
@@ -32,7 +31,7 @@ export class LaserColor {
 }
 
 export class LaserProjectile {
-  public image: Phaser.GameObjects.Image;
+  public image: Phaser.GameObjects.Image = null;
   public owner: LaserGun;
 
   constructor(
@@ -83,15 +82,8 @@ export class LaserProjectile {
     }
   }
 
-  Remove(state: DynamicState) {
-    if (!state.virtual) {
-      this.image.destroy();
-      this.image = null;
-    }
-  }
-
-  Unload(virtual: boolean) {
-    if (!virtual) {
+  Remove() {
+    if (this.image != null) {
       this.image.destroy();
       this.image = null;
     }
@@ -116,50 +108,49 @@ export default class LaserGun extends GridObjectStaticImage {
     return LaserGun.tags.has(tag);
   }
 
-  override OnRemove(state: DynamicState) {
+  override OnRemove(_state: DynamicState) {
     for (const projectile of this.projectiles) {
-      projectile.Remove(state);
+      projectile.Remove();
     }
     this.projectiles = [];
   }
 
-  override OnUnload(virtual: boolean): void {
+  override OnUnload(_virtual: boolean): void {
     for (const projectile of this.projectiles) {
-      projectile.Unload(virtual);
+      projectile.Remove();
     }
     this.projectiles = [];
   }
 
-  override OnBeginStep(state: DynamicState, trigger: boolean): void {
+  override OnBeginStep(_state: DynamicState, _trigger: boolean): void {
     for (const projectile of this.projectiles) {
-      projectile.Remove(state);
+      projectile.Remove();
     }
     this.projectiles = [];
-
-    if (trigger) {
+  }
+  override OnBeginStepTrigger(state: DynamicState): void {
+    if (
+      state.virtual &&
+      this.position.x != state.player.destination.x &&
+      this.position.y != state.player.destination.y
+    ) {
+      // TODO: could cause problems once more complicated items are added
+      return;
+    }
+    for (const dir of Direction.ALL) {
+      const nextPoint = this.position.Translate(dir);
       if (
-        state.virtual &&
-        this.position.x != state.player.destination.x &&
-        this.position.y != state.player.destination.y
+        state.IsInBounds(nextPoint) &&
+        !state.HasGridTag(nextPoint, ObjectTag.DESTROY_BULLETS)
       ) {
-        // TODO: could cause problems once more complicated items are added
-        return;
-      }
-      for (const dir of getAllEnumValues(Direction)) {
-        const nextPoint = this.position.Translate(dir);
-        if (
-          state.IsInBounds(nextPoint) &&
-          !state.HasGridTag(nextPoint, ObjectTag.DESTROY_BULLETS)
-        ) {
-          new LaserProjectile(
-            nextPoint,
-            state,
-            dir,
-            this.color.length,
-            this.color,
-            this
-          );
-        }
+        new LaserProjectile(
+          nextPoint,
+          state,
+          dir,
+          this.color.length,
+          this.color,
+          this
+        );
       }
     }
   }

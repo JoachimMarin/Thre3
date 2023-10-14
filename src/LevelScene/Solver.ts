@@ -72,21 +72,19 @@ export default class Solver {
   }
 
   private _Solve(state: DynamicState, path: Vec2[]) {
-    const directions = [
-      Direction.RIGHT,
-      Direction.DOWN,
-      Direction.LEFT,
-      Direction.UP
-    ];
-    const queue: [DynamicState, Vec2[]][] = [[state, path]];
-    while (queue.length > 0) {
+    const queue: [DynamicState, Vec2[]][] = [[state.DeepVirtualCopy(), path]];
+
+    while (queue.length > 0 && this.victoryPaths.length == 0) {
       const [state, path] = queue.shift();
+      this.counter++;
       if (path.length > this.pathLength) {
         this.pathLength = path.length;
+        console.log('queued = ' + queue.length);
         console.log('path length = ' + this.pathLength);
+        console.log('break');
       }
 
-      for (const dir of directions) {
+      for (const dir of Direction.ALL) {
         const tile = state.player.position.Translate(dir);
         if (state.player.CanMoveTo(tile)) {
           Solver.result = Result.Pending;
@@ -110,10 +108,11 @@ export default class Solver {
                 ' search steps.'
             );
             this.AddVictoryPath(newPath);
-            return;
+            break;
           }
         }
       }
+      state.Unload();
     }
   }
 }

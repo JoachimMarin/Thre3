@@ -4,6 +4,7 @@ import StaticState from './StaticState';
 import Inventory from 'LevelScene/Inventory';
 import LevelParser from './LevelParser';
 import CameraManager from 'LevelScene/CameraManager';
+import Solver from 'LevelScene/Solver';
 
 export default class LevelState {
   private _staticState: StaticState;
@@ -51,6 +52,13 @@ export default class LevelState {
       }
       this.loaded = false;
     }
+  }
+
+  public SolveLevel(index: integer, levelParser: LevelParser) {
+    this.LoadLevel(index, levelParser);
+    const solver = new Solver();
+    solver.Solve(this.dynamicState);
+    solver.ReportVictoryPaths();
   }
 
   public LoadLevel(index: integer, levelParser: LevelParser) {
