@@ -7,13 +7,12 @@ import PopUp from 'GameObjects/PopUp';
 import ItemDefinitions from 'Constants/Definitions/ItemDefinitions';
 import LevelState from 'LevelScene/LevelState';
 import Solver from 'LevelScene/Solver';
-import GameObject from 'GameObjects/BaseClasses/GameObject';
-import GridObjectDynamic from 'GameObjects/BaseClasses/GridObjectDynamic';
+import GridObject from 'GameObjects/BaseClasses/GridObject';
 import { LaserProjectile } from './LaserGun';
 import TimedImage from 'GameObjects/TimedImage';
 import ImageDefinitions from 'Constants/Definitions/ImageDefinitions';
 
-export default class Player extends GridObjectDynamic {
+export default class Player extends GridObject {
   public image: Phaser.GameObjects.Image;
   static imageKey = 'player';
 
@@ -22,11 +21,11 @@ export default class Player extends GridObjectDynamic {
   private direction: Direction = Direction.DOWN;
   public destination: Vec2;
   private gameOver: boolean = false;
-  public objectsToProcess: GameObject[] = [];
+  public objectsToProcess: LaserProjectile[] = [];
   private grid: LevelState;
 
   constructor(point: IVec2, grid: LevelState) {
-    super(grid, point);
+    super(point);
     this.grid = grid;
     this.grid.player = this;
     if (!this.grid.virtual) {
@@ -77,52 +76,41 @@ export default class Player extends GridObjectDynamic {
       }
     }
 
-    const deadlyList: GameObject[] = this.grid.GetByTag(
-      this.position,
-      ObjectTag.DEADLY
-    );
-    for (const obj of this.objectsToProcess) {
-      if (obj.HasTag(this.grid, ObjectTag.DEADLY)) {
-        deadlyList.push(obj);
-      }
-    }
     let useMirror = false;
     let useShield = false;
-    for (const deadly of deadlyList) {
+    for (const deadly of this.objectsToProcess) {
       let blocked = false;
-      if (deadly.HasTag(this.grid, ObjectTag.CAN_BE_REFLECTED)) {
-        if (!useMirror && this.grid.inventory.HasItem(ItemDefinitions.MIRROR)) {
-          this.grid.inventory.RemoveItem(ItemDefinitions.MIRROR);
-          useMirror = true;
-          new PopUp(this.position, this.grid, ItemDefinitions.MIRROR.imageKey);
-        }
-        if (
-          !useMirror &&
-          !useShield &&
-          this.grid.inventory.HasItem(ItemDefinitions.SHIELD)
-        ) {
-          this.grid.inventory.RemoveItem(ItemDefinitions.SHIELD);
-          useShield = true;
-          new PopUp(this.position, this.grid, ItemDefinitions.SHIELD.imageKey);
-        }
-        if (useMirror) {
-          if (deadly instanceof LaserProjectile) {
-            deadly.owner.Remove(this.grid);
-            new TimedImage(
-              deadly.owner.position,
-              this.grid,
-              ImageDefinitions.EXPLOSION.imageKey,
-              0.3,
-              1.25,
-              1.25
-            );
-          }
 
-          blocked = true;
-        } else if (useShield) {
-          blocked = true;
-        }
+      if (!useMirror && this.grid.inventory.HasItem(ItemDefinitions.MIRROR)) {
+        this.grid.inventory.RemoveItem(ItemDefinitions.MIRROR);
+        useMirror = true;
+        new PopUp(this.position, this.grid, ItemDefinitions.MIRROR.imageKey);
       }
+      if (
+        !useMirror &&
+        !useShield &&
+        this.grid.inventory.HasItem(ItemDefinitions.SHIELD)
+      ) {
+        this.grid.inventory.RemoveItem(ItemDefinitions.SHIELD);
+        useShield = true;
+        new PopUp(this.position, this.grid, ItemDefinitions.SHIELD.imageKey);
+      }
+      if (useMirror) {
+        deadly.owner.Remove(this.grid);
+        new TimedImage(
+          deadly.owner.position,
+          this.grid,
+          ImageDefinitions.EXPLOSION.imageKey,
+          0.3,
+          1.25,
+          1.25
+        );
+
+        blocked = true;
+      } else if (useShield) {
+        blocked = true;
+      }
+
       if (!blocked) {
         this.Defeat();
       }
@@ -152,6 +140,10 @@ export default class Player extends GridObjectDynamic {
       }
     }
     return true;
+  }
+
+  SetGridPosition(position: Vec2) {
+    this.position = position;
   }
 
   OnUpdate(_state: LevelState, delta: number): void {

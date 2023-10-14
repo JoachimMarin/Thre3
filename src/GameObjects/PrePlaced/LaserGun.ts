@@ -4,7 +4,6 @@ import Direction from 'Math/Direction';
 import { getAllEnumValues } from 'enum-for';
 import { IVec2, Vec2 } from 'Math/GridPoint';
 import ImageKey from 'Constants/ImageKey';
-import GameObject from 'GameObjects/BaseClasses/GameObject';
 import GridObjectStatic from 'GameObjects/BaseClasses/GridObjectStatic';
 
 export class LaserColor {
@@ -31,15 +30,9 @@ export class LaserColor {
   public static readonly PURPLE = new LaserColor('purple', 10);
 }
 
-export class LaserProjectile extends GameObject {
-  static tags = new Set<ObjectTag>([
-    ObjectTag.DEADLY,
-    ObjectTag.CAN_BE_REFLECTED
-  ]);
-
+export class LaserProjectile {
   public image: Phaser.GameObjects.Image;
   public owner: LaserGun;
-  public state: LevelState;
 
   constructor(
     aPoint: IVec2,
@@ -49,10 +42,8 @@ export class LaserProjectile extends GameObject {
     color: LaserColor,
     owner: LaserGun
   ) {
-    super();
     this.owner = owner;
     this.owner.projectiles.push(this);
-    this.state = state;
     const point = Vec2.AsVec2(aPoint);
     //this.owner.AddChild(this);
     let end = true;
@@ -76,7 +67,6 @@ export class LaserProjectile extends GameObject {
     if (point.Equals(state.player.destination)) {
       state.player.objectsToProcess.push(this);
     }
-    this.PostConstruct(state);
     if (!state.virtual) {
       this.image = state.levelScene.add.image(
         point.realX(),
@@ -92,18 +82,10 @@ export class LaserProjectile extends GameObject {
     }
   }
 
-  override HasTag(_state: LevelState, tag: ObjectTag) {
-    return LaserProjectile.tags.has(tag);
-  }
-
-  override OnRemove(_state: LevelState) {
-    if (!this.state.virtual) {
+  Remove(state: LevelState) {
+    if (!state.virtual) {
       this.image.destroy();
     }
-  }
-
-  override OnBeginStep(state: LevelState, _trigger: boolean): void {
-    this.Remove(state);
   }
 }
 
@@ -145,22 +127,36 @@ export default class LaserGun extends GridObjectStatic {
     }
   }
 
-  override OnBeginStepTrigger(state: LevelState): void {
+  override OnBeginStep(state: LevelState, trigger: boolean): void {
+    for (const projectile of this.projectiles) {
+      projectile.Remove(state);
+    }
     this.projectiles = [];
-    for (const dir of getAllEnumValues(Direction)) {
-      const nextPoint = this.position.Translate(dir);
+
+    if (trigger) {
       if (
-        state.IsInBounds(nextPoint) &&
-        !state.HasGridTag(nextPoint, ObjectTag.DESTROY_BULLETS)
+        state.virtual &&
+        this.position.x != state.player.destination.x &&
+        this.position.y != state.player.destination.y
       ) {
-        new LaserProjectile(
-          nextPoint,
-          state,
-          dir,
-          this.color.length,
-          this.color,
-          this
-        );
+        // TODO: could cause problems once more complicated items are added
+        return;
+      }
+      for (const dir of getAllEnumValues(Direction)) {
+        const nextPoint = this.position.Translate(dir);
+        if (
+          state.IsInBounds(nextPoint) &&
+          !state.HasGridTag(nextPoint, ObjectTag.DESTROY_BULLETS)
+        ) {
+          new LaserProjectile(
+            nextPoint,
+            state,
+            dir,
+            this.color.length,
+            this.color,
+            this
+          );
+        }
       }
     }
   }

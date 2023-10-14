@@ -239,7 +239,8 @@ export default class LevelScene extends Phaser.Scene {
     );
     this.levelParser.BuildLevel(this.grid);
     this.cameraManager = new CameraManager(this.grid);
-    const solver = new Solver(this.grid);
+    const solver = new Solver();
+    solver.Solve(this.grid);
     solver.ReportVictoryPaths();
   }
 
