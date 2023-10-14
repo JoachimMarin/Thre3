@@ -1,10 +1,11 @@
 import ObjectTag from 'Constants/ObjectTag';
-import LevelState from 'LevelScene/LevelState';
+import DynamicState from 'Level/DynamicState';
 import Direction from 'Math/Direction';
 import { getAllEnumValues } from 'enum-for';
 import { IVec2, Vec2 } from 'Math/GridPoint';
 import ImageKey from 'Constants/ImageKey';
-import GridObjectStatic from 'GameObjects/BaseClasses/GridObjectStatic';
+import GridObjectStaticImage from 'GameObjects/BaseClasses/GridObjectStaticImage';
+import StaticState from 'Level/StaticState';
 
 export class LaserColor {
   public readonly name: string;
@@ -36,7 +37,7 @@ export class LaserProjectile {
 
   constructor(
     aPoint: IVec2,
-    state: LevelState,
+    state: DynamicState,
     direction: Direction,
     length: integer,
     color: LaserColor,
@@ -82,14 +83,22 @@ export class LaserProjectile {
     }
   }
 
-  Remove(state: LevelState) {
+  Remove(state: DynamicState) {
     if (!state.virtual) {
       this.image.destroy();
+      this.image = null;
+    }
+  }
+
+  Unload(virtual: boolean) {
+    if (!virtual) {
+      this.image.destroy();
+      this.image = null;
     }
   }
 }
 
-export default class LaserGun extends GridObjectStatic {
+export default class LaserGun extends GridObjectStaticImage {
   public image: Phaser.GameObjects.Image;
 
   static tags = new Set<ObjectTag>([ObjectTag.WALL, ObjectTag.DESTROY_BULLETS]);
@@ -97,37 +106,31 @@ export default class LaserGun extends GridObjectStatic {
   private color: LaserColor;
   public projectiles: LaserProjectile[] = [];
 
-  constructor(state: LevelState, aPoint: IVec2, color: LaserColor) {
-    super(state, aPoint);
+  constructor(state: StaticState, aPoint: IVec2, color: LaserColor) {
+    super(state, aPoint, color.gunImageKey);
     this.color = color;
-
-    if (!state.virtual) {
-      const point = Vec2.AsVec2(aPoint);
-      this.image = state.levelScene.add.image(
-        point.realX(),
-        point.realY(),
-        color.gunImageKey
-      );
-      this.image.setDisplaySize(1, 1);
-    }
-
     this.PostConstructStatic(state);
   }
 
-  override HasTag(_state: LevelState, tag: ObjectTag) {
+  override HasTag(_state: DynamicState, tag: ObjectTag) {
     return LaserGun.tags.has(tag);
   }
 
-  override OnRemove(state: LevelState) {
+  override OnRemove(state: DynamicState) {
     for (const projectile of this.projectiles) {
       projectile.Remove(state);
     }
-    if (!state.virtual) {
-      this.image.destroy();
-    }
+    this.projectiles = [];
   }
 
-  override OnBeginStep(state: LevelState, trigger: boolean): void {
+  override OnUnload(virtual: boolean): void {
+    for (const projectile of this.projectiles) {
+      projectile.Unload(virtual);
+    }
+    this.projectiles = [];
+  }
+
+  override OnBeginStep(state: DynamicState, trigger: boolean): void {
     for (const projectile of this.projectiles) {
       projectile.Remove(state);
     }

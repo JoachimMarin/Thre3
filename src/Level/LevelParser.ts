@@ -1,20 +1,14 @@
-import * as Phaser from 'phaser';
-
-import LevelState from 'LevelScene/LevelState';
-import Item from 'GameObjects/PrePlaced/Item';
-import ItemType from 'Constants/ItemType';
-import ImageKey from 'Constants/ImageKey';
-import Tile from 'Constants/Tile';
-import { IVec2 } from 'Math/GridPoint';
-
 import ImageDefinitions from 'Constants/Definitions/ImageDefinitions';
 import ItemDefinitions from 'Constants/Definitions/ItemDefinitions';
-import TileDefinitions from 'Constants/Definitions/TileDefinitions';
-import CameraManager from './CameraManager';
-import SideUserInterfaceScene from './SideUserInterfaceScene';
-import GridUserInterfaceScene from './GridUserInterfaceScene';
 import LevelList from 'Constants/Definitions/LevelList';
-import Solver from './Solver';
+import TileDefinitions from 'Constants/Definitions/TileDefinitions';
+import ImageKey from 'Constants/ImageKey';
+import ItemType from 'Constants/ItemType';
+import Tile from 'Constants/Tile';
+import Item from 'GameObjects/PrePlaced/Item';
+import LevelScene from 'Level/LevelScene';
+import { IVec2 } from 'Math/GridPoint';
+import LevelState from './LevelState';
 
 /**
  * TilesFile parses the .tsx file from the Tiled level editor.
@@ -93,13 +87,15 @@ class LevelFile {
  *  .tsx file @see TilesFile
  *  .tmx file @see LevelFile
  */
-class LevelParser {
+export default class LevelParser {
   private tileDict: {
-    [key: string]: (point: IVec2, grid: LevelState) => void;
+    [key: string]: (state: LevelState, point: IVec2) => void;
   } = {};
 
   private scenes: Phaser.Scene[];
   private levelScene: LevelScene;
+
+  public levelIndex: integer;
   public tilesFile: TilesFile;
   public levelFile: LevelFile;
 
@@ -116,7 +112,7 @@ class LevelParser {
     }
   }
 
-  RegisterTile(key: string, fun: (point: IVec2, grid: LevelState) => void) {
+  RegisterTile(key: string, fun: (state: LevelState, point: IVec2) => void) {
     this.tileDict[key] = fun;
   }
 
@@ -130,7 +126,7 @@ class LevelParser {
     for (const itemType of ItemType.ALL) {
       this.RegisterTile(
         itemType.imageKey,
-        (point, grid) => new Item(grid, point, itemType)
+        (state, point) => new Item(state.staticState, point, itemType)
       );
     }
 
@@ -139,140 +135,40 @@ class LevelParser {
     }
 
     this.levelScene.load.xml('tiles', 'assets/tiles.tsx');
-    this.levelScene.load.xml(
-      LevelList[LevelScene.SCENE.index].fileName,
-      'assets/levels/' + LevelList[LevelScene.SCENE.index].fileName + '.tmx'
-    );
+    for (let i = 0; i < LevelList.length; i++) {
+      this.levelScene.load.xml(
+        LevelList[i].fileName,
+        'assets/levels/' + LevelList[i].fileName + '.tmx'
+      );
+    }
   }
 
-  LoadLevelInfo() {
+  LoadLevelInfo(levelIndex: integer) {
     /**
      * Loads level information from the loaded .tsx and .tmx files.
      */
+    this.levelIndex = levelIndex;
     this.tilesFile = new TilesFile(this.levelScene.cache.xml.get('tiles'));
     this.levelFile = new LevelFile(
-      this.levelScene.cache.xml.get(LevelList[LevelScene.SCENE.index].fileName)
+      this.levelScene.cache.xml.get(LevelList[levelIndex].fileName)
     );
   }
 
-  BuildLevel(grid: LevelState) {
-    /**
-     * Fills the grid with tiles as specified by the loaded .tsx and .tmx files.
-     * @param grid:
-     */
-    grid.lockGridKey = true;
+  BuildLevel(state: LevelState) {
+    state.dynamicState.lockGridKey = true;
     for (let y = 0; y < this.levelFile.height; y++) {
       for (let x = 0; x < this.levelFile.width; x++) {
         for (const objectId of this.levelFile.objects[x][y]) {
           const key = this.tilesFile.tileDict[objectId];
           if (key in this.tileDict) {
-            this.tileDict[key]([x, y], grid);
+            this.tileDict[key](state, [x, y]);
           } else {
             console.error('key <' + key + '> was not found.');
           }
         }
       }
     }
-    grid.lockGridKey = false;
-    grid.UpdateGridKeyString();
-
-    return grid;
-  }
-}
-
-export default class LevelScene extends Phaser.Scene {
-  public cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private grid: LevelState;
-  private levelParser: LevelParser;
-  public cameraManager: CameraManager;
-  private ready: boolean = false;
-  private additionalScenes: Phaser.Scene[];
-
-  public static readonly SCENE = new LevelScene();
-
-  public index: integer = 0;
-
-  private constructor() {
-    super('level');
-    this.additionalScenes = [
-      SideUserInterfaceScene.SCENE,
-      GridUserInterfaceScene.SCENE
-    ];
-    this.levelParser = new LevelParser(this, []);
-  }
-
-  init() {
-    this.cursors = this.input.keyboard.createCursorKeys();
-  }
-
-  preload() {
-    this.levelParser.Preload();
-  }
-
-  changeSceneToLevel(current: Phaser.Scene, index: integer) {
-    this.index = index;
-    current.scene.start(this);
-  }
-
-  restartLevel() {
-    this.loadLevel();
-  }
-
-  changeToNextLevel() {
-    const next = this.index + 1;
-    if (next < LevelList.length) {
-      this.changeSceneToLevel(this, next);
-    } else {
-      console.log('you won all levels');
-    }
-  }
-
-  loadLevel() {
-    if (this.grid != null) {
-      this.grid.Remove();
-    }
-    this.levelParser.LoadLevelInfo();
-    this.grid = new LevelState(
-      this,
-      this.levelParser.levelFile.width,
-      this.levelParser.levelFile.height
-    );
-    this.levelParser.BuildLevel(this.grid);
-    this.cameraManager = new CameraManager(this.grid);
-    const solver = new Solver();
-    solver.Solve(this.grid);
-    solver.ReportVictoryPaths();
-  }
-
-  createReady() {
-    this.loadLevel();
-    this.ready = true;
-  }
-
-  create() {
-    this.ready = false;
-    for (const scene of this.additionalScenes) {
-      this.scene.launch(scene);
-    }
-
-    // wait until additional scenes have run "create"
-    // this allows us to fully interact with them
-    // for example accessing their cameras with CameraManager
-    const waitForScenes = setInterval(() => {
-      for (const scene of this.additionalScenes) {
-        if (this.scene.getStatus(scene) != 5) {
-          return;
-        }
-      }
-
-      clearInterval(waitForScenes);
-      this.createReady();
-    }, 5);
-  }
-
-  update(_time: number, delta: number) {
-    if (this.ready) {
-      this.grid.Update(delta);
-    }
+    state.dynamicState.lockGridKey = false;
+    state.dynamicState.UpdateGridKeyString();
   }
 }

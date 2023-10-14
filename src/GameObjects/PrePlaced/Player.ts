@@ -5,7 +5,7 @@ import { IVec2, Vec2 } from 'Math/GridPoint';
 import Item from './Item';
 import PopUp from 'GameObjects/PopUp';
 import ItemDefinitions from 'Constants/Definitions/ItemDefinitions';
-import LevelState from 'LevelScene/LevelState';
+import DynamicState from 'Level/DynamicState';
 import Solver from 'LevelScene/Solver';
 import GridObject from 'GameObjects/BaseClasses/GridObject';
 import { LaserProjectile } from './LaserGun';
@@ -22,9 +22,9 @@ export default class Player extends GridObject {
   public destination: Vec2;
   private gameOver: boolean = false;
   public objectsToProcess: LaserProjectile[] = [];
-  private grid: LevelState;
+  private grid: DynamicState;
 
-  constructor(point: IVec2, grid: LevelState) {
+  constructor(point: IVec2, grid: DynamicState) {
     super(point);
     this.grid = grid;
     this.grid.player = this;
@@ -40,7 +40,20 @@ export default class Player extends GridObject {
     this.PostConstruct(grid);
   }
 
-  override DeepCopy(state: LevelState) {
+  override OnRemove(_state: DynamicState): void {
+    if (!this.grid.virtual) {
+      this.image.destroy();
+      this.image = null;
+    }
+  }
+  override OnUnload(virtual: boolean): void {
+    if (!virtual) {
+      this.image.destroy();
+      this.image = null;
+    }
+  }
+
+  override DeepCopy(state: DynamicState) {
     return new Player(this.position, state);
   }
 
@@ -84,7 +97,7 @@ export default class Player extends GridObject {
       if (!useMirror && this.grid.inventory.HasItem(ItemDefinitions.MIRROR)) {
         this.grid.inventory.RemoveItem(ItemDefinitions.MIRROR);
         useMirror = true;
-        new PopUp(this.position, this.grid, ItemDefinitions.MIRROR.imageKey);
+        PopUp.Create(this.grid, this.position, ItemDefinitions.MIRROR.imageKey);
       }
       if (
         !useMirror &&
@@ -93,13 +106,13 @@ export default class Player extends GridObject {
       ) {
         this.grid.inventory.RemoveItem(ItemDefinitions.SHIELD);
         useShield = true;
-        new PopUp(this.position, this.grid, ItemDefinitions.SHIELD.imageKey);
+        PopUp.Create(this.grid, this.position, ItemDefinitions.SHIELD.imageKey);
       }
       if (useMirror) {
         deadly.owner.Remove(this.grid);
-        new TimedImage(
-          deadly.owner.position,
+        TimedImage.Create(
           this.grid,
+          deadly.owner.position,
           ImageDefinitions.EXPLOSION.imageKey,
           0.3,
           1.25,
@@ -146,7 +159,7 @@ export default class Player extends GridObject {
     this.position = position;
   }
 
-  OnUpdate(_state: LevelState, delta: number): void {
+  OnUpdate(_state: DynamicState, delta: number): void {
     const speed = 0.004;
     if (this.moving) {
       const translationVector = Vec2.TranslationVector(this.direction);

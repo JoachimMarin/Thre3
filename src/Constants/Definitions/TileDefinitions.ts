@@ -4,34 +4,37 @@ import LaserGun, { LaserColor } from 'GameObjects/PrePlaced/LaserGun';
 import DirtWall from 'GameObjects/PrePlaced/DirtWall';
 import { Vec2 } from 'Math/GridPoint';
 import ObjectTag from 'Constants/ObjectTag';
-import LevelState from 'LevelScene/LevelState';
+import DynamicState from 'Level/DynamicState';
 
 class SimpleTile extends Tile {
   constructor(imageKey: string, ...tags: ObjectTag[]) {
-    super(imageKey, (point, grid) => {
+    super(imageKey, (state, point) => {
       const vec2 = Vec2.AsVec2(point);
-      const gridKey = LevelState.GridKeyPoint(vec2);
-      if (!grid.staticState.staticTags.has(gridKey)) {
-        grid.staticState.staticTags.set(gridKey, new Set<ObjectTag>());
+      const gridKey = DynamicState.GridKeyPoint(vec2);
+      if (!state.staticState.staticTags.has(gridKey)) {
+        state.staticState.staticTags.set(gridKey, new Set<ObjectTag>());
       }
       for (const tag of tags) {
-        grid.staticState.staticTags.get(gridKey).add(tag);
+        state.staticState.staticTags.get(gridKey).add(tag);
       }
-      if (!grid.virtual) {
-        const image = grid.levelScene.add.image(
+      if (!state.virtual) {
+        const image = state.levelScene.add.image(
           vec2.realX(),
           vec2.realY(),
           imageKey
         );
         image.setDisplaySize(1, 1);
-        grid.staticImages.push(image);
+        state.levelScene.staticImages.push(image);
       }
     });
   }
 }
 
 const TileDefinitions = {
-  PLAYER: new Tile(Player.imageKey, (point, grid) => new Player(point, grid)),
+  PLAYER: new Tile(
+    Player.imageKey,
+    (state, point) => new Player(point, state.dynamicState)
+  ),
   BLUE_WALL: new SimpleTile('blue_wall', ObjectTag.WALL),
   PROTECTIVE_WALL: new SimpleTile(
     'protective_wall',
@@ -45,8 +48,8 @@ const TileDefinitions = {
     for (const color of LaserColor.ALL) {
       r.set(
         color,
-        new Tile(color.gunImageKey, (point, grid) => {
-          return new LaserGun(grid, point, color);
+        new Tile(color.gunImageKey, (state, point) => {
+          return new LaserGun(state.staticState, point, color);
         })
       );
     }
@@ -55,7 +58,7 @@ const TileDefinitions = {
 
   DIRT_WALL: new Tile(
     DirtWall.imageKey,
-    (point, grid) => new DirtWall(grid, point)
+    (state, point) => new DirtWall(state.staticState, point)
   )
 };
 

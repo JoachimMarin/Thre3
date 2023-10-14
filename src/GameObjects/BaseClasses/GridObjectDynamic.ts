@@ -1,11 +1,11 @@
-import LevelState from 'LevelScene/LevelState';
+import DynamicState from 'Level/DynamicState';
 import { IVec2, Vec2 } from 'Math/GridPoint';
 import GridObject from './GridObject';
 
 export default abstract class GridObjectDynamic extends GridObject {
-  public state: LevelState;
+  public state: DynamicState;
 
-  constructor(state: LevelState, point: IVec2) {
+  constructor(state: DynamicState, point: IVec2) {
     super(point);
     this.state = state;
     this.AddToGrid();
@@ -16,7 +16,7 @@ export default abstract class GridObjectDynamic extends GridObject {
   }
 
   private AddToGrid() {
-    const gridKey = LevelState.GridKeyPoint(this.position);
+    const gridKey = DynamicState.GridKeyPoint(this.position);
     if (!this.state.dynamicObjects.has(gridKey)) {
       this.state.dynamicObjects.set(gridKey, new Set<GridObjectDynamic>());
     }
@@ -24,14 +24,14 @@ export default abstract class GridObjectDynamic extends GridObject {
     this.state.UpdateDynamicsKeyString();
   }
   private RemoveFromGrid() {
-    const gridKey = LevelState.GridKeyPoint(this.position);
+    const gridKey = DynamicState.GridKeyPoint(this.position);
     if (this.state.dynamicObjects.has(gridKey)) {
       this.state.dynamicObjects.get(gridKey).delete(this);
       this.state.UpdateDynamicsKeyString();
     }
   }
 
-  override Remove(state: LevelState) {
+  override Remove(state: DynamicState) {
     this.state.ClearEventGroups(this);
     this.RemoveFromGrid();
     super.Remove(state);

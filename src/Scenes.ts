@@ -1,4 +1,4 @@
-import LevelScene from 'LevelScene/LevelScene';
+import LevelScene from 'Level/LevelScene';
 import MainMenuScene from 'MainMenuScene';
 import SideUserInterfaceScene from 'LevelScene/SideUserInterfaceScene';
 import GridUserInterfaceScene from 'LevelScene/GridUserInterfaceScene';

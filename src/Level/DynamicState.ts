@@ -1,92 +1,27 @@
-import GridObject from 'GameObjects/BaseClasses/GridObject';
-import ObjectTag from 'Constants/ObjectTag';
-import LevelScene from 'LevelScene/LevelScene';
-import { IVec2, Vec2 } from 'Math/GridPoint';
 import GameObjectEvent from 'Constants/GridObjectEvent';
-import Player from 'GameObjects/PrePlaced/Player';
-import Inventory from 'LevelScene/Inventory';
 import GameObject from 'GameObjects/BaseClasses/GameObject';
-import ClassUtils from 'Utils/ClassUtils';
-import GridObjectChanges from 'GameObjects/BaseClasses/GridObjectChanges';
+import GridObjectChanges from 'Level/GridObjectChanges';
 import GridObjectDynamic from 'GameObjects/BaseClasses/GridObjectDynamic';
 import GridObjectStatic from 'GameObjects/BaseClasses/GridObjectStatic';
-
-export class StaticState {
-  public staticObjects = new Map<number, Set<GridObjectStatic>>();
-  public staticTags = new Map<number, Set<ObjectTag>>();
-
-  public eventGroups = new Map<GameObjectEvent, (obj: GameObject) => boolean>();
-  public staticEventObjects = new Map<GameObjectEvent, Set<GridObjectStatic>>();
-
-  constructor() {
-    this.DefineEventGroups();
-  }
-
-  /**
-   * Adds Gameobject obj to all relevant EventGroups
-   * @param obj
-   */
-  SetupEventGroups(obj: GridObjectStatic) {
-    for (const [event, condition] of this.eventGroups) {
-      if (condition(obj)) {
-        if (!this.staticEventObjects.has(event)) {
-          this.staticEventObjects.set(event, new Set<GridObjectStatic>());
-        }
-        this.staticEventObjects.get(event).add(obj);
-      }
-    }
-  }
-
-  /**
-   * Defines a new EventGroup for GameObjectEvent key for GameObjects fulfilling condition.
-   * @param key
-   * @param condition
-   */
-  DefineEventGroup(
-    key: GameObjectEvent,
-    condition: (obj: GameObject) => boolean
-  ) {
-    this.eventGroups.set(key, condition);
-  }
-
-  DefineEventGroups() {
-    // Check whether a GameObject has a certain event
-    // All GameObjects in the scene
-    this.DefineEventGroup(GameObjectEvent.GLOBAL_SCENE, (_obj) => true);
-    // GameObjects that override an event function:
-    // .OnUpdate
-    this.DefineEventGroup(GameObjectEvent.UPDATE, (obj) =>
-      ClassUtils.IsImplemented(obj.OnUpdate)
-    );
-    // .OnBeginStep
-    this.DefineEventGroup(GameObjectEvent.BEGIN_STEP_ALL, (obj) =>
-      ClassUtils.IsImplemented(obj.OnBeginStep)
-    );
-    // .OnBeginStepTrigger
-    this.DefineEventGroup(GameObjectEvent.BEGIN_STEP_TRIGGER, (obj) =>
-      ClassUtils.IsImplemented(obj.OnBeginStepTrigger)
-    );
-    // .OnEndStep
-    this.DefineEventGroup(GameObjectEvent.END_STEP_ALL, (obj) =>
-      ClassUtils.IsImplemented(obj.OnEndStep)
-    );
-    // .OnEndStepTrigger
-    this.DefineEventGroup(GameObjectEvent.END_STEP_TRIGGER, (obj) =>
-      ClassUtils.IsImplemented(obj.OnEndStepTrigger)
-    );
-  }
-}
+import { IVec2, Vec2 } from 'Math/GridPoint';
+import StaticState from './StaticState';
+import Player from 'GameObjects/PrePlaced/Player';
+import Inventory from 'LevelScene/Inventory';
+import EventGroupDefintions from './EventGroupDefintions';
+import ObjectTag from 'Constants/ObjectTag';
+import GridObject from 'GameObjects/BaseClasses/GridObject';
+import LevelScene from 'Level/LevelScene';
 
 /**
  * Contains all game objects and manages level related gameplay.
  */
-export default class LevelState {
+export default class DynamicState {
   static GridKeyXY(x: number, y: number) {
     return x + y * 10000;
   }
 
   static GridKeyPoint(point: Vec2) {
-    return LevelState.GridKeyXY(point.x, point.y);
+    return DynamicState.GridKeyXY(point.x, point.y);
   }
 
   public staticObjectChanges = new Map<GridObjectStatic, GridObjectChanges>();
@@ -94,44 +29,37 @@ export default class LevelState {
   public dynamicEventObjects = new Map<GameObjectEvent, Set<GameObject>>();
   public staticState: StaticState | null;
 
-  public readonly levelScene: LevelScene;
-  public readonly virtual: boolean;
   private playerStep = 0;
   private playerMaxStep = 3;
   public player: Player = null;
   public inventory: Inventory;
-  private background: Phaser.GameObjects.Rectangle;
-  public staticImages: Phaser.GameObjects.Image[] = [];
   private changesKeyString: string;
   private dynamicsKeyString: string;
   public lockGridKey: boolean = true;
 
-  public readonly width: integer;
-  public readonly height: integer;
+  public readonly levelScene: LevelScene;
+  public readonly virtual: boolean;
 
-  constructor(levelScene: LevelScene | null, width: integer, height: integer) {
-    this.virtual = levelScene == null;
+  constructor(
+    staticState: StaticState,
+    inventory: Inventory,
+    levelScene: LevelScene
+  ) {
+    this.staticState = staticState;
+    this.inventory = inventory;
     this.levelScene = levelScene;
-    this.width = width;
-    this.height = height;
-
-    if (!this.virtual) {
-      this.staticState = new StaticState();
-      this.background = levelScene.add
-        .rectangle(0, 0, width, height, 0xaabbcc)
-        .setOrigin(0, 0);
-    }
-
-    this.inventory = new Inventory(this.virtual);
+    this.virtual = levelScene == null;
   }
 
   DeepVirtualCopy() {
-    const copy = new LevelState(null, this.width, this.height);
-    copy.staticState = this.staticState;
+    const copy = new DynamicState(
+      this.staticState,
+      this.inventory.DeepVirtualCopy(),
+      null
+    );
     copy.player = this.player.DeepCopy(copy);
     copy.playerStep = this.playerStep;
     copy.playerMaxStep = this.playerMaxStep;
-    copy.inventory = this.inventory.DeepVirtualCopy();
     copy.changesKeyString = this.changesKeyString;
     copy.dynamicsKeyString = this.dynamicsKeyString;
     copy.lockGridKey = true;
@@ -223,7 +151,7 @@ export default class LevelState {
    * @param obj
    */
   SetupEventGroups(obj: GameObject) {
-    for (const [event, condition] of this.staticState.eventGroups) {
+    for (const [event, condition] of EventGroupDefintions) {
       if (condition(obj)) {
         if (!this.dynamicEventObjects.has(event)) {
           this.dynamicEventObjects.set(event, new Set<GameObject>());
@@ -238,7 +166,7 @@ export default class LevelState {
    * @param obj
    */
   ClearEventGroups(obj: GameObject) {
-    for (const [event, condition] of this.staticState.eventGroups) {
+    for (const [event, condition] of EventGroupDefintions) {
       if (condition(obj)) {
         if (this.dynamicEventObjects.has(event)) {
           this.dynamicEventObjects.get(event).delete(obj);
@@ -253,8 +181,8 @@ export default class LevelState {
    * @param func
    */
   ForEventGroup(key: GameObjectEvent, func: (obj: GameObject) => void) {
-    if (this.staticState.staticEventObjects.has(key)) {
-      for (const object of this.staticState.staticEventObjects.get(key)) {
+    if (this.staticState.eventGroups.has(key)) {
+      for (const object of this.staticState.eventGroups.get(key)) {
         if (object.Exists(this)) {
           func(object);
         }
@@ -277,8 +205,8 @@ export default class LevelState {
     return (
       gridPoint.x >= 0 &&
       gridPoint.y >= 0 &&
-      gridPoint.x < this.width &&
-      gridPoint.y < this.height
+      gridPoint.x < this.staticState.width &&
+      gridPoint.y < this.staticState.height
     );
   }
   /**
@@ -289,7 +217,7 @@ export default class LevelState {
    */
   HasGridTag(point: IVec2, tag: ObjectTag) {
     const gridPoint = Vec2.AsVec2(point);
-    const gridKey = LevelState.GridKeyPoint(gridPoint);
+    const gridKey = DynamicState.GridKeyPoint(gridPoint);
 
     if (this.staticState.staticTags.has(gridKey)) {
       if (this.staticState.staticTags.get(gridKey).has(tag)) {
@@ -322,7 +250,7 @@ export default class LevelState {
    */
   GetByTag(point: IVec2, tag: ObjectTag): GridObject[] {
     const gridPoint = Vec2.AsVec2(point);
-    const gridKey = LevelState.GridKeyPoint(gridPoint);
+    const gridKey = DynamicState.GridKeyPoint(gridPoint);
 
     const array = [];
 
@@ -393,18 +321,19 @@ export default class LevelState {
   }
 
   /**
-   * Removes all data governed by this LevelState.
+   * Removes all data governed by this DynamicState.
    */
-  Remove() {
-    this.ForEventGroup(GameObjectEvent.GLOBAL_SCENE, (obj) => {
-      obj.Remove(this);
-    });
-    this.inventory.Clear();
-    if (!this.virtual) {
-      this.background.destroy();
-      for (const image of this.staticImages) {
-        image.destroy();
+  Unload() {
+    if (this.dynamicEventObjects.has(GameObjectEvent.GLOBAL_SCENE)) {
+      for (const obj of this.dynamicEventObjects.get(
+        GameObjectEvent.GLOBAL_SCENE
+      )) {
+        obj.Unload(this.virtual);
       }
     }
+    this.staticObjectChanges.clear();
+    this.dynamicObjects.clear();
+    this.dynamicEventObjects.clear();
+    this.inventory.Clear();
   }
 }

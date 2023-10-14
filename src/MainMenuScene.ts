@@ -1,5 +1,5 @@
 import LevelList from 'Constants/Definitions/LevelList';
-import LevelScene from 'LevelScene/LevelScene';
+import LevelScene from 'Level/LevelScene';
 import { Vec2 } from 'Math/GridPoint';
 import * as UI from 'UserInterface';
 import * as Phaser from 'phaser';
