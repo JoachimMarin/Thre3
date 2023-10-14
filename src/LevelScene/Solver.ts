@@ -38,6 +38,7 @@ export default class Solver {
   private static result = Result.Pending;
   private knownStates: KnownStates = new KnownStates();
   private counter: number = 0;
+  private pathLength: number = 0;
 
   static Defeat() {
     this.result = Result.Defeat;
@@ -45,18 +46,6 @@ export default class Solver {
 
   static Victory() {
     this.result = Result.Victory;
-  }
-
-  private victoryPaths: Vec2[][] = [];
-
-  constructor(state: LevelState) {
-    console.time('Solver');
-    this.Solve(state, []);
-    console.timeEnd('Solver');
-  }
-
-  AddVictoryPath(path: Vec2[]) {
-    this.victoryPaths.push(path);
   }
 
   ReportVictoryPaths() {
@@ -70,7 +59,19 @@ export default class Solver {
     }
   }
 
-  Solve(state: LevelState, path: Vec2[]) {
+  Solve(state: LevelState) {
+    console.time('Solver');
+    this._Solve(state, []);
+    console.timeEnd('Solver');
+  }
+
+  private victoryPaths: Vec2[][] = [];
+
+  private AddVictoryPath(path: Vec2[]) {
+    this.victoryPaths.push(path);
+  }
+
+  private _Solve(state: LevelState, path: Vec2[]) {
     const directions = [
       Direction.RIGHT,
       Direction.DOWN,
@@ -80,9 +81,9 @@ export default class Solver {
     const queue: [LevelState, Vec2[]][] = [[state, path]];
     while (queue.length > 0) {
       const [state, path] = queue.shift();
-      this.counter++;
-      if (this.counter % 1000 == 0) {
-        console.log(this.counter);
+      if (path.length > this.pathLength) {
+        this.pathLength = path.length;
+        console.log('path length = ' + this.pathLength);
       }
 
       for (const dir of directions) {

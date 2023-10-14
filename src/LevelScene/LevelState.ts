@@ -92,7 +92,7 @@ export default class LevelState {
   public staticObjectChanges = new Map<GridObjectStatic, GridObjectChanges>();
   public dynamicObjects = new Map<number, Set<GridObjectDynamic>>();
   public dynamicEventObjects = new Map<GameObjectEvent, Set<GameObject>>();
-  public staticState = new StaticState();
+  public staticState: StaticState | null;
 
   public readonly levelScene: LevelScene;
   public readonly virtual: boolean;
@@ -112,26 +112,29 @@ export default class LevelState {
   constructor(levelScene: LevelScene | null, width: integer, height: integer) {
     this.virtual = levelScene == null;
     this.levelScene = levelScene;
-    this.inventory = new Inventory(this.virtual);
     this.width = width;
     this.height = height;
 
     if (!this.virtual) {
+      this.staticState = new StaticState();
       this.background = levelScene.add
         .rectangle(0, 0, width, height, 0xaabbcc)
         .setOrigin(0, 0);
     }
+
+    this.inventory = new Inventory(this.virtual);
   }
 
   DeepVirtualCopy() {
     const copy = new LevelState(null, this.width, this.height);
+    copy.staticState = this.staticState;
+    copy.player = this.player.DeepCopy(copy);
     copy.playerStep = this.playerStep;
     copy.playerMaxStep = this.playerMaxStep;
     copy.inventory = this.inventory.DeepVirtualCopy();
     copy.changesKeyString = this.changesKeyString;
     copy.dynamicsKeyString = this.dynamicsKeyString;
     copy.lockGridKey = true;
-    copy.staticState = this.staticState;
 
     this.dynamicObjects.forEach((set, _) => {
       for (const gridObject of set) {
