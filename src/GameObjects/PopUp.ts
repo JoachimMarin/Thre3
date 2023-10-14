@@ -1,56 +1,65 @@
-import LevelState from 'LevelScene/LevelState';
-import { IVec2, Vec2 } from 'Math/GridPoint';
-import GameObject from './BaseClasses/GameObject';
+import DynamicState from 'Level/DynamicState';
+import { IVec2 } from 'Math/GridPoint';
+import GameObjectImage from './BaseClasses/GameObjectImage';
 
-export default class PopUp extends GameObject {
-  private image: Phaser.GameObjects.Image;
+export default class PopUp extends GameObjectImage {
   private rotationAngle: number = 0;
   private readonly rotationSpeed: number;
   private readonly rotationAngleMax: number;
 
-  constructor(
+  private constructor(
+    state: DynamicState,
     aPoint: IVec2,
-    state: LevelState,
     imageKey: string,
-    rotationSpeed: number = 1,
-    numRotations: number = 1
+    rotationSpeed: number,
+    numRotations: number,
+    displayWidth: number,
+    displayHeight: number
   ) {
-    super();
+    super(state, aPoint, imageKey, displayWidth, displayHeight);
     this.rotationSpeed = rotationSpeed;
     this.rotationAngleMax = numRotations * 360;
     this.PostConstruct(state);
+  }
+
+  public static Create(
+    state: DynamicState,
+    aPoint: IVec2,
+    imageKey: string,
+    rotationSpeed: number = 1,
+    numRotations: number = 1,
+    displayWidth: number = 1,
+    displayHeight: number = 1
+  ) {
     if (state.virtual) {
-      this.Remove(state);
+      return null;
     } else {
-      const point = Vec2.AsVec2(aPoint);
-      this.image = state.levelScene.add.image(
-        point.realX(),
-        point.realY(),
-        imageKey
+      return new PopUp(
+        state,
+        aPoint,
+        imageKey,
+        rotationSpeed,
+        numRotations,
+        displayWidth,
+        displayHeight
       );
-      this.image.setDisplaySize(1, 1);
     }
   }
 
-  Rotate(state: LevelState, angle: number) {
+  Rotate(state: DynamicState, angle: number) {
     this.rotationAngle += angle;
     if (this.rotationAngle >= this.rotationAngleMax) {
       this.Remove(state);
-    }
-    const displayAngleRad = ((this.rotationAngle % 360) / 180) * Math.PI;
-    const xScale = Math.cos(displayAngleRad);
+    } else {
+      const displayAngleRad = ((this.rotationAngle % 360) / 180) * Math.PI;
+      const xScale = Math.cos(displayAngleRad);
 
-    this.image.flipX = xScale < 0;
-    this.image.setDisplaySize(Math.abs(xScale), 1);
-  }
-
-  override OnRemove(state: LevelState): void {
-    if (!state.virtual) {
-      this.image.destroy();
+      this.image.flipX = xScale < 0;
+      this.image.setDisplaySize(Math.abs(xScale), 1);
     }
   }
 
-  override OnUpdate(state: LevelState, delta: number): void {
+  override OnUpdate(state: DynamicState, delta: number): void {
     this.Rotate(state, delta * this.rotationSpeed);
   }
 }

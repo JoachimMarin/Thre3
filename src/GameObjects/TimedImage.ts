@@ -1,42 +1,46 @@
-import LevelState from 'LevelScene/LevelState';
-import { IVec2, Vec2 } from 'Math/GridPoint';
-import GameObject from './BaseClasses/GameObject';
+import DynamicState from 'Level/DynamicState';
+import { IVec2 } from 'Math/GridPoint';
+import GameObjectImage from './BaseClasses/GameObjectImage';
 
-export default class TimedImage extends GameObject {
-  private image: Phaser.GameObjects.Image;
+export default class TimedImage extends GameObjectImage {
   private duration: number;
 
-  constructor(
+  private constructor(
+    state: DynamicState,
     aPoint: IVec2,
-    state: LevelState,
     imageKey: string,
-    duration: number = 1,
-    sizeX: number = 1,
-    sizeY: number = 1
+    duration: number,
+    displayWidth: number,
+    displayHeight: number
   ) {
-    super();
+    super(state, aPoint, imageKey, displayWidth, displayHeight);
     this.duration = duration * 1000;
     this.PostConstruct(state);
+  }
+
+  public static Create(
+    state: DynamicState,
+    aPoint: IVec2,
+    imageKey: string,
+    duration: number = 1,
+    displayWidth: number = 1,
+    displayHeight: number = 1
+  ) {
     if (state.virtual) {
-      this.Remove(state);
+      return null;
     } else {
-      const point = Vec2.AsVec2(aPoint);
-      this.image = state.levelScene.add.image(
-        point.realX(),
-        point.realY(),
-        imageKey
+      return new TimedImage(
+        state,
+        aPoint,
+        imageKey,
+        duration,
+        displayWidth,
+        displayHeight
       );
-      this.image.setDisplaySize(sizeX, sizeY);
     }
   }
 
-  override OnRemove(state: LevelState): void {
-    if (!state.virtual) {
-      this.image.destroy();
-    }
-  }
-
-  override OnUpdate(state: LevelState, delta: number): void {
+  override OnUpdate(state: DynamicState, delta: number): void {
     this.duration -= delta;
     if (this.duration <= 0) {
       this.Remove(state);

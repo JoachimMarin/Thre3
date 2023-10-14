@@ -1,37 +1,22 @@
 import ObjectTag from 'Constants/ObjectTag';
-import LevelState from 'LevelScene/LevelState';
+import DynamicState from 'Level/DynamicState';
 import ItemType from 'Constants/ItemType';
-import { IVec2, Vec2 } from 'Math/GridPoint';
-import GridObjectStatic from 'GameObjects/BaseClasses/GridObjectStatic';
+import { IVec2 } from 'Math/GridPoint';
+import GridObjectStaticImage from 'GameObjects/BaseClasses/GridObjectStaticImage';
+import StaticState from 'Level/StaticState';
 
-export default class Item extends GridObjectStatic {
-  public image: Phaser.GameObjects.Image;
+export default class Item extends GridObjectStaticImage {
   static tags = new Set<ObjectTag>([ObjectTag.ITEM]);
 
   public readonly itemType: ItemType;
 
-  constructor(state: LevelState, aPoint: IVec2, itemType: ItemType) {
-    super(state, aPoint);
+  constructor(state: StaticState, aPoint: IVec2, itemType: ItemType) {
+    super(state, aPoint, itemType.imageKey);
     this.itemType = itemType;
     this.PostConstructStatic(state);
-    if (!state.virtual) {
-      const point = Vec2.AsVec2(aPoint);
-      this.image = state.levelScene.add.image(
-        point.realX(),
-        point.realY(),
-        itemType.imageKey
-      );
-      this.image.setDisplaySize(1, 1);
-    }
   }
 
-  override HasTag(_state: LevelState, tag: ObjectTag) {
+  override HasTag(_state: DynamicState, tag: ObjectTag) {
     return Item.tags.has(tag);
-  }
-
-  override OnRemove(state: LevelState) {
-    if (!state.virtual) {
-      this.image.destroy();
-    }
   }
 }

@@ -1,31 +1,31 @@
-import LevelState from 'LevelScene/LevelState';
+import DynamicState from 'Level/DynamicState';
 import { IVec2, Vec2 } from 'Math/GridPoint';
 import GridObject from './GridObject';
-import GridObjectChanges from 'GameObjects/BaseClasses/GridObjectChanges';
+import GridObjectChanges from 'Level/GridObjectChanges';
+import StaticState from 'Level/StaticState';
 
 export default abstract class GridObjectStatic extends GridObject {
-  constructor(state: LevelState, point: IVec2) {
+  constructor(state: StaticState, point: IVec2) {
     super(point);
-    const gridKey = LevelState.GridKeyPoint(Vec2.AsVec2(point));
-    const staticState = state.staticState;
+    const gridKey = DynamicState.GridKeyPoint(Vec2.AsVec2(point));
+    const staticState = state;
     if (!staticState.staticObjects.has(gridKey)) {
       staticState.staticObjects.set(gridKey, new Set<GridObjectStatic>());
     }
     staticState.staticObjects.get(gridKey).add(this);
   }
 
-  PostConstructStatic(state: LevelState) {
-    state.staticState.SetupEventGroups(this);
-    this.OnInit(state);
+  PostConstructStatic(state: StaticState) {
+    state.SetupEventGroups(this);
   }
 
-  override Exists(state: LevelState) {
+  override Exists(state: DynamicState) {
     return (
       !state.staticObjectChanges.has(this) ||
       !state.staticObjectChanges.get(this).disabled
     );
   }
-  override Remove(state: LevelState) {
+  override Remove(state: DynamicState) {
     if (!state.staticObjectChanges.has(this)) {
       state.staticObjectChanges.set(this, new GridObjectChanges());
     }
@@ -34,5 +34,5 @@ export default abstract class GridObjectStatic extends GridObject {
     super.Remove(state);
   }
 
-  override DeepCopy(_state: LevelState) {}
+  override DeepCopy(_state: DynamicState) {}
 }

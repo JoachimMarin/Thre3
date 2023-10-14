@@ -1,4 +1,4 @@
-import LevelState from 'LevelScene/LevelState';
+import DynamicState from 'Level/DynamicState';
 import { IVec2, Vec2 } from 'Math/GridPoint';
 import GameObject from './GameObject';
 
@@ -14,13 +14,13 @@ export default abstract class GridObject extends GameObject {
     this.position = Vec2.AsVec2(point);
   }
 
-  abstract DeepCopy(state: LevelState): void;
+  abstract DeepCopy(state: DynamicState): void;
 
-  IsWall(_state: LevelState) {
+  IsWall(_state: DynamicState) {
     return false;
   }
 
-  GetGridPosition(_state: LevelState) {
+  GetGridPosition(_state: DynamicState) {
     return this.position;
   }
 }

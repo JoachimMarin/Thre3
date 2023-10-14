@@ -4,12 +4,12 @@ import GameObject from 'GameObjects/BaseClasses/GameObject';
 import SideUserInterfaceScene from './SideUserInterfaceScene';
 import GridUserInterfaceScene from './GridUserInterfaceScene';
 import { Vec2 } from 'Math/GridPoint';
-import LevelState from './LevelState';
+import DynamicState from 'Level/DynamicState';
 
 const maxZoomInTiles = 4;
 
 export default class CameraManager extends GameObject {
-  private state: LevelState;
+  private state: DynamicState;
   private canvasSize: Vec2 = Vec2.AsVec2([0, 0]);
   private uiCanvasSize: Vec2 = Vec2.AsVec2([0, 0]);
   private mainCanvasSize: Vec2 = Vec2.AsVec2([0, 0]);
@@ -19,7 +19,7 @@ export default class CameraManager extends GameObject {
   private sideUICam: Phaser.Cameras.Scene2D.Camera;
   private gridUICam: Phaser.Cameras.Scene2D.Camera;
 
-  constructor(state: LevelState) {
+  constructor(state: DynamicState) {
     super();
     this.state = state;
     this.mainScene = state.levelScene;
@@ -112,8 +112,8 @@ export default class CameraManager extends GameObject {
   }
 
   LimitCamera() {
-    const levelWidth = this.state.width;
-    const levelHeight = this.state.height;
+    const levelWidth = this.state.staticState.width;
+    const levelHeight = this.state.staticState.height;
 
     let cameraWidth = this.mainCanvasSize.x / this.mainCam.zoom;
     let cameraHeight = this.mainCanvasSize.y / this.mainCam.zoom;
@@ -173,7 +173,10 @@ export default class CameraManager extends GameObject {
   OnInit(): void {
     this.UpdateCanvas();
     this.mainCam.setZoom(0.00001);
-    this.mainCam.centerOn(this.state.width / 2, this.state.height / 2);
+    this.mainCam.centerOn(
+      this.state.staticState.width / 2,
+      this.state.staticState.height / 2
+    );
     this.LimitCamera();
     this.mainScene.input.on(
       'wheel',
@@ -200,12 +203,12 @@ export default class CameraManager extends GameObject {
     });
   }
 
-  OnUpdate(_state: LevelState, _delta: number): void {
+  OnUpdate(_state: DynamicState, _delta: number): void {
     this.UpdateCanvas();
     this.LimitCamera();
   }
 
-  OnRemove(_state: LevelState): void {
+  OnUnload(_virtual: boolean): void {
     this.mainScene.input.off('wheel');
     this.mainScene.input.off('pointermove');
   }

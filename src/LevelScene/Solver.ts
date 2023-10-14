@@ -1,6 +1,6 @@
 import { Vec2 } from 'Math/GridPoint';
-import LevelState from './LevelState';
 import Direction from 'Math/Direction';
+import DynamicState from 'Level/DynamicState';
 
 enum Result {
   Pending,
@@ -11,7 +11,7 @@ enum Result {
 class KnownStates {
   public map = new Map<string, Map<string, Vec2[]>>();
 
-  public AddState(newState: LevelState, newPath: Vec2[]) {
+  public AddState(newState: DynamicState, newPath: Vec2[]) {
     const posKey =
       '[' + newState.player.position.x + ',' + newState.player.position.y + ']';
     if (!this.map.has(posKey)) {
@@ -59,7 +59,7 @@ export default class Solver {
     }
   }
 
-  Solve(state: LevelState) {
+  Solve(state: DynamicState) {
     console.time('Solver');
     this._Solve(state, []);
     console.timeEnd('Solver');
@@ -71,14 +71,14 @@ export default class Solver {
     this.victoryPaths.push(path);
   }
 
-  private _Solve(state: LevelState, path: Vec2[]) {
+  private _Solve(state: DynamicState, path: Vec2[]) {
     const directions = [
       Direction.RIGHT,
       Direction.DOWN,
       Direction.LEFT,
       Direction.UP
     ];
-    const queue: [LevelState, Vec2[]][] = [[state, path]];
+    const queue: [DynamicState, Vec2[]][] = [[state, path]];
     while (queue.length > 0) {
       const [state, path] = queue.shift();
       if (path.length > this.pathLength) {
