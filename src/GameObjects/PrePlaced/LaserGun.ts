@@ -45,7 +45,6 @@ export class LaserProjectile {
     this.owner = owner;
     this.owner.projectiles.push(this);
     const point = Vec2.AsVec2(aPoint);
-    //this.owner.AddChild(this);
     let end = true;
     if (length > 1) {
       const nextPoint = point.Translate(direction);
