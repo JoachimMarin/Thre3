@@ -1,13 +1,14 @@
 import * as Phaser from 'phaser';
 
-import SideUserInterfaceScene from 'Phaser/SideUserInterfaceScene';
-import GridUserInterfaceScene from 'Phaser/GridUserInterfaceScene';
-import LevelParser from 'Level/LevelParser';
-import SceneLevelParser from './SceneLevelParser';
-import LevelList from 'Constants/Definitions/LevelList';
-import LevelState from '../Level/LevelState';
-import InventoryUI from './InventoryUI';
-import CameraManager from './CameraManager';
+import SideUserInterfaceScene from 'Phaser/UI/SideUserInterfaceScene';
+import GridUserInterfaceScene from 'Phaser/UI/GridUserInterfaceScene';
+
+import LevelState from 'Headless/Level/GameState/LevelState';
+import LevelParser from 'Headless/Level/Generation/AssetLoading/LevelParser';
+import SceneLevelParser from 'Phaser/SceneLevelParser';
+import LevelList from 'Headless/Level/Generation/AssetDefinitions/LevelList';
+import InventoryUI from 'Phaser/UI/InventoryUI';
+import CameraManager from 'Phaser/CameraManager';
 
 export default class LevelScene extends Phaser.Scene {
   public cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
