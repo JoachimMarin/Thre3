@@ -74,7 +74,7 @@ export class LaserProjectile {
         end ? color.projectileEnd.imageKey : color.projectile.imageKey
       );
       this.image.setDisplaySize(1, 1);
-      this.image.setAngle(direction.ToAngle());
+      this.image.setAngle(direction.angle);
       this.image.setVisible(false);
       setTimeout(() => {
         this.image.setVisible(true);

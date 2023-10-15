@@ -8,6 +8,6 @@ export default class GridObjectChanges {
   }
 
   GetKeyString() {
-    return '{' + this.disabled + '}';
+    return this.disabled ? '1' : '0';
   }
 }

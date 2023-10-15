@@ -17,7 +17,7 @@ import ILevelScene from 'PhaserStubs/ILevelScene';
  */
 export default class DynamicState {
   static GridKeyXY(x: number, y: number) {
-    return x + y * 10000;
+    return x + y * 1000;
   }
 
   static GridKeyPoint(point: Vec2) {
@@ -83,7 +83,7 @@ export default class DynamicState {
       return;
     }
 
-    this.changesKeyString = 'static changes:';
+    this.changesKeyString = '';
     const changedObjects: GridObjectStatic[] = [];
     for (const changedObject of this.staticObjectChanges.keys()) {
       changedObjects.push(changedObject);
@@ -93,8 +93,9 @@ export default class DynamicState {
       this.changesKeyString +=
         '[' +
         changedObject._id +
-        ']:' +
-        this.staticObjectChanges.get(changedObject).GetKeyString();
+        ':' +
+        this.staticObjectChanges.get(changedObject).GetKeyString() +
+        ']';
     }
   }
 
@@ -103,7 +104,7 @@ export default class DynamicState {
       return;
     }
 
-    this.dynamicsKeyString = 'dynamic:';
+    this.dynamicsKeyString = '#';
     const dynamicGridKeys = [];
     for (const gridKey of this.dynamicObjects.keys()) {
       dynamicGridKeys.push(gridKey);
@@ -112,10 +113,10 @@ export default class DynamicState {
     for (const gridKey of dynamicGridKeys) {
       const dynamicSet = this.dynamicObjects.get(gridKey);
       if (dynamicSet.size > 0) {
-        this.dynamicsKeyString += '[' + gridKey + ']:';
+        this.dynamicsKeyString += '[' + gridKey + ':';
         // TODO: use deterministic order if multiple dynamic grid objects in same location
-        for (const dynamicObjects of dynamicSet) {
-          this.dynamicsKeyString += dynamicObjects.GetKeyString() + '|';
+        for (const dynamicObject of dynamicSet) {
+          this.dynamicsKeyString += dynamicObject.GetKeyString() + ']';
         }
       }
     }
@@ -129,7 +130,7 @@ export default class DynamicState {
   GetStateKeyString() {
     const playerString =
       this.player.position.x +
-      '|' +
+      ',' +
       this.player.position.y +
       '|' +
       this.playerStep +

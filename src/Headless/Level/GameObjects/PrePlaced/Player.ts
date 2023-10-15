@@ -199,7 +199,7 @@ export default class Player extends GridObject {
         }
       }
       if (this.moving) {
-        this.image.setAngle(this.direction.ToAngle());
+        this.image.setAngle(this.direction.angle);
         this.grid.BeginPlayerStep();
       }
     }
