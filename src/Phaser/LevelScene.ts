@@ -1,10 +1,13 @@
 import * as Phaser from 'phaser';
 
-import SideUserInterfaceScene from '../LevelScene/SideUserInterfaceScene';
-import GridUserInterfaceScene from '../LevelScene/GridUserInterfaceScene';
+import SideUserInterfaceScene from 'Phaser/SideUserInterfaceScene';
+import GridUserInterfaceScene from 'Phaser/GridUserInterfaceScene';
 import LevelParser from 'Level/LevelParser';
+import SceneLevelParser from './SceneLevelParser';
 import LevelList from 'Constants/Definitions/LevelList';
-import LevelState from './LevelState';
+import LevelState from '../Level/LevelState';
+import InventoryUI from './InventoryUI';
+import CameraManager from './CameraManager';
 
 export default class LevelScene extends Phaser.Scene {
   public cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -25,7 +28,7 @@ export default class LevelScene extends Phaser.Scene {
       SideUserInterfaceScene.SCENE,
       GridUserInterfaceScene.SCENE
     ];
-    this.levelParser = new LevelParser(this, []);
+    this.levelParser = new SceneLevelParser(this, []);
   }
 
   init() {
@@ -66,12 +69,12 @@ export default class LevelScene extends Phaser.Scene {
       this.levelState.UnloadLevel();
     }
     this.levelState = new LevelState(this);
-    this.levelState.LoadLevel(this.index, this.levelParser);
+    this.levelState.LoadLevel(this.index, this.levelParser, new InventoryUI());
+    new CameraManager(this.levelState.dynamicState);
   }
 
   OnFullyLoaded() {
-    this.levelState = new LevelState(this);
-    this.levelState.SolveLevel(this.index, this.levelParser);
+    this.LoadLevel();
   }
 
   createReady() {

@@ -1,19 +1,18 @@
-import LevelScene from 'Level/LevelScene';
 import DynamicState from './DynamicState';
 import StaticState from './StaticState';
 import Inventory from 'LevelScene/Inventory';
 import LevelParser from './LevelParser';
-import CameraManager from 'LevelScene/CameraManager';
 import Solver from 'LevelScene/Solver';
+import ILevelScene from './ILevelScene';
 
 export default class LevelState {
   private _staticState: StaticState;
   private _dynamicState: DynamicState;
-  private _levelScene: LevelScene;
+  private _levelScene: ILevelScene;
   private loaded: boolean = false;
   public readonly virtual: boolean;
 
-  constructor(levelScene: LevelScene) {
+  constructor(levelScene: ILevelScene) {
     this.levelScene = levelScene;
     this.virtual = levelScene == null;
   }
@@ -30,10 +29,10 @@ export default class LevelState {
   private set dynamicState(v: DynamicState) {
     this._dynamicState = v;
   }
-  get levelScene(): LevelScene {
+  get levelScene(): ILevelScene {
     return this._levelScene;
   }
-  private set levelScene(v: LevelScene) {
+  private set levelScene(v: ILevelScene) {
     this._levelScene = v;
   }
 
@@ -55,13 +54,13 @@ export default class LevelState {
   }
 
   public SolveLevel(index: integer, levelParser: LevelParser) {
-    this.LoadLevel(index, levelParser);
+    this.LoadLevel(index, levelParser, new Inventory());
     const solver = new Solver();
     solver.Solve(this.dynamicState);
     solver.ReportVictoryPaths();
   }
 
-  public LoadLevel(index: integer, levelParser: LevelParser) {
+  public LoadLevel(index: integer, levelParser: LevelParser, inv: Inventory) {
     levelParser.LoadLevelInfo(index);
 
     this.staticState = new StaticState(
@@ -71,11 +70,9 @@ export default class LevelState {
     );
     this.dynamicState = new DynamicState(
       this.staticState,
-      new Inventory(this.virtual),
+      inv,
       this.levelScene
     );
-
-    new CameraManager(this.dynamicState);
 
     levelParser.BuildLevel(this);
     this.loaded = true;

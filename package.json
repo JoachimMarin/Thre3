@@ -7,6 +7,7 @@
     "dev": "rollup --config rollup.config.dev.mjs",
     "build": "rollup --config rollup.config.dist.mjs",
     "watch": "rollup --watch --config rollup.config.dev.mjs",
+    "local": "rollup --config rollup.config.local.mjs",
     "prettier-format": "prettier --config .prettierrc src/**/*.ts --write",
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix",
@@ -26,9 +27,11 @@
     "@rollup/plugin-commonjs": "^24.0.1",
     "@rollup/plugin-node-resolve": "^15.0.2",
     "@rollup/plugin-replace": "^5.0.2",
+    "@rollup/plugin-run": "^3.0.2",
     "@rollup/plugin-terser": "^0.4.0",
     "@rollup/plugin-typescript": "^11.1.0",
     "@types/node": "^20.6.0",
+    "@types/xml2js": "^0.4.12",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
     "eslint": "^8.49.0",
@@ -43,6 +46,7 @@
     "typescript": "^5.0.3"
   },
   "dependencies": {
-    "enum-for": "0.0.6"
+    "enum-for": "0.0.6",
+    "xml2js": "^0.6.2"
   }
 }

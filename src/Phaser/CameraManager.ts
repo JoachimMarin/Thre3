@@ -1,10 +1,11 @@
 import * as Phaser from 'phaser';
 
 import GameObject from 'GameObjects/BaseClasses/GameObject';
-import SideUserInterfaceScene from './SideUserInterfaceScene';
-import GridUserInterfaceScene from './GridUserInterfaceScene';
+import SideUserInterfaceScene from 'Phaser/SideUserInterfaceScene';
+import GridUserInterfaceScene from 'Phaser/GridUserInterfaceScene';
 import { Vec2 } from 'Math/GridPoint';
 import DynamicState from 'Level/DynamicState';
+import LevelScene from './LevelScene';
 
 const maxZoomInTiles = 4;
 
@@ -22,7 +23,7 @@ export default class CameraManager extends GameObject {
   constructor(state: DynamicState) {
     super();
     this.state = state;
-    this.mainScene = state.levelScene;
+    this.mainScene = state.levelScene as LevelScene;
     this.mainCam = this.mainScene.cameras.main;
     this.sideUICam = SideUserInterfaceScene.SCENE.cameras.main;
     this.gridUICam = GridUserInterfaceScene.SCENE.cameras.main;
