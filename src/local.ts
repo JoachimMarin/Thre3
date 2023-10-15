@@ -1,7 +1,7 @@
 process.chdir('./dist');
 
-import LevelParser from 'Level/LevelParser';
-import LevelState from 'Level/LevelState';
+import LevelState from 'Headless/Level/GameState/LevelState';
+import LevelParser from 'Headless/Level/Generation/AssetLoading/LevelParser';
 import { readFileSync } from 'fs';
 import { parseString } from 'xml2js';
 

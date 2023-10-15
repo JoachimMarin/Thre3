@@ -1,11 +1,11 @@
 import * as Phaser from 'phaser';
 
-import GameObject from 'GameObjects/BaseClasses/GameObject';
-import SideUserInterfaceScene from 'Phaser/SideUserInterfaceScene';
-import GridUserInterfaceScene from 'Phaser/GridUserInterfaceScene';
-import { Vec2 } from 'Math/GridPoint';
-import DynamicState from 'Level/DynamicState';
-import LevelScene from './LevelScene';
+import GameObject from 'Headless/Level/GameObjects/BaseClasses/GameObject';
+import SideUserInterfaceScene from 'Phaser/UI/SideUserInterfaceScene';
+import GridUserInterfaceScene from 'Phaser/UI/GridUserInterfaceScene';
+import { Vec2 } from 'Headless/Utils/Math/GridPoint';
+import DynamicState from 'Headless/Level/GameState/DynamicState';
+import LevelScene from 'Phaser/LevelScene';
 
 const maxZoomInTiles = 4;
 

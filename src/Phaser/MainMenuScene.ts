@@ -1,8 +1,8 @@
-import LevelList from 'Constants/Definitions/LevelList';
 import LevelScene from 'Phaser/LevelScene';
-import { Vec2 } from 'Math/GridPoint';
-import * as UI from 'Phaser/UserInterface';
+import { Vec2 } from 'Headless/Utils/Math/GridPoint';
+import * as UI from 'Phaser/UI/UserInterface';
 import * as Phaser from 'phaser';
+import LevelList from 'Headless/Level/Generation/AssetDefinitions/LevelList';
 
 export default class MainMenuScene extends Phaser.Scene {
   public static readonly SCENE = new MainMenuScene();

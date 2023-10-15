@@ -1,7 +1,7 @@
 import LevelScene from 'Phaser/LevelScene';
 import MainMenuScene from 'Phaser/MainMenuScene';
-import SideUserInterfaceScene from 'Phaser/SideUserInterfaceScene';
-import GridUserInterfaceScene from 'Phaser/GridUserInterfaceScene';
+import SideUserInterfaceScene from 'Phaser/UI/SideUserInterfaceScene';
+import GridUserInterfaceScene from 'Phaser/UI/GridUserInterfaceScene';
 
 export default abstract class Scenes {
   static ALL = [
