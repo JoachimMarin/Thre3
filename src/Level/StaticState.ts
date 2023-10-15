@@ -2,7 +2,7 @@ import GameObjectEvent from 'Constants/GridObjectEvent';
 import ObjectTag from 'Constants/ObjectTag';
 import GridObjectStatic from 'GameObjects/BaseClasses/GridObjectStatic';
 import EventGroupDefintions from 'Level/EventGroupDefintions';
-import LevelScene from 'Level/LevelScene';
+import ILevelScene from './ILevelScene';
 
 export default class StaticState {
   public staticObjects = new Map<number, Set<GridObjectStatic>>();
@@ -12,10 +12,10 @@ export default class StaticState {
   public readonly width: integer;
   public readonly height: integer;
 
-  public readonly levelScene: LevelScene;
+  public readonly levelScene: ILevelScene;
   public readonly virtual: boolean;
 
-  constructor(width: integer, height: integer, levelScene: LevelScene) {
+  constructor(width: integer, height: integer, levelScene: ILevelScene) {
     this.width = width;
     this.height = height;
     this.levelScene = levelScene;

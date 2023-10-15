@@ -10,7 +10,7 @@ import Inventory from 'LevelScene/Inventory';
 import EventGroupDefintions from './EventGroupDefintions';
 import ObjectTag from 'Constants/ObjectTag';
 import GridObject from 'GameObjects/BaseClasses/GridObject';
-import LevelScene from 'Level/LevelScene';
+import ILevelScene from './ILevelScene';
 
 /**
  * Contains all game objects and manages level related gameplay.
@@ -37,13 +37,13 @@ export default class DynamicState {
   private dynamicsKeyString: string;
   public lockGridKey: boolean = true;
 
-  public readonly levelScene: LevelScene;
+  public readonly levelScene: ILevelScene;
   public readonly virtual: boolean;
 
   constructor(
     staticState: StaticState,
     inventory: Inventory,
-    levelScene: LevelScene
+    levelScene: ILevelScene
   ) {
     this.staticState = staticState;
     this.inventory = inventory;

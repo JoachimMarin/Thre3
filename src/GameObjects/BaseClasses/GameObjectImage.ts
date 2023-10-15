@@ -1,8 +1,9 @@
 import DynamicState from 'Level/DynamicState';
 import { IVec2, Vec2 } from 'Math/GridPoint';
 import GameObject from 'GameObjects/BaseClasses/GameObject';
+import IImage from 'Level/IImage';
 export default class GameObjectImage extends GameObject {
-  protected image: Phaser.GameObjects.Image;
+  protected image: IImage;
 
   protected constructor(
     state: DynamicState,

@@ -11,9 +11,10 @@ import GridObject from 'GameObjects/BaseClasses/GridObject';
 import { LaserProjectile } from './LaserGun';
 import TimedImage from 'GameObjects/TimedImage';
 import ImageDefinitions from 'Constants/Definitions/ImageDefinitions';
+import IImage from 'Level/IImage';
 
 export default class Player extends GridObject {
-  public image: Phaser.GameObjects.Image;
+  public image: IImage;
   static imageKey = 'player';
 
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;

@@ -1,7 +1,7 @@
 import LevelList from 'Constants/Definitions/LevelList';
-import LevelScene from 'Level/LevelScene';
+import LevelScene from 'Phaser/LevelScene';
 import { Vec2 } from 'Math/GridPoint';
-import * as UI from 'UserInterface';
+import * as UI from 'Phaser/UserInterface';
 import * as Phaser from 'phaser';
 
 export default class MainMenuScene extends Phaser.Scene {

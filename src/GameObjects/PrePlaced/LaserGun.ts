@@ -5,6 +5,7 @@ import { IVec2, Vec2 } from 'Math/GridPoint';
 import ImageKey from 'Constants/ImageKey';
 import GridObjectStaticImage from 'GameObjects/BaseClasses/GridObjectStaticImage';
 import StaticState from 'Level/StaticState';
+import IImage from 'Level/IImage';
 
 export class LaserColor {
   public readonly name: string;
@@ -31,7 +32,7 @@ export class LaserColor {
 }
 
 export class LaserProjectile {
-  public image: Phaser.GameObjects.Image = null;
+  public image: IImage = null;
   public owner: LaserGun;
 
   constructor(

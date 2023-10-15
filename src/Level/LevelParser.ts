@@ -6,9 +6,14 @@ import ImageKey from 'Constants/ImageKey';
 import ItemType from 'Constants/ItemType';
 import Tile from 'Constants/Tile';
 import Item from 'GameObjects/PrePlaced/Item';
-import LevelScene from 'Level/LevelScene';
 import { IVec2 } from 'Math/GridPoint';
 import LevelState from './LevelState';
+//import { parseString } from 'xml2js';
+
+// ensure correct initialization order by importing object definitions
+// this function is a workaround for unused import warnings
+function ImportAssets(..._args: object[]) {}
+ImportAssets(TileDefinitions, ImageDefinitions, ItemDefinitions);
 
 /**
  * TilesFile parses the .tsx file from the Tiled level editor.
@@ -17,15 +22,14 @@ import LevelState from './LevelState';
 class TilesFile {
   public tileDict: { [key: integer]: string } = {};
 
-  constructor(data: XMLDocument) {
-    const tilesets = data.getElementsByTagName('tileset');
-    const tileset = tilesets[0];
-    const tiles = tileset.getElementsByTagName('tile');
+  constructor(data: object) {
+    const tileset = data['tileset'];
+    const tiles = tileset['tile'];
     for (const tile of tiles) {
-      const id = parseInt(tile['id']) + 1;
-      const images = tile.getElementsByTagName('image');
-      const image = images[0];
-      const source: string = image.getAttribute('source');
+      const id = parseInt(tile['$']['id']) + 1;
+      const images = tile['image'];
+      const image = images[0]['$'];
+      const source: string = image['source'];
       this.tileDict[id] = source.substring(0, source.length - 4);
     }
   }
@@ -40,17 +44,13 @@ class LevelFile {
   public readonly height: integer = 0;
   public readonly objects: integer[][][] = [];
 
-  constructor(data: XMLDocument) {
-    const tilemaps = data.getElementsByTagName('map');
-    const tilemap = tilemaps[0];
+  constructor(data: object) {
+    const map = data['map'];
+    const layers = map['layer'];
 
-    const layers = tilemap.getElementsByTagName('layer');
     for (const layer of layers) {
-      this.width = Math.max(this.width, parseInt(layer.getAttribute('width')));
-      this.height = Math.max(
-        this.height,
-        parseInt(layer.getAttribute('height'))
-      );
+      this.width = Math.max(this.width, parseInt(layer['$']['width']));
+      this.height = Math.max(this.height, parseInt(layer['$']['height']));
     }
 
     this.objects = [];
@@ -61,8 +61,8 @@ class LevelFile {
       }
     }
     for (const layer of layers) {
-      const data = layer.getElementsByTagName('data');
-      const dataContent = data[0].innerHTML;
+      const data = layer['data'][0];
+      const dataContent = data['_'];
       const rawData = dataContent
         .replace('\n', '')
         .replace('\r', '')
@@ -81,44 +81,21 @@ class LevelFile {
   }
 }
 
-/**
- * LevelParser handles asset management for level scenes. This includes:
- *  image files
- *  .tsx file @see TilesFile
- *  .tmx file @see LevelFile
- */
-export default class LevelParser {
+export default abstract class LevelParser {
   private tileDict: {
     [key: string]: (state: LevelState, point: IVec2) => void;
   } = {};
-
-  private scenes: Phaser.Scene[];
-  private levelScene: LevelScene;
-
   public levelIndex: integer;
   public tilesFile: TilesFile;
   public levelFile: LevelFile;
 
-  constructor(levelScene: LevelScene, additionalScenes: Phaser.Scene[]) {
-    this.levelScene = levelScene;
-    this.scenes = [levelScene as Phaser.Scene].concat(additionalScenes);
-  }
-
-  ImportAssets(..._args: object[]) {}
-
-  RegisterAsset(key: string) {
-    for (const scene of this.scenes) {
-      scene.load.image(key, 'assets/' + key + '.png');
-    }
-  }
-
+  abstract RegisterAsset(_key: string): void;
+  abstract ReadXmlFile(_key: string, _path: string): void;
+  abstract GetXmlObject(_key: string): object;
   RegisterTile(key: string, fun: (state: LevelState, point: IVec2) => void) {
     this.tileDict[key] = fun;
   }
-
   Preload() {
-    this.ImportAssets(TileDefinitions, ImageDefinitions, ItemDefinitions);
-
     for (const tile of Tile.ALL) {
       this.RegisterTile(tile.imageKey, tile.fun);
     }
@@ -134,23 +111,22 @@ export default class LevelParser {
       this.RegisterAsset(imageKey.imageKey);
     }
 
-    this.levelScene.load.xml('tiles', 'assets/tiles.tsx');
+    this.ReadXmlFile('tiles', 'assets/tiles.tsx');
     for (let i = 0; i < LevelList.length; i++) {
-      this.levelScene.load.xml(
+      this.ReadXmlFile(
         LevelList[i].fileName,
         'assets/levels/' + LevelList[i].fileName + '.tmx'
       );
     }
   }
-
   LoadLevelInfo(levelIndex: integer) {
     /**
      * Loads level information from the loaded .tsx and .tmx files.
      */
     this.levelIndex = levelIndex;
-    this.tilesFile = new TilesFile(this.levelScene.cache.xml.get('tiles'));
+    this.tilesFile = new TilesFile(this.GetXmlObject('tiles'));
     this.levelFile = new LevelFile(
-      this.levelScene.cache.xml.get(LevelList[levelIndex].fileName)
+      this.GetXmlObject(LevelList[levelIndex].fileName)
     );
   }
 
