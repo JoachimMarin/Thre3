@@ -1,4 +1,3 @@
-import { Vec2 } from 'Headless/Utils/Math/GridPoint';
 import Direction from 'Headless/Utils/Math/Direction';
 import DynamicState from 'Headless/Level/GameState/DynamicState';
 
@@ -8,14 +7,29 @@ enum Result {
   Defeat
 }
 
-class KnownStates {
-  public map = new Map<string, Map<string, Vec2[]>>();
+class Path {
+  public readonly prev: Path;
+  public readonly direction: integer;
+  public readonly length: integer;
+  constructor(direction: integer, prev: Path = null) {
+    this.prev = prev;
+    this.direction = direction;
+    if (prev == null) {
+      this.length = 1;
+    } else {
+      this.length = prev.length + 1;
+    }
+  }
+}
 
-  public AddState(newState: DynamicState, newPath: Vec2[]) {
+class KnownStates {
+  public map = new Map<string, Map<string, Path>>();
+
+  public AddState(newState: DynamicState, newPath: Path) {
     const posKey =
       '[' + newState.player.position.x + ',' + newState.player.position.y + ']';
     if (!this.map.has(posKey)) {
-      this.map.set(posKey, new Map<string, Vec2[]>());
+      this.map.set(posKey, new Map<string, Path>());
     }
     const stateMap = this.map.get(posKey);
     const stateKey = newState.GetStateKeyString();
@@ -52,32 +66,40 @@ export default class Solver {
     console.log('possible paths:');
     for (const path of this.victoryPaths) {
       let pathString = '';
-      for (const dir of path) {
-        pathString += ' ' + dir;
+      let current = path;
+      const pathArray: integer[] = [];
+      while (current != null) {
+        pathArray.push(current.direction);
+        current = current.prev;
       }
+      pathArray.reverse();
+      for (const dir of pathArray) {
+        pathString += Direction.ALL[dir] + ', ';
+      }
+
       console.log(pathString);
     }
   }
 
   Solve(state: DynamicState) {
     console.time('Solver');
-    this._Solve(state, []);
+    this._Solve(state, null);
     console.timeEnd('Solver');
   }
 
-  private victoryPaths: Vec2[][] = [];
+  private victoryPaths: Path[] = [];
 
-  private AddVictoryPath(path: Vec2[]) {
+  private AddVictoryPath(path: Path) {
     this.victoryPaths.push(path);
   }
 
-  private _Solve(state: DynamicState, path: Vec2[]) {
-    const queue: [DynamicState, Vec2[]][] = [[state.DeepVirtualCopy(), path]];
+  private _Solve(state: DynamicState, path: Path) {
+    const queue: [DynamicState, Path][] = [[state.DeepVirtualCopy(), path]];
 
     while (queue.length > 0 && this.victoryPaths.length == 0) {
       const [state, path] = queue.shift();
       this.counter++;
-      if (path.length > this.pathLength) {
+      if (path != null && path.length > this.pathLength) {
         this.pathLength = path.length;
         console.log('queued = ' + queue.length);
         console.log('path length = ' + this.pathLength);
@@ -93,8 +115,7 @@ export default class Solver {
           newState.BeginPlayerStep();
           newState.player.SetGridPosition(newState.player.destination);
           newState.player.EndPlayerStep();
-          const newPath = [...path];
-          newPath.push(tile);
+          const newPath = new Path(dir.id, path);
           if (Solver.result == Result.Pending) {
             if (this.knownStates.AddState(newState, newPath)) {
               queue.push([newState, newPath]);
