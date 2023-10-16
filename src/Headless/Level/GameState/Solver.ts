@@ -23,26 +23,26 @@ class Path {
 }
 
 class KnownStates {
-  public map = new Map<string, Map<string, Path>>();
+  public map: { [pos: integer]: { [key: string]: Path } } = {};
 
   public AddState(newState: DynamicState, newPath: Path) {
-    const posKey =
-      '[' + newState.player.position.x + ',' + newState.player.position.y + ']';
-    if (!this.map.has(posKey)) {
-      this.map.set(posKey, new Map<string, Path>());
+    const playerKey = newState.GetPlayerKey();
+
+    if (!(playerKey in this.map)) {
+      this.map[playerKey] = {};
     }
-    const stateMap = this.map.get(posKey);
+    const stateMap = this.map[playerKey];
     const stateKey = newState.GetStateKeyString();
-    if (stateMap.has(stateKey)) {
-      const currentPath = stateMap.get(stateKey);
+    if (stateKey in stateMap) {
+      const currentPath = stateMap[stateKey];
       if (newPath.length < currentPath.length) {
-        stateMap.set(stateKey, newPath);
+        stateMap[stateKey] = newPath;
       } else {
         // same state with shorter path already exists -> discard current path
         return false;
       }
     } else {
-      stateMap.set(stateKey, newPath);
+      stateMap[stateKey] = newPath;
     }
     return true;
   }
@@ -62,7 +62,7 @@ export default class Solver {
     this.result = Result.Victory;
   }
 
-  ReportVictoryPaths() {
+  ReportVictoryPaths(initialState: DynamicState) {
     console.log('possible paths:');
     for (const path of this.victoryPaths) {
       let pathString = '';
@@ -73,17 +73,20 @@ export default class Solver {
         current = current.prev;
       }
       pathArray.reverse();
-      for (const dir of pathArray) {
-        pathString += Direction.ALL[dir] + ', ';
+      let pos = initialState.player.position;
+      for (const dirId of pathArray) {
+        const dir = Direction.ALL[dirId];
+        pos = pos.Translate(dir);
+        pathString += dir.toString().padStart(5, ' ') + ' => ' + pos + '\n';
       }
 
       console.log(pathString);
     }
   }
 
-  Solve(state: DynamicState) {
+  Solve(initialState: DynamicState) {
     console.time('Solver');
-    this._Solve(state, null);
+    this._Solve(initialState, null);
     console.timeEnd('Solver');
   }
 
@@ -93,8 +96,10 @@ export default class Solver {
     this.victoryPaths.push(path);
   }
 
-  private _Solve(state: DynamicState, path: Path) {
-    const queue: [DynamicState, Path][] = [[state.DeepVirtualCopy(), path]];
+  private _Solve(initialState: DynamicState, path: Path) {
+    const queue: [DynamicState, Path][] = [
+      [initialState.DeepVirtualCopy(), path]
+    ];
 
     while (queue.length > 0 && this.victoryPaths.length == 0) {
       const [state, path] = queue.shift();

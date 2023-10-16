@@ -57,7 +57,7 @@ export default class LevelState {
     this.LoadLevel(index, levelParser, new Inventory());
     const solver = new Solver();
     solver.Solve(this.dynamicState);
-    solver.ReportVictoryPaths();
+    solver.ReportVictoryPaths(this.dynamicState);
   }
 
   public LoadLevel(index: integer, levelParser: LevelParser, inv: Inventory) {

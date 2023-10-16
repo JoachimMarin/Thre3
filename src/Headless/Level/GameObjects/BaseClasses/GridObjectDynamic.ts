@@ -15,7 +15,7 @@ export default abstract class GridObjectDynamic extends GridObject {
     return 8;
   }
 
-  abstract WriteByteArray(_byteArray: Buffer, _index: integer): void;
+  abstract WriteByteArray(_byteArray: Uint8Array, _index: integer): void;
 
   private AddToGrid() {
     const gridKey = DynamicState.GridKeyPoint(this.position);

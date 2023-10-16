@@ -11,20 +11,21 @@ import EventGroupDefintions from 'Headless/Level/Events/EventGroupDefintions';
 import ObjectTag from 'Headless/Level/GameObjects/ObjectTag';
 import GridObject from 'Headless/Level/GameObjects/BaseClasses/GridObject';
 import ILevelScene from 'PhaserStubs/ILevelScene';
+import Bitwise from 'Headless/Utils/Math/Bitwise';
 
 /**
  * Contains all game objects and manages level related gameplay.
  */
 export default class DynamicState {
   static GridKeyXY(x: number, y: number) {
-    return x + y * 1000;
+    return x + y * 256;
   }
 
   static GridKeyPoint(point: Vec2) {
     return DynamicState.GridKeyXY(point.x, point.y);
   }
 
-  public staticObjectChanges = new Map<GridObjectStatic, GridObjectChanges>();
+  public staticObjectChanges = new Map<GridObjectStatic, integer>();
   public dynamicObjects = new Map<number, Set<GridObjectDynamic>>();
   public dynamicEventObjects = new Map<GameObjectEvent, Set<GameObject>>();
   public staticState: StaticState | null;
@@ -34,10 +35,10 @@ export default class DynamicState {
   public player: Player = null;
   public inventory: Inventory;
   private static changesSizeFactor = 2 + GridObjectChanges.GetByteArraySize();
-  private changesKeyString: Buffer;
+  private changesKeyString: Uint8Array;
   private static dynamicSizeFactor = 2 + GridObjectDynamic.GetByteArraySize();
-  private dynamicsKeyString: Buffer;
-  private playerKeyString: Buffer = Buffer.alloc(4);
+  private dynamicsKeyString: Uint8Array;
+  private playerKeyString: Uint8Array = new Uint8Array(4);
 
   public lockGridKey: boolean = true;
 
@@ -75,7 +76,7 @@ export default class DynamicState {
     });
 
     this.staticObjectChanges.forEach((changes, obj) => {
-      copy.staticObjectChanges.set(obj, changes.DeepCopy());
+      copy.staticObjectChanges.set(obj, changes);
     });
 
     copy.lockGridKey = false;
@@ -87,7 +88,7 @@ export default class DynamicState {
       return;
     }
 
-    this.changesKeyString = Buffer.alloc(
+    this.changesKeyString = new Uint8Array(
       DynamicState.changesSizeFactor * this.staticObjectChanges.size
     );
 
@@ -98,16 +99,16 @@ export default class DynamicState {
     changedObjects.sort((a, b) => a._id - b._id);
     for (let i = 0; i < changedObjects.length; i++) {
       const changedObject = changedObjects[i];
-      this.changesKeyString.writeInt16BE(
-        changedObject._id,
-        i * DynamicState.changesSizeFactor
+      Bitwise.Write16(
+        this.changesKeyString,
+        i * DynamicState.changesSizeFactor,
+        changedObject._id
       );
-      this.staticObjectChanges
-        .get(changedObject)
-        .WriteByteArray(
-          this.changesKeyString,
-          i * DynamicState.changesSizeFactor + 2
-        );
+      GridObjectChanges.WriteByteArray(
+        this.changesKeyString,
+        i * DynamicState.changesSizeFactor + 2,
+        this.staticObjectChanges.get(changedObject)
+      );
     }
   }
 
@@ -116,7 +117,7 @@ export default class DynamicState {
       return;
     }
 
-    this.dynamicsKeyString = Buffer.alloc(
+    this.dynamicsKeyString = new Uint8Array(
       DynamicState.dynamicSizeFactor * this.dynamicObjects.size
     );
     const dynamicGridKeys = [];
@@ -131,9 +132,10 @@ export default class DynamicState {
 
       // TODO: use deterministic order if multiple dynamic grid objects in same location
       for (const dynamicObject of dynamicSet) {
-        this.dynamicsKeyString.writeInt16BE(
-          gridKey,
-          i * DynamicState.dynamicSizeFactor
+        Bitwise.Write16(
+          this.dynamicsKeyString,
+          i * DynamicState.dynamicSizeFactor,
+          gridKey
         );
         dynamicObject.WriteByteArray(
           this.dynamicsKeyString,
@@ -148,15 +150,16 @@ export default class DynamicState {
     this.UpdateDynamicsKeyString();
   }
 
-  GetStateKeyString() {
+  GetPlayerKey() {
     this.playerKeyString[0] = this.player.position.x;
     this.playerKeyString[1] = this.player.position.y;
     this.playerKeyString[2] = this.playerStep;
     this.playerKeyString[3] = this.playerMaxStep;
+    return this.playerKeyString.toString();
+  }
 
+  GetStateKeyString() {
     return (
-      this.playerKeyString.toString() +
-      '|' +
       this.changesKeyString.toString() +
       '|' +
       this.dynamicsKeyString.toString() +

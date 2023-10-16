@@ -12,7 +12,7 @@ export default class Inventory {
   }
 
   GetKey() {
-    const buffer = Buffer.alloc(2 * this.itemCountMap.size);
+    const buffer = new Uint8Array(2 * this.itemCountMap.size);
     const keys = [];
     for (const key of this.itemCountMap.keys()) {
       keys.push(key);
