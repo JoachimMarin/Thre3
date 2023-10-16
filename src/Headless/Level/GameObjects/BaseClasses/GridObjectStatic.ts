@@ -22,14 +22,17 @@ export default abstract class GridObjectStatic extends GridObject {
   override Exists(state: DynamicState) {
     return (
       !state.staticObjectChanges.has(this) ||
-      !state.staticObjectChanges.get(this).disabled
+      GridObjectChanges.GetFlag(state.staticObjectChanges.get(this), 0) == false
     );
   }
   override Remove(state: DynamicState) {
     if (!state.staticObjectChanges.has(this)) {
-      state.staticObjectChanges.set(this, new GridObjectChanges());
+      state.staticObjectChanges.set(this, 0);
     }
-    state.staticObjectChanges.get(this).disabled = true;
+    state.staticObjectChanges.set(
+      this,
+      GridObjectChanges.SetFlag(state.staticObjectChanges.get(this), 0, true)
+    );
     state.UpdateChangesKeyString();
     super.Remove(state);
   }
