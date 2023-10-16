@@ -104,7 +104,7 @@ export default class InventoryUI extends Inventory {
   RemoveItem(itemType: ItemType, count: integer = 1) {
     super.RemoveItem(itemType, count);
     const itemKey = itemType.imageKey;
-    const remaining = this.GetCount(itemType) - count;
+    const remaining = this.GetCount(itemType);
 
     if (remaining > 0) {
       const entry = this.itemEntryList[this.itemEntryMap.get(itemKey)];
