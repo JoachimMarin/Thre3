@@ -33,8 +33,12 @@ export default class DynamicState {
   private playerMaxStep = 3;
   public player: Player = null;
   public inventory: Inventory;
-  private changesKeyString: string;
-  private dynamicsKeyString: string;
+  private static changesSizeFactor = 2 + GridObjectChanges.GetByteArraySize();
+  private changesKeyString: Buffer;
+  private static dynamicSizeFactor = 2 + GridObjectDynamic.GetByteArraySize();
+  private dynamicsKeyString: Buffer;
+  private playerKeyString: Buffer = Buffer.alloc(4);
+
   public lockGridKey: boolean = true;
 
   public readonly levelScene: ILevelScene;
@@ -83,19 +87,27 @@ export default class DynamicState {
       return;
     }
 
-    this.changesKeyString = '';
+    this.changesKeyString = Buffer.alloc(
+      DynamicState.changesSizeFactor * this.staticObjectChanges.size
+    );
+
     const changedObjects: GridObjectStatic[] = [];
     for (const changedObject of this.staticObjectChanges.keys()) {
       changedObjects.push(changedObject);
     }
     changedObjects.sort((a, b) => a._id - b._id);
-    for (const changedObject of changedObjects) {
-      this.changesKeyString +=
-        '[' +
-        changedObject._id +
-        ':' +
-        this.staticObjectChanges.get(changedObject).GetKeyString() +
-        ']';
+    for (let i = 0; i < changedObjects.length; i++) {
+      const changedObject = changedObjects[i];
+      this.changesKeyString.writeInt16BE(
+        changedObject._id,
+        i * DynamicState.changesSizeFactor
+      );
+      this.staticObjectChanges
+        .get(changedObject)
+        .WriteByteArray(
+          this.changesKeyString,
+          i * DynamicState.changesSizeFactor + 2
+        );
     }
   }
 
@@ -104,20 +116,29 @@ export default class DynamicState {
       return;
     }
 
-    this.dynamicsKeyString = '#';
+    this.dynamicsKeyString = Buffer.alloc(
+      DynamicState.dynamicSizeFactor * this.dynamicObjects.size
+    );
     const dynamicGridKeys = [];
     for (const gridKey of this.dynamicObjects.keys()) {
       dynamicGridKeys.push(gridKey);
     }
     dynamicGridKeys.sort();
-    for (const gridKey of dynamicGridKeys) {
+
+    for (let i = 0; i < dynamicGridKeys.length; i++) {
+      const gridKey = dynamicGridKeys[i];
       const dynamicSet = this.dynamicObjects.get(gridKey);
-      if (dynamicSet.size > 0) {
-        this.dynamicsKeyString += '[' + gridKey + ':';
-        // TODO: use deterministic order if multiple dynamic grid objects in same location
-        for (const dynamicObject of dynamicSet) {
-          this.dynamicsKeyString += dynamicObject.GetKeyString() + ']';
-        }
+
+      // TODO: use deterministic order if multiple dynamic grid objects in same location
+      for (const dynamicObject of dynamicSet) {
+        this.dynamicsKeyString.writeInt16BE(
+          gridKey,
+          i * DynamicState.dynamicSizeFactor
+        );
+        dynamicObject.WriteByteArray(
+          this.dynamicsKeyString,
+          i * DynamicState.dynamicSizeFactor + 2
+        );
       }
     }
   }
@@ -128,22 +149,19 @@ export default class DynamicState {
   }
 
   GetStateKeyString() {
-    const playerString =
-      this.player.position.x +
-      ',' +
-      this.player.position.y +
-      '|' +
-      this.playerStep +
-      '/' +
-      this.playerMaxStep;
+    this.playerKeyString[0] = this.player.position.x;
+    this.playerKeyString[1] = this.player.position.y;
+    this.playerKeyString[2] = this.playerStep;
+    this.playerKeyString[3] = this.playerMaxStep;
+
     return (
-      this.changesKeyString +
-      '\n' +
-      this.dynamicsKeyString +
-      '\n' +
-      this.inventory.GetKey() +
-      '\n' +
-      playerString
+      this.playerKeyString.toString() +
+      '|' +
+      this.changesKeyString.toString() +
+      '|' +
+      this.dynamicsKeyString.toString() +
+      '|' +
+      this.inventory.GetKey().toString()
     );
   }
 

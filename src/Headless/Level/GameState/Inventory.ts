@@ -1,7 +1,7 @@
 import ItemType from 'Headless/Level/Generation/AssetLoading/ItemType';
 
 export default class Inventory {
-  private itemCountMap: Map<string, integer> = new Map<string, integer>();
+  private itemCountMap: Map<integer, integer> = new Map<integer, integer>();
 
   DeepVirtualCopy() {
     const copy = new Inventory();
@@ -12,16 +12,18 @@ export default class Inventory {
   }
 
   GetKey() {
-    let inventoryKey = '';
+    const buffer = Buffer.alloc(2 * this.itemCountMap.size);
     const keys = [];
     for (const key of this.itemCountMap.keys()) {
       keys.push(key);
     }
     keys.sort();
-    for (const key of keys) {
-      inventoryKey += key + '=' + this.itemCountMap.get(key) + '|';
+    for (let i = 0; i < keys.length; i++) {
+      const count = this.itemCountMap.get(keys[i]);
+      buffer[i * 2] = keys[i];
+      buffer[i * 2 + 1] = count;
     }
-    return inventoryKey;
+    return buffer;
   }
 
   /**
@@ -30,7 +32,7 @@ export default class Inventory {
    * @param count The number of items to be added.
    */
   AddItem(itemType: ItemType, count: integer = 1) {
-    const itemKey = itemType.imageKey;
+    const itemKey = itemType.itemId;
 
     if (!this.itemCountMap.has(itemKey)) {
       this.itemCountMap.set(itemKey, count);
@@ -45,7 +47,7 @@ export default class Inventory {
    * @param count The number of items to be removed.
    */
   RemoveItem(itemType: ItemType, count: integer = 1) {
-    const itemKey = itemType.imageKey;
+    const itemKey = itemType.itemId;
     const remaining = this.GetCount(itemType) - count;
 
     if (remaining > 0) {
@@ -63,7 +65,7 @@ export default class Inventory {
    * @returns
    */
   GetCount(itemType: ItemType) {
-    const itemKey = itemType.imageKey;
+    const itemKey = itemType.itemId;
     if (this.itemCountMap.has(itemKey)) {
       return this.itemCountMap.get(itemKey);
     } else {
