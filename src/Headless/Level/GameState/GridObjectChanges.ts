@@ -7,7 +7,11 @@ export default class GridObjectChanges {
     return copy;
   }
 
-  GetKeyString() {
-    return this.disabled ? '1' : '0';
+  static GetByteArraySize() {
+    return 1;
+  }
+
+  WriteByteArray(byteArray: Buffer, index: integer) {
+    byteArray[index] = this.disabled ? 1 : 0;
   }
 }
