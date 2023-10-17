@@ -1,6 +1,7 @@
 import DynamicState from 'Game/Level/GameState/DynamicState';
 import { IVec2 } from 'Utils/Math/GridPoint';
 import GameObjectImage from 'Game/Level/GameObjects/BaseClasses/GameObjectImage';
+import Constants from 'Game/Constants';
 
 export default class PopUp extends GameObjectImage {
   private rotationAngle: number = 0;
@@ -31,9 +32,7 @@ export default class PopUp extends GameObjectImage {
     displayWidth: number = 1,
     displayHeight: number = 1
   ) {
-    if (state.virtual) {
-      return null;
-    } else {
+    if (Constants.INCLUDE_GRAPHICS) {
       return new PopUp(
         state,
         aPoint,
@@ -43,6 +42,8 @@ export default class PopUp extends GameObjectImage {
         displayWidth,
         displayHeight
       );
+    } else {
+      return null;
     }
   }
 

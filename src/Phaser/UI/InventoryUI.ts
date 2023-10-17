@@ -68,8 +68,6 @@ export default class InventoryUI extends Inventory {
   private itemEntryList: InventoryEntry[] = [];
   private itemEntryMap: Map<string, integer> = new Map<string, integer>();
 
-  public readonly virtual: boolean;
-
   constructor() {
     super();
   }
@@ -116,13 +114,12 @@ export default class InventoryUI extends Inventory {
 
   override Clear() {
     super.Clear();
-    if (!this.virtual) {
-      for (const inventoryEntry of this.itemEntryList) {
-        inventoryEntry.Remove();
-      }
-      this.itemEntryList = [];
-      this.itemEntryMap.clear();
+
+    for (const inventoryEntry of this.itemEntryList) {
+      inventoryEntry.Remove();
     }
+    this.itemEntryList = [];
+    this.itemEntryMap.clear();
   }
 
   override Update() {

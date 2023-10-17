@@ -9,11 +9,9 @@ export default class LevelState {
   private _dynamicState: DynamicState;
   private _levelScene: ILevelScene;
   private loaded: boolean = false;
-  public readonly virtual: boolean;
 
   constructor(levelScene: ILevelScene) {
     this.levelScene = levelScene;
-    this.virtual = levelScene == null;
   }
 
   public get staticState(): StaticState {
@@ -44,7 +42,7 @@ export default class LevelState {
       this.dynamicState = null;
       this.staticState.Unload();
       this.staticState = null;
-      if (!this.virtual) {
+      if (this.levelScene != null) {
         this.levelScene.Unload();
         this.levelScene = null;
       }

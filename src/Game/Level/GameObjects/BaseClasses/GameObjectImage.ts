@@ -2,6 +2,7 @@ import DynamicState from 'Game/Level/GameState/DynamicState';
 import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
 import GameObject from 'Game/Level/GameObjects/BaseClasses/GameObject';
 import IImage from 'PhaserStubs/IImage';
+import Constants from 'Game/Constants';
 export default class GameObjectImage extends GameObject {
   protected image: IImage;
 
@@ -14,7 +15,7 @@ export default class GameObjectImage extends GameObject {
   ) {
     super();
 
-    if (!state.virtual) {
+    if (Constants.INCLUDE_GRAPHICS) {
       const point = Vec2.AsVec2(aPoint);
       this.image = state.levelScene.add.image(
         point.realX(),
@@ -27,15 +28,15 @@ export default class GameObjectImage extends GameObject {
 
   override Remove(state: DynamicState): void {
     super.Remove(state);
-    if (!state.virtual) {
+    if (Constants.INCLUDE_GRAPHICS) {
       this.image.destroy();
       this.image = null;
     }
   }
 
-  override Unload(virtual: boolean) {
-    super.Unload(virtual);
-    if (!virtual) {
+  override Unload() {
+    super.Unload();
+    if (Constants.INCLUDE_GRAPHICS) {
       this.image.destroy();
       this.image = null;
     }

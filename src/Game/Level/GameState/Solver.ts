@@ -52,17 +52,18 @@ class KnownStates {
  * BFS based solver.
  */
 export default class Solver {
-  private static result = Result.Pending;
+  private result = Result.Pending;
   private knownStates: KnownStates = new KnownStates();
   private counter: number = 0;
   private pathLength: number = 0;
 
-  static Defeat() {
+  Defeat() {
     this.result = Result.Defeat;
   }
 
-  static Victory() {
+  Victory() {
     this.result = Result.Victory;
+    console.log('?');
   }
 
   ReportVictoryPaths(initialState: DynamicState) {
@@ -117,18 +118,18 @@ export default class Solver {
       for (const dir of Direction.ALL) {
         const tile = state.player.position.Translate(dir);
         if (state.player.CanMoveTo(tile)) {
-          Solver.result = Result.Pending;
+          this.result = Result.Pending;
           const newState = state.DeepVirtualCopy();
           newState.player.destination = tile;
           newState.BeginPlayerStep();
           newState.player.SetGridPosition(newState.player.destination);
           newState.player.EndPlayerStep();
           const newPath = new Path(dir.id, path);
-          if (Solver.result == Result.Pending) {
+          if (this.result == Result.Pending) {
             if (this.knownStates.AddState(newState, newPath)) {
               queue.push([newState, newPath]);
             }
-          } else if (Solver.result == Result.Victory) {
+          } else if (this.result == Result.Victory) {
             console.log(
               'Found path of length ' +
                 newPath.length +

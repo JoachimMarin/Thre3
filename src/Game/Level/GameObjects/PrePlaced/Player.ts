@@ -9,10 +9,10 @@ import GridObject from 'Game/Level/GameObjects/BaseClasses/GridObject';
 import { LaserProjectile } from 'Game/Level/GameObjects/PrePlaced/LaserGun';
 import ImageDefinitions from 'Game/Level/Generation/AssetDefinitions/ImageDefinitions';
 import IImage from 'PhaserStubs/IImage';
-import Solver from 'Game/Level/GameState/Solver';
 import ItemDefinitions from 'Game/Level/Generation/AssetDefinitions/ItemDefinitions';
 import TimedImage from 'Game/Level/GameObjects/Temporary/TimedImage';
 import GameManager from 'Game/GameManager';
+import Constants from 'Game/Constants';
 
 export default class Player extends GridObject {
   public image: IImage;
@@ -30,7 +30,7 @@ export default class Player extends GridObject {
     super(point);
     this.grid = grid;
     this.grid.player = this;
-    if (!this.grid.virtual) {
+    if (Constants.INCLUDE_GRAPHICS) {
       this.cursors = grid.levelScene.cursors;
       this.image = grid.levelScene.add.image(
         this.position.realX(),
@@ -43,13 +43,13 @@ export default class Player extends GridObject {
   }
 
   override OnRemove(_state: DynamicState): void {
-    if (!this.grid.virtual) {
+    if (Constants.INCLUDE_GRAPHICS) {
       this.image.destroy();
       this.image = null;
     }
   }
-  override OnUnload(_virtual: boolean): void {
-    if (this.image != null) {
+  override OnUnload(): void {
+    if (Constants.INCLUDE_GRAPHICS) {
       this.image.destroy();
       this.image = null;
     }
@@ -62,12 +62,12 @@ export default class Player extends GridObject {
   Defeat() {
     if (!this.gameOver) {
       this.gameOver = true;
-      if (this.grid.virtual) {
-        Solver.Defeat();
-      } else {
+      if (Constants.INCLUDE_GRAPHICS) {
         setTimeout(() => {
-          GameManager.RestartLevel();
+          GameManager.Defeat();
         }, 2000);
+      } else {
+        GameManager.Defeat();
       }
     }
   }
@@ -75,10 +75,12 @@ export default class Player extends GridObject {
   Victory() {
     if (!this.gameOver) {
       this.gameOver = true;
-      if (this.grid.virtual) {
-        Solver.Victory();
+      if (Constants.INCLUDE_GRAPHICS) {
+        setTimeout(() => {
+          GameManager.Victory();
+        }, 2000);
       } else {
-        GameManager.NextLevel();
+        GameManager.Victory();
       }
     }
   }

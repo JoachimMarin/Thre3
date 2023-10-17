@@ -6,6 +6,7 @@ import DirtWall from 'Game/Level/GameObjects/PrePlaced/DirtWall';
 import { Vec2 } from 'Utils/Math/GridPoint';
 import ObjectTag from 'Game/Level/GameObjects/ObjectTag';
 import Tile from 'Game/Level/Generation/AssetLoading/Tile';
+import Constants from 'Game/Constants';
 
 class SimpleTile extends Tile {
   constructor(imageKey: string, ...tags: ObjectTag[]) {
@@ -18,7 +19,7 @@ class SimpleTile extends Tile {
       for (const tag of tags) {
         state.staticState.staticTags.get(gridKey).add(tag);
       }
-      if (!state.virtual) {
+      if (Constants.INCLUDE_GRAPHICS) {
         const image = state.levelScene.add.image(
           vec2.realX(),
           vec2.realY(),

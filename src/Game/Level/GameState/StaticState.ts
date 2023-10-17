@@ -13,13 +13,10 @@ export default class StaticState {
   public readonly height: integer;
 
   public readonly levelScene: ILevelScene;
-  public readonly virtual: boolean;
-
   constructor(width: integer, height: integer, levelScene: ILevelScene) {
     this.width = width;
     this.height = height;
     this.levelScene = levelScene;
-    this.virtual = levelScene == null;
   }
 
   /**
@@ -40,7 +37,7 @@ export default class StaticState {
   Unload() {
     if (this.eventGroups.has(EventGroup.ALL)) {
       for (const obj of this.eventGroups.get(EventGroup.ALL)) {
-        obj.Unload(this.virtual);
+        obj.Unload();
       }
     }
     this.staticObjects.clear();

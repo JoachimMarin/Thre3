@@ -13,8 +13,8 @@ export default abstract class GameObject {
    * Removes the object completely, ignoring all states.
    * This should only be called when the game state is discarded.
    */
-  Unload(virtual: boolean) {
-    this.OnUnload(virtual);
+  Unload() {
+    this.OnUnload();
   }
 
   /**
@@ -60,7 +60,7 @@ export default abstract class GameObject {
   }
 
   // Events:
-  OnUnload(_virtual: boolean) {}
+  OnUnload() {}
   OnInit(_state: DynamicState) {}
   OnRemove(_state: DynamicState) {}
   OnBeginStep(_state: DynamicState, _trigger: boolean) {}

@@ -1,6 +1,7 @@
 import DynamicState from 'Game/Level/GameState/DynamicState';
 import { IVec2 } from 'Utils/Math/GridPoint';
 import GameObjectImage from 'Game/Level/GameObjects/BaseClasses/GameObjectImage';
+import Constants from 'Game/Constants';
 
 export default class TimedImage extends GameObjectImage {
   private duration: number;
@@ -26,9 +27,7 @@ export default class TimedImage extends GameObjectImage {
     displayWidth: number = 1,
     displayHeight: number = 1
   ) {
-    if (state.virtual) {
-      return null;
-    } else {
+    if (Constants.INCLUDE_GRAPHICS) {
       return new TimedImage(
         state,
         aPoint,
@@ -37,6 +36,8 @@ export default class TimedImage extends GameObjectImage {
         displayWidth,
         displayHeight
       );
+    } else {
+      return null;
     }
   }
 
