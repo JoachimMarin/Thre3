@@ -1,13 +1,14 @@
-import ILevelScene from 'PhaserStubs/ILevelScene';
+//import ILevelScene from 'PhaserStubs/ILevelScene';
 import LevelParser from 'Game/Level/Generation/AssetLoading/LevelParser';
 import LevelState from 'Game/Level/GameState/LevelState';
 import Inventory from 'Game/Level/GameState/Inventory';
 import LevelList from 'Game/Level/Generation/AssetDefinitions/LevelList';
 import Solver from './Level/GameState/Solver';
+import LevelScene from 'Phaser/LevelScene';
 
 export default abstract class GameManager {
   private static parser: LevelParser;
-  private static levelScene: ILevelScene;
+  private static levelScene: LevelScene;
   private static inventory: () => Inventory;
   private static levelState: LevelState = null;
   private static _levelIndex: integer = -1;
@@ -18,7 +19,7 @@ export default abstract class GameManager {
 
   static Init(
     parser: LevelParser,
-    levelScene: ILevelScene,
+    levelScene: LevelScene,
     inventory: () => Inventory
   ) {
     this.parser = parser;

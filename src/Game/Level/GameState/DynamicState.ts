@@ -10,8 +10,9 @@ import Inventory from 'Game/Level/GameState/Inventory';
 import EventGroupDefintions from 'Game/Level/Events/EventGroupDefintions';
 import ObjectTag from 'Game/Level/GameObjects/ObjectTag';
 import GridObject from 'Game/Level/GameObjects/BaseClasses/GridObject';
-import ILevelScene from 'PhaserStubs/ILevelScene';
+//import ILevelScene from 'PhaserStubs/ILevelScene';
 import ByteArray from 'Utils/Math/ByteArray';
+import LevelScene from 'Phaser/LevelScene';
 
 /**
  * Contains all changes to the level state compared to the initial static state.
@@ -34,12 +35,12 @@ export default class DynamicState {
 
   public lockGridKey: boolean = true;
 
-  public readonly levelScene: ILevelScene;
+  public readonly levelScene: LevelScene;
 
   constructor(
     staticState: StaticState,
     inventory: Inventory,
-    levelScene: ILevelScene
+    levelScene: LevelScene
   ) {
     this.staticState = staticState;
     this.inventory = inventory;
