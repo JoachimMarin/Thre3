@@ -1,6 +1,6 @@
 process.chdir('./dist');
 
-import LevelState from 'Headless/Level/GameState/LevelState';
+/*import LevelState from 'Headless/Level/GameState/LevelState';
 import LevelParser from 'Headless/Level/Generation/AssetLoading/LevelParser';
 import { readFileSync } from 'fs';
 import { parseString } from 'xml2js';
@@ -33,4 +33,6 @@ const parser = new LocalLevelParser();
 parser.Preload();
 
 const state = new LevelState(null);
-state.SolveLevel(0, parser);
+state.SolveLevel(0, parser);*/
+
+console.log(process.argv);
