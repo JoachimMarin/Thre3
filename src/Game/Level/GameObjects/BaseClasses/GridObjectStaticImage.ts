@@ -3,6 +3,7 @@ import GridObjectStatic from 'Game/Level/GameObjects/BaseClasses/GridObjectStati
 import DynamicState from 'Game/Level/GameState/DynamicState';
 import IImage from 'PhaserStubs/IImage';
 import StaticState from 'Game/Level/GameState/StaticState';
+import Constants from 'Game/Constants';
 
 export default class GridObjectStaticImage extends GridObjectStatic {
   protected image: IImage = null;
@@ -16,7 +17,7 @@ export default class GridObjectStaticImage extends GridObjectStatic {
   ) {
     super(state, aPoint);
 
-    if (!state.virtual) {
+    if (Constants.INCLUDE_GRAPHICS) {
       const point = Vec2.AsVec2(aPoint);
       this.image = state.levelScene.add.image(
         point.realX(),
@@ -29,15 +30,15 @@ export default class GridObjectStaticImage extends GridObjectStatic {
 
   override Remove(state: DynamicState): void {
     super.Remove(state);
-    if (!state.virtual) {
+    if (Constants.INCLUDE_GRAPHICS) {
       this.image.destroy();
       this.image = null;
     }
   }
 
-  override Unload(virtual: boolean) {
-    super.Unload(virtual);
-    if (this.image != null) {
+  override Unload() {
+    super.Unload();
+    if (Constants.INCLUDE_GRAPHICS) {
       this.image.destroy();
       this.image = null;
     }

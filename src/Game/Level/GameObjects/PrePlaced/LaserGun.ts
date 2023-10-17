@@ -6,6 +6,7 @@ import ImageKey from 'Game/Level/Generation/AssetLoading/ImageKey';
 import GridObjectStaticImage from 'Game/Level/GameObjects/BaseClasses/GridObjectStaticImage';
 import IImage from 'PhaserStubs/IImage';
 import StaticState from 'Game/Level/GameState/StaticState';
+import Constants from 'Game/Constants';
 
 export class LaserColor {
   public readonly name: string;
@@ -67,7 +68,7 @@ export class LaserProjectile {
     if (point.Equals(state.player.destination)) {
       state.player.objectsToProcess.push(this);
     }
-    if (!state.virtual) {
+    if (Constants.INCLUDE_GRAPHICS) {
       this.image = state.levelScene.add.image(
         point.realX(),
         point.realY(),
@@ -115,7 +116,7 @@ export default class LaserGun extends GridObjectStaticImage {
     this.projectiles = [];
   }
 
-  override OnUnload(_virtual: boolean): void {
+  override OnUnload(): void {
     for (const projectile of this.projectiles) {
       projectile.Remove();
     }
@@ -130,7 +131,7 @@ export default class LaserGun extends GridObjectStaticImage {
   }
   override OnBeginStepTrigger(state: DynamicState): void {
     if (
-      state.virtual &&
+      !Constants.INCLUDE_GRAPHICS &&
       this.position.x != state.player.destination.x &&
       this.position.y != state.player.destination.y
     ) {

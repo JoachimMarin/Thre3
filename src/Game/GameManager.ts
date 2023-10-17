@@ -46,15 +46,32 @@ export default abstract class GameManager {
   public static SolveLevel(index: integer) {
     this.LoadLevel(index);
     const solver = new Solver();
-    solver.Solve(this.levelState.dynamicState);
+    // override defeat and victory while running solver
+    {
+      const _defeat = this.Defeat;
+      const _victory = this.Victory;
+      this.Defeat = () => solver.Defeat();
+      this.Victory = () => solver.Victory();
+      solver.Solve(this.levelState.dynamicState);
+      this.Defeat = _defeat;
+      this.Victory = _victory;
+    }
     solver.ReportVictoryPaths(this.levelState.dynamicState);
   }
 
-  public static RestartLevel() {
+  public static Defeat() {
+    this.RestartLevel();
+  }
+
+  public static Victory() {
+    this.NextLevel();
+  }
+
+  private static RestartLevel() {
     this.LoadLevel(this._levelIndex);
   }
 
-  public static NextLevel() {
+  private static NextLevel() {
     if (this._levelIndex + 1 < LevelList.length) {
       this.LoadLevel(this._levelIndex + 1);
     }

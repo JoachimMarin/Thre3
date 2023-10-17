@@ -35,7 +35,6 @@ export default class DynamicState {
   public lockGridKey: boolean = true;
 
   public readonly levelScene: ILevelScene;
-  public readonly virtual: boolean;
 
   constructor(
     staticState: StaticState,
@@ -45,7 +44,6 @@ export default class DynamicState {
     this.staticState = staticState;
     this.inventory = inventory;
     this.levelScene = levelScene;
-    this.virtual = levelScene == null;
   }
 
   DeepVirtualCopy() {
@@ -336,7 +334,7 @@ export default class DynamicState {
   Unload() {
     if (this.dynamicEventObjects.has(EventGroup.ALL)) {
       for (const obj of this.dynamicEventObjects.get(EventGroup.ALL)) {
-        obj.Unload(this.virtual);
+        obj.Unload();
       }
     }
     this.dynamicEventObjects.clear();
