@@ -1,7 +1,8 @@
 process.chdir('./dist');
 
-/*import LevelState from 'Headless/Level/GameState/LevelState';
-import LevelParser from 'Headless/Level/Generation/AssetLoading/LevelParser';
+import GameManager from 'Game/GameManager';
+import Inventory from 'Game/Level/GameState/Inventory';
+import LevelParser from 'Game/Level/Generation/AssetLoading/LevelParser';
 import { readFileSync } from 'fs';
 import { parseString } from 'xml2js';
 
@@ -10,6 +11,7 @@ export class LocalLevelParser extends LevelParser {
 
   constructor() {
     super();
+    this.Preload();
   }
 
   override RegisterAsset(_key: string) {}
@@ -29,10 +31,5 @@ export class LocalLevelParser extends LevelParser {
   }
 }
 
-const parser = new LocalLevelParser();
-parser.Preload();
-
-const state = new LevelState(null);
-state.SolveLevel(0, parser);*/
-
-console.log(process.argv);
+GameManager.Init(new LocalLevelParser(), null, () => new Inventory());
+GameManager.SolveLevel(0);
