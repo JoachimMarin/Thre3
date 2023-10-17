@@ -7,7 +7,7 @@
     "dev": "rollup --config rollup.config.dev.mjs",
     "build": "rollup --config rollup.config.dist.mjs",
     "watch": "rollup --watch --config rollup.config.dev.mjs",
-    "local": "rollup --config rollup.config.local.mjs",
+    "local": "rollup --config rollup.config.local.mjs --configArgs=\"",
     "prettier-format": "prettier --config .prettierrc src/**/*.ts --write",
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix",
