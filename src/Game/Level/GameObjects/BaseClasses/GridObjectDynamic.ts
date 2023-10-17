@@ -15,6 +15,11 @@ export default abstract class GridObjectDynamic extends GridObject {
     return 8;
   }
 
+  /**
+   * Writes this object's state to the byte array.
+   * @param _byteArray
+   * @param _index
+   */
   abstract WriteByteArray(_byteArray: Uint8Array, _index: integer): void;
 
   private AddToGrid() {
@@ -44,4 +49,6 @@ export default abstract class GridObjectDynamic extends GridObject {
     this.position = Vec2.AsVec2(position);
     this.AddToGrid();
   }
+
+  abstract DeepCopy(state: DynamicState): GridObjectDynamic;
 }

@@ -10,8 +10,8 @@ export default abstract class GameObject {
   public _id: number = GameObject._idCounter++;
 
   /**
-   * Removes the object completely, ignoring the all states.
-   * This is called when the user leaves the level.
+   * Removes the object completely, ignoring all states.
+   * This should only be called when the game state is discarded.
    */
   Unload(virtual: boolean) {
     this.OnUnload(virtual);
@@ -23,6 +23,9 @@ export default abstract class GameObject {
    * @param state
    */
   Remove(state: DynamicState) {
+    // Removes this game object from any event groups in the dynamic state.
+    // This function is overridden by static objects, since they are never
+    // part of any event groups in the dynamic state.
     state.ClearEventGroups(this);
     this.OnRemove(state);
   }

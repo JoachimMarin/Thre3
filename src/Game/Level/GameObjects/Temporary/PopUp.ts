@@ -46,7 +46,7 @@ export default class PopUp extends GameObjectImage {
     }
   }
 
-  Rotate(state: DynamicState, angle: number) {
+  private Rotate(state: DynamicState, angle: number) {
     this.rotationAngle += angle;
     if (this.rotationAngle >= this.rotationAngleMax) {
       this.Remove(state);

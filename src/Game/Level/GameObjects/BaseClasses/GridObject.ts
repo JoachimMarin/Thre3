@@ -4,7 +4,7 @@ import GameObject from 'Game/Level/GameObjects/BaseClasses/GameObject';
 
 /**
  * GridObject
- *  has position in grid and can be retrieved from grid
+ *  has position in grid
  */
 export default abstract class GridObject extends GameObject {
   public position: Vec2;
@@ -14,13 +14,17 @@ export default abstract class GridObject extends GameObject {
     this.position = Vec2.AsVec2(point);
   }
 
-  abstract DeepCopy(state: DynamicState): void;
-
+  /**
+   * Returns if the GridObject acts as a wall. This is only used in combination with ObjectTag.CONDITIONAL_WALL.
+   * GridObjects with ObjectTag.WALL are always treated as wall.
+   * @param _state
+   * @returns
+   */
   IsWall(_state: DynamicState) {
     return false;
   }
 
-  GetGridPosition(_state: DynamicState) {
+  GetGridPosition(_state: DynamicState): Vec2 {
     return this.position;
   }
 }

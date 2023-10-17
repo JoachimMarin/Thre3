@@ -52,6 +52,12 @@ export default class LevelState {
     }
   }
 
+  /**
+   * Prepares new static and dynamic states for the given level index.
+   * @param index
+   * @param levelParser
+   * @param inv
+   */
   public LoadLevel(index: integer, levelParser: LevelParser, inv: Inventory) {
     levelParser.LoadLevelInfo(index);
 

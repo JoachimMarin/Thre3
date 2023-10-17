@@ -13,7 +13,6 @@ export default class GameObjectImage extends GameObject {
     displayHeight: number
   ) {
     super();
-    this.PostConstruct(state);
 
     if (!state.virtual) {
       const point = Vec2.AsVec2(aPoint);

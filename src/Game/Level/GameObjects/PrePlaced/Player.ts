@@ -55,7 +55,7 @@ export default class Player extends GridObject {
     }
   }
 
-  override DeepCopy(state: DynamicState) {
+  DeepCopy(state: DynamicState) {
     return new Player(this.position, state);
   }
 

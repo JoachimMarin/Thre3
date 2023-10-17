@@ -1,6 +1,8 @@
 import ByteArray from 'Utils/Math/ByteArray';
 
 export default abstract class GridObjectChanges {
+  static readonly REMOVED = 0;
+
   static GetByteArraySize() {
     return 4;
   }
@@ -10,10 +12,10 @@ export default abstract class GridObjectChanges {
     index: integer,
     changes: integer
   ) {
-    return ByteArray.Write32(byteArray, index, changes);
+    ByteArray.Write32(byteArray, index, changes);
   }
 
-  static SetFlag(changes: integer, index: integer, flag: boolean) {
+  static SetFlag(changes: integer, index: integer, flag: boolean): integer {
     if (flag) {
       return changes | (1 << index);
     } else {
@@ -21,7 +23,7 @@ export default abstract class GridObjectChanges {
     }
   }
 
-  static GetFlag(changes: integer, index: integer) {
+  static HasFlag(changes: integer, index: integer): boolean {
     return (changes & (1 << index)) != 0;
   }
 }

@@ -48,6 +48,9 @@ class KnownStates {
   }
 }
 
+/**
+ * BFS based solver.
+ */
 export default class Solver {
   private static result = Result.Pending;
   private knownStates: KnownStates = new KnownStates();
