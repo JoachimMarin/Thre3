@@ -22,20 +22,31 @@ export default abstract class GridObjectStatic extends GridObject {
   override Exists(state: DynamicState) {
     return (
       !state.staticObjectChanges.has(this) ||
-      GridObjectChanges.GetFlag(state.staticObjectChanges.get(this), 0) == false
+      !GridObjectChanges.HasFlag(
+        state.staticObjectChanges.get(this),
+        GridObjectChanges.REMOVED
+      )
     );
   }
   override Remove(state: DynamicState) {
     if (!state.staticObjectChanges.has(this)) {
       state.staticObjectChanges.set(this, 0);
     }
+    // static objects are not actually removed,
+    // but only marked as removed in the DynamicState.
     state.staticObjectChanges.set(
       this,
-      GridObjectChanges.SetFlag(state.staticObjectChanges.get(this), 0, true)
+      GridObjectChanges.SetFlag(
+        state.staticObjectChanges.get(this),
+        GridObjectChanges.REMOVED,
+        true
+      )
     );
     state.UpdateChangesKeyString();
-    super.Remove(state);
+    // Does not call super.Remove(), because static objects
+    // do not need to be removed from event groups
+    // OnRemove is still called, because the objects are
+    // still removed from active gameplay.
+    this.OnRemove(state);
   }
-
-  override DeepCopy(_state: DynamicState) {}
 }

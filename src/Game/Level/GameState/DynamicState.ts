@@ -1,4 +1,4 @@
-import GameObjectEvent from 'Game/Level/Events/GridObjectEvent';
+import EventGroup from 'Game/Level/Events/GridObjectEvent';
 import GameObject from 'Game/Level/GameObjects/BaseClasses/GameObject';
 import GridObjectChanges from 'Game/Level/GameState/GridObjectChanges';
 import GridObjectDynamic from 'Game/Level/GameObjects/BaseClasses/GridObjectDynamic';
@@ -14,12 +14,12 @@ import ILevelScene from 'PhaserStubs/ILevelScene';
 import ByteArray from 'Utils/Math/ByteArray';
 
 /**
- * Contains all game objects and manages level related gameplay.
+ * Contains all changes to the level state compared to the initial static state.
  */
 export default class DynamicState {
   public staticObjectChanges = new Map<GridObjectStatic, integer>();
   public dynamicObjects = new Map<number, Set<GridObjectDynamic>>();
-  public dynamicEventObjects = new Map<GameObjectEvent, Set<GameObject>>();
+  public dynamicEventObjects = new Map<EventGroup, Set<GameObject>>();
   public staticState: StaticState | null;
 
   private playerStep = 0;
@@ -194,7 +194,7 @@ export default class DynamicState {
    * @param key
    * @param func
    */
-  ForEventGroup(key: GameObjectEvent, func: (obj: GameObject) => void) {
+  ForEventGroup(key: EventGroup, func: (obj: GameObject) => void) {
     if (this.staticState.eventGroups.has(key)) {
       for (const object of this.staticState.eventGroups.get(key)) {
         if (object.Exists(this)) {
@@ -291,9 +291,7 @@ export default class DynamicState {
    */
   Update(delta: number) {
     this.inventory.Update();
-    this.ForEventGroup(GameObjectEvent.UPDATE, (obj) =>
-      obj.OnUpdate(this, delta)
-    );
+    this.ForEventGroup(EventGroup.UPDATE, (obj) => obj.OnUpdate(this, delta));
   }
 
   /**
@@ -307,11 +305,11 @@ export default class DynamicState {
     } else if (this.playerStep < 0) {
       this.playerStep = this.playerMaxStep - 1;
     }
-    this.ForEventGroup(GameObjectEvent.BEGIN_STEP_ALL, (obj) =>
+    this.ForEventGroup(EventGroup.BEGIN_STEP_ALL, (obj) =>
       obj.OnBeginStep(this, trigger)
     );
     if (trigger) {
-      this.ForEventGroup(GameObjectEvent.BEGIN_STEP_TRIGGER, (obj) =>
+      this.ForEventGroup(EventGroup.BEGIN_STEP_TRIGGER, (obj) =>
         obj.OnBeginStepTrigger(this)
       );
     }
@@ -322,11 +320,11 @@ export default class DynamicState {
    */
   EndPlayerStep() {
     const trigger = this.playerStep == 0;
-    this.ForEventGroup(GameObjectEvent.END_STEP_ALL, (obj) =>
+    this.ForEventGroup(EventGroup.END_STEP_ALL, (obj) =>
       obj.OnEndStep(this, trigger)
     );
     if (trigger) {
-      this.ForEventGroup(GameObjectEvent.END_STEP_TRIGGER, (obj) =>
+      this.ForEventGroup(EventGroup.END_STEP_TRIGGER, (obj) =>
         obj.OnEndStepTrigger(this)
       );
     }
@@ -336,10 +334,8 @@ export default class DynamicState {
    * Removes all data governed by this DynamicState.
    */
   Unload() {
-    if (this.dynamicEventObjects.has(GameObjectEvent.GLOBAL_SCENE)) {
-      for (const obj of this.dynamicEventObjects.get(
-        GameObjectEvent.GLOBAL_SCENE
-      )) {
+    if (this.dynamicEventObjects.has(EventGroup.ALL)) {
+      for (const obj of this.dynamicEventObjects.get(EventGroup.ALL)) {
         obj.Unload(this.virtual);
       }
     }

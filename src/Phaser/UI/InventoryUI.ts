@@ -74,12 +74,7 @@ export default class InventoryUI extends Inventory {
     super();
   }
 
-  /**
-   * Adds items to the inventory.
-   * @param itemType The item type to be added.
-   * @param count The number of items to be added.
-   */
-  AddItem(itemType: ItemType, count: integer = 1) {
+  override AddItem(itemType: ItemType, count: integer = 1) {
     super.AddItem(itemType, count);
     const itemKey = itemType.imageKey;
 
@@ -96,12 +91,7 @@ export default class InventoryUI extends Inventory {
     }
   }
 
-  /**
-   * Removes items to the inventory.
-   * @param itemType The item type to be removed.
-   * @param count The number of items to be removed.
-   */
-  RemoveItem(itemType: ItemType, count: integer = 1) {
+  override RemoveItem(itemType: ItemType, count: integer = 1) {
     super.RemoveItem(itemType, count);
     const itemKey = itemType.imageKey;
     const remaining = this.GetCount(itemType);
@@ -124,10 +114,7 @@ export default class InventoryUI extends Inventory {
     }
   }
 
-  /**
-   * Removes all items from the inventory.
-   */
-  Clear() {
+  override Clear() {
     super.Clear();
     if (!this.virtual) {
       for (const inventoryEntry of this.itemEntryList) {
@@ -138,10 +125,7 @@ export default class InventoryUI extends Inventory {
     }
   }
 
-  /**
-   * Runs on scene update.
-   */
-  Update() {
+  override Update() {
     for (const inventoryEntry of this.itemEntryList) {
       inventoryEntry.Update();
     }

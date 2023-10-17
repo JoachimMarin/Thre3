@@ -1,4 +1,4 @@
-import GameObjectEvent from 'Game/Level/Events/GridObjectEvent';
+import EventGroup from 'Game/Level/Events/GridObjectEvent';
 import ObjectTag from 'Game/Level/GameObjects/ObjectTag';
 import GridObjectStatic from 'Game/Level/GameObjects/BaseClasses/GridObjectStatic';
 import EventGroupDefintions from 'Game/Level/Events/EventGroupDefintions';
@@ -7,7 +7,7 @@ import ILevelScene from 'PhaserStubs/ILevelScene';
 export default class StaticState {
   public staticObjects = new Map<number, Set<GridObjectStatic>>();
   public staticTags = new Map<number, Set<ObjectTag>>();
-  public eventGroups = new Map<GameObjectEvent, Set<GridObjectStatic>>();
+  public eventGroups = new Map<EventGroup, Set<GridObjectStatic>>();
 
   public readonly width: integer;
   public readonly height: integer;
@@ -38,8 +38,8 @@ export default class StaticState {
   }
 
   Unload() {
-    if (this.eventGroups.has(GameObjectEvent.GLOBAL_SCENE)) {
-      for (const obj of this.eventGroups.get(GameObjectEvent.GLOBAL_SCENE)) {
+    if (this.eventGroups.has(EventGroup.ALL)) {
+      for (const obj of this.eventGroups.get(EventGroup.ALL)) {
         obj.Unload(this.virtual);
       }
     }
