@@ -2,7 +2,8 @@ import EventGroup from 'Game/Level/Events/GridObjectEvent';
 import ObjectTag from 'Game/Level/GameObjects/ObjectTag';
 import GridObjectStatic from 'Game/Level/GameObjects/BaseClasses/GridObjectStatic';
 import EventGroupDefintions from 'Game/Level/Events/EventGroupDefintions';
-import ILevelScene from 'PhaserStubs/ILevelScene';
+import LevelScene from 'Phaser/LevelScene';
+//import ILevelScene from 'PhaserStubs/ILevelScene';
 
 export default class StaticState {
   public staticObjects = new Map<number, Set<GridObjectStatic>>();
@@ -12,8 +13,8 @@ export default class StaticState {
   public readonly width: integer;
   public readonly height: integer;
 
-  public readonly levelScene: ILevelScene;
-  constructor(width: integer, height: integer, levelScene: ILevelScene) {
+  public readonly levelScene: LevelScene;
+  constructor(width: integer, height: integer, levelScene: LevelScene) {
     this.width = width;
     this.height = height;
     this.levelScene = levelScene;

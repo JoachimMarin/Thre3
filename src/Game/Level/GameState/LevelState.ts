@@ -1,16 +1,17 @@
-import ILevelScene from 'PhaserStubs/ILevelScene';
+//import ILevelScene from 'PhaserStubs/ILevelScene';
 import DynamicState from 'Game/Level/GameState/DynamicState';
 import StaticState from 'Game/Level/GameState/StaticState';
 import Inventory from 'Game/Level/GameState/Inventory';
 import LevelParser from 'Game/Level/Generation/AssetLoading/LevelParser';
+import LevelScene from 'Phaser/LevelScene';
 
 export default class LevelState {
   private _staticState: StaticState;
   private _dynamicState: DynamicState;
-  private _levelScene: ILevelScene;
+  private _levelScene: LevelScene;
   private loaded: boolean = false;
 
-  constructor(levelScene: ILevelScene) {
+  constructor(levelScene: LevelScene) {
     this.levelScene = levelScene;
   }
 
@@ -26,10 +27,10 @@ export default class LevelState {
   private set dynamicState(v: DynamicState) {
     this._dynamicState = v;
   }
-  get levelScene(): ILevelScene {
+  get levelScene(): LevelScene {
     return this._levelScene;
   }
-  private set levelScene(v: ILevelScene) {
+  private set levelScene(v: LevelScene) {
     this._levelScene = v;
   }
 

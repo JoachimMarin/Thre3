@@ -8,14 +8,14 @@ import DynamicState from 'Game/Level/GameState/DynamicState';
 import GridObject from 'Game/Level/GameObjects/BaseClasses/GridObject';
 import { LaserProjectile } from 'Game/Level/GameObjects/PrePlaced/LaserGun';
 import ImageDefinitions from 'Game/Level/Generation/AssetDefinitions/ImageDefinitions';
-import IImage from 'PhaserStubs/IImage';
+//import IImage from 'PhaserStubs/IImage';
 import ItemDefinitions from 'Game/Level/Generation/AssetDefinitions/ItemDefinitions';
 import TimedImage from 'Game/Level/GameObjects/Temporary/TimedImage';
 import GameManager from 'Game/GameManager';
 import Constants from 'Game/Constants';
 
 export default class Player extends GridObject {
-  public image: IImage;
+  public image: Phaser.GameObjects.Image;
   static imageKey = 'player';
 
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;

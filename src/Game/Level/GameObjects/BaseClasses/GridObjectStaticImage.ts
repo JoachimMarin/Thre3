@@ -1,12 +1,11 @@
 import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
 import GridObjectStatic from 'Game/Level/GameObjects/BaseClasses/GridObjectStatic';
 import DynamicState from 'Game/Level/GameState/DynamicState';
-import IImage from 'PhaserStubs/IImage';
 import StaticState from 'Game/Level/GameState/StaticState';
 import Constants from 'Game/Constants';
 
 export default class GridObjectStaticImage extends GridObjectStatic {
-  protected image: IImage = null;
+  protected image: Phaser.GameObjects.Image = null;
 
   constructor(
     state: StaticState,

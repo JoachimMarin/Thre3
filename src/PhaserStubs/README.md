@@ -1,2 +1,0 @@
-Game logic and graphics are separated for the most part, but in some cases separation is not possible or inconvenient.
-In these cases, abstract classes are used to replace graphic types, so that game logic only depends on these abstract classes and not on real graphic types.
