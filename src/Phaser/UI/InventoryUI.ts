@@ -1,7 +1,7 @@
-import ItemType from 'Headless/Level/Generation/AssetLoading/ItemType';
+import ItemType from 'Game/Level/Generation/AssetLoading/ItemType';
 import SideUserInterfaceScene from './SideUserInterfaceScene';
 import * as UI from 'Phaser/UI/UserInterface';
-import Inventory from 'Headless/Level/GameState/Inventory';
+import Inventory from 'Game/Level/GameState/Inventory';
 
 class InventoryEntry {
   public imageL: Phaser.GameObjects.Image;

@@ -3,12 +3,12 @@ import * as Phaser from 'phaser';
 import SideUserInterfaceScene from 'Phaser/UI/SideUserInterfaceScene';
 import GridUserInterfaceScene from 'Phaser/UI/GridUserInterfaceScene';
 
-import LevelState from 'Headless/Level/GameState/LevelState';
-import LevelParser from 'Headless/Level/Generation/AssetLoading/LevelParser';
+import LevelParser from 'Game/Level/Generation/AssetLoading/LevelParser';
 import SceneLevelParser from 'Phaser/SceneLevelParser';
-import LevelList from 'Headless/Level/Generation/AssetDefinitions/LevelList';
 import InventoryUI from 'Phaser/UI/InventoryUI';
 import CameraManager from 'Phaser/CameraManager';
+import GameManager from 'Game/GameManager';
+import LevelState from 'Game/Level/GameState/LevelState';
 
 export default class LevelScene extends Phaser.Scene {
   public cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -16,12 +16,12 @@ export default class LevelScene extends Phaser.Scene {
   private ready: boolean = false;
   private additionalScenes: Phaser.Scene[];
 
-  public index: integer = 0;
-
   public static readonly SCENE = new LevelScene();
   public staticImages: Phaser.GameObjects.Image[] = [];
 
-  public levelState: LevelState = null;
+  private readonly gameManager: GameManager;
+  private cameraManager: CameraManager;
+  private levelIndex: integer;
 
   private constructor() {
     super('level');
@@ -30,6 +30,7 @@ export default class LevelScene extends Phaser.Scene {
       GridUserInterfaceScene.SCENE
     ];
     this.levelParser = new SceneLevelParser(this, []);
+    GameManager.Init(this.levelParser, this, () => new InventoryUI());
   }
 
   init() {
@@ -40,22 +41,8 @@ export default class LevelScene extends Phaser.Scene {
     this.levelParser.Preload();
   }
 
-  changeSceneToLevel(current: Phaser.Scene, index: integer) {
-    this.index = index;
-    current.scene.start(this);
-  }
-
-  restartLevel() {
-    this.LoadLevel();
-  }
-
-  changeToNextLevel() {
-    const next = this.index + 1;
-    if (next < LevelList.length) {
-      this.changeSceneToLevel(this, next);
-    } else {
-      console.log('you won all levels');
-    }
+  LoadLevel(state: LevelState) {
+    this.cameraManager = new CameraManager(this, state);
   }
 
   Unload() {
@@ -63,24 +50,13 @@ export default class LevelScene extends Phaser.Scene {
       img.destroy();
     }
     this.staticImages = [];
+    this.cameraManager.Unload();
+    this.cameraManager = null;
   }
 
-  LoadLevel() {
-    if (this.levelState != null) {
-      this.levelState.UnloadLevel();
-    }
-    this.levelState = new LevelState(this);
-    this.levelState.LoadLevel(this.index, this.levelParser, new InventoryUI());
-    new CameraManager(this.levelState.dynamicState);
-  }
-
-  OnFullyLoaded() {
-    this.LoadLevel();
-  }
-
-  createReady() {
-    this.OnFullyLoaded();
-    this.ready = true;
+  ChangeSceneToLevel(current: Phaser.Scene, index: integer) {
+    this.levelIndex = index;
+    current.scene.start(this);
   }
 
   create() {
@@ -104,9 +80,15 @@ export default class LevelScene extends Phaser.Scene {
     }, 5);
   }
 
-  update(_time: number, delta: number) {
+  createReady() {
+    GameManager.LoadLevel(this.levelIndex);
+    this.ready = true;
+  }
+
+  update(time: number, delta: number) {
     if (this.ready) {
-      this.levelState.dynamicState.Update(delta);
+      GameManager.Update(time, delta);
+      this.cameraManager.Update();
     }
   }
 }

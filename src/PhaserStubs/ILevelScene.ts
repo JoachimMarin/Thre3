@@ -1,9 +1,9 @@
+import LevelState from 'Game/Level/GameState/LevelState';
 import IImage from 'PhaserStubs/IImage';
 
 export default abstract class ILevelScene {
   abstract Unload(): void;
-  abstract changeToNextLevel(): void;
-  abstract restartLevel(): void;
+  abstract LoadLevel(state: LevelState): void;
   add = {
     image: function (..._: any[]): IImage {
       return null;

@@ -1,33 +1,62 @@
 import * as Phaser from 'phaser';
 
-import GameObject from 'Headless/Level/GameObjects/BaseClasses/GameObject';
 import SideUserInterfaceScene from 'Phaser/UI/SideUserInterfaceScene';
 import GridUserInterfaceScene from 'Phaser/UI/GridUserInterfaceScene';
-import { Vec2 } from 'Headless/Utils/Math/GridPoint';
-import DynamicState from 'Headless/Level/GameState/DynamicState';
+import { Vec2 } from 'Utils/Math/GridPoint';
 import LevelScene from 'Phaser/LevelScene';
+import LevelState from 'Game/Level/GameState/LevelState';
+import StaticState from 'Game/Level/GameState/StaticState';
 
 const maxZoomInTiles = 4;
 
-export default class CameraManager extends GameObject {
-  private state: DynamicState;
+export default class CameraManager {
   private canvasSize: Vec2 = Vec2.AsVec2([0, 0]);
   private uiCanvasSize: Vec2 = Vec2.AsVec2([0, 0]);
   private mainCanvasSize: Vec2 = Vec2.AsVec2([0, 0]);
+
+  private staticState: StaticState = null;
 
   private mainScene: Phaser.Scene;
   private mainCam: Phaser.Cameras.Scene2D.Camera;
   private sideUICam: Phaser.Cameras.Scene2D.Camera;
   private gridUICam: Phaser.Cameras.Scene2D.Camera;
 
-  constructor(state: DynamicState) {
-    super();
-    this.state = state;
-    this.mainScene = state.levelScene as LevelScene;
+  constructor(mainScene: LevelScene, state: LevelState) {
+    this.mainScene = mainScene;
+    this.staticState = state.staticState;
     this.mainCam = this.mainScene.cameras.main;
     this.sideUICam = SideUserInterfaceScene.SCENE.cameras.main;
     this.gridUICam = GridUserInterfaceScene.SCENE.cameras.main;
-    this.PostConstruct(state);
+    this.UpdateCanvas();
+    this.mainCam.setZoom(0.00001);
+    this.mainCam.centerOn(
+      this.staticState.width / 2,
+      this.staticState.height / 2
+    );
+    this.LimitCamera();
+    this.mainScene.input.on(
+      'wheel',
+      (_pointer, _gameObjects, _deltaX, deltaY, _deltaZ) => {
+        if (deltaY > 0) {
+          this.ChangeZoom(1.0 / 1.2);
+        }
+
+        if (deltaY < 0) {
+          this.ChangeZoom(1.2);
+        }
+        this.LimitCamera();
+      }
+    );
+
+    this.mainScene.input.on('pointermove', (pointer) => {
+      if (!pointer.isDown) return;
+
+      this.mainCam.scrollX -=
+        ((pointer.x - pointer.prevPosition.x) * 4) / this.mainCam.zoom;
+      this.mainCam.scrollY -=
+        ((pointer.y - pointer.prevPosition.y) * 4) / this.mainCam.zoom;
+      this.LimitCamera();
+    });
   }
 
   UpdateCanvas() {
@@ -113,8 +142,8 @@ export default class CameraManager extends GameObject {
   }
 
   LimitCamera() {
-    const levelWidth = this.state.staticState.width;
-    const levelHeight = this.state.staticState.height;
+    const levelWidth = this.staticState.width;
+    const levelHeight = this.staticState.height;
 
     let cameraWidth = this.mainCanvasSize.x / this.mainCam.zoom;
     let cameraHeight = this.mainCanvasSize.y / this.mainCam.zoom;
@@ -171,45 +200,12 @@ export default class CameraManager extends GameObject {
     this.mainCam.zoom *= factor;
   }
 
-  OnInit(): void {
-    this.UpdateCanvas();
-    this.mainCam.setZoom(0.00001);
-    this.mainCam.centerOn(
-      this.state.staticState.width / 2,
-      this.state.staticState.height / 2
-    );
-    this.LimitCamera();
-    this.mainScene.input.on(
-      'wheel',
-      (_pointer, _gameObjects, _deltaX, deltaY, _deltaZ) => {
-        if (deltaY > 0) {
-          this.ChangeZoom(1.0 / 1.2);
-        }
-
-        if (deltaY < 0) {
-          this.ChangeZoom(1.2);
-        }
-        this.LimitCamera();
-      }
-    );
-
-    this.mainScene.input.on('pointermove', (pointer) => {
-      if (!pointer.isDown) return;
-
-      this.mainCam.scrollX -=
-        ((pointer.x - pointer.prevPosition.x) * 4) / this.mainCam.zoom;
-      this.mainCam.scrollY -=
-        ((pointer.y - pointer.prevPosition.y) * 4) / this.mainCam.zoom;
-      this.LimitCamera();
-    });
-  }
-
-  OnUpdate(_state: DynamicState, _delta: number): void {
+  Update() {
     this.UpdateCanvas();
     this.LimitCamera();
   }
 
-  OnUnload(_virtual: boolean): void {
+  Unload() {
     this.mainScene.input.off('wheel');
     this.mainScene.input.off('pointermove');
   }
