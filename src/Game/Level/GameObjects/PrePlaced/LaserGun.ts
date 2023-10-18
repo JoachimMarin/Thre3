@@ -7,7 +7,6 @@ import ImageKey from 'Game/Level/Generation/AssetLoading/ImageKey';
 import Direction from 'Utils/Math/Direction';
 import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
 
-
 export class LaserColor {
   public readonly name: string;
   public readonly length: integer;

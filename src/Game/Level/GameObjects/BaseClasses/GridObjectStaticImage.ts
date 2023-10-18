@@ -4,7 +4,6 @@ import DynamicState from 'Game/Level/GameState/DynamicState';
 import StaticState from 'Game/Level/GameState/StaticState';
 import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
 
-
 export default class GridObjectStaticImage extends GridObjectStatic {
   protected image: Phaser.GameObjects.Image;
 

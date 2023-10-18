@@ -4,7 +4,6 @@ import * as UI from 'Phaser/UI/UserInterface';
 import { Vec2 } from 'Utils/Math/GridPoint';
 import * as Phaser from 'phaser';
 
-
 export default class MainMenuScene extends Phaser.Scene {
   public static readonly SCENE = new MainMenuScene();
 

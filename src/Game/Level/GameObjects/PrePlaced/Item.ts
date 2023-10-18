@@ -5,7 +5,6 @@ import StaticState from 'Game/Level/GameState/StaticState';
 import ItemType from 'Game/Level/Generation/AssetLoading/ItemType';
 import { IVec2 } from 'Utils/Math/GridPoint';
 
-
 export default class Item extends GridObjectStaticImage {
   static tags = new Set<ObjectTag>([ObjectTag.ITEM]);
 

@@ -3,7 +3,6 @@ import ItemType from 'Game/Level/Generation/AssetLoading/ItemType';
 import SideUserInterfaceScene from 'Phaser/UI/SideUserInterfaceScene';
 import * as UI from 'Phaser/UI/UserInterface';
 
-
 class InventoryEntry {
   public imageL: Phaser.GameObjects.Image;
   public textL: UI.Text;

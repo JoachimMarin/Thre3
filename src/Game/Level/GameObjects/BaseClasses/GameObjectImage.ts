@@ -3,7 +3,6 @@ import GameObject from 'Game/Level/GameObjects/BaseClasses/GameObject';
 import DynamicState from 'Game/Level/GameState/DynamicState';
 import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
 
-
 export default class GameObjectImage extends GameObject {
   protected image: Phaser.GameObjects.Image;
 

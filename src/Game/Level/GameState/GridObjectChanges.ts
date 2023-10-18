@@ -1,6 +1,5 @@
 import ByteArray from 'Utils/Math/ByteArray';
 
-
 export default abstract class GridObjectChanges {
   static readonly REMOVED = 0;
 

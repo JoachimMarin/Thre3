@@ -1,6 +1,5 @@
 import Direction from 'Utils/Math/Direction';
 
-
 export type IVec2 = Vec2 | [integer, integer];
 
 export class Vec2 {

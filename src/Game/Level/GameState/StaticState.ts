@@ -4,7 +4,6 @@ import GridObjectStatic from 'Game/Level/GameObjects/BaseClasses/GridObjectStati
 import ObjectTag from 'Game/Level/GameObjects/ObjectTag';
 import LevelScene from 'Phaser/LevelScene';
 
-
 export default class StaticState {
   public staticObjects = new Map<number, Set<GridObjectStatic>>();
   public staticTags = new Map<number, Set<ObjectTag>>();

@@ -13,7 +13,8 @@
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:import/recommended",
-    "plugin:import/typescript"
+    "plugin:import/typescript",
+    "prettier"
   ],
   "settings": {
     "import/resolver": {
@@ -41,9 +42,14 @@
     ],
     "no-relative-import-paths/no-relative-import-paths": [
       "error",
-      { "allowSameFolder": false, "rootDir": "src", "prefix": "" }
+      {
+        "allowSameFolder": false,
+        "rootDir": "src",
+        "prefix": ""
+      }
     ],
-    "import/newline-after-import": ["error", { "count": 2 }],
+    "import/imports-first": "error",
+    "import/newline-after-import": ["error", { "count": 1 }],
     "import/order": [
       "error",
       {

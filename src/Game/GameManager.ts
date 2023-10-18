@@ -5,7 +5,6 @@ import LevelList from 'Game/Level/Generation/AssetDefinitions/LevelList';
 import LevelParser from 'Game/Level/Generation/AssetLoading/LevelParser';
 import LevelScene from 'Phaser/LevelScene';
 
-
 export default abstract class GameManager {
   private static parser: LevelParser;
   private static levelScene: LevelScene;

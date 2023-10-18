@@ -4,7 +4,6 @@ import GridObjectChanges from 'Game/Level/GameState/GridObjectChanges';
 import StaticState from 'Game/Level/GameState/StaticState';
 import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
 
-
 export default abstract class GridObjectStatic extends GridObject {
   constructor(state: StaticState, point: IVec2) {
     super(point);

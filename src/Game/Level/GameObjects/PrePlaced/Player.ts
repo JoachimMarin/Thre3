@@ -13,7 +13,6 @@ import Direction from 'Utils/Math/Direction';
 import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
 import * as Phaser from 'phaser';
 
-
 export default class Player extends GridObject {
   public image: Phaser.GameObjects.Image;
   static imageKey = 'player';

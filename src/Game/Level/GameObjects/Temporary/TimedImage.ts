@@ -3,7 +3,6 @@ import GameObjectImage from 'Game/Level/GameObjects/BaseClasses/GameObjectImage'
 import DynamicState from 'Game/Level/GameState/DynamicState';
 import { IVec2 } from 'Utils/Math/GridPoint';
 
-
 export default class TimedImage extends GameObjectImage {
   private duration: number;
 

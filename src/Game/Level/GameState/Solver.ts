@@ -1,7 +1,6 @@
 import DynamicState from 'Game/Level/GameState/DynamicState';
 import Direction from 'Utils/Math/Direction';
 
-
 enum Result {
   Pending,
   Victory,

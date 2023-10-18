@@ -5,7 +5,6 @@ import StaticState from 'Game/Level/GameState/StaticState';
 import ItemDefinitions from 'Game/Level/Generation/AssetDefinitions/ItemDefinitions';
 import { IVec2 } from 'Utils/Math/GridPoint';
 
-
 export default class DirtWall extends GridObjectStaticImage {
   static tags = new Set<ObjectTag>([
     ObjectTag.CONDITIONAL_WALL,

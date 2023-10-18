@@ -1,6 +1,5 @@
 import ItemType from 'Game/Level/Generation/AssetLoading/ItemType';
 
-
 export default class Inventory {
   private itemCountMap: Map<integer, integer> = new Map<integer, integer>();
 

@@ -13,7 +13,6 @@ import LevelScene from 'Phaser/LevelScene';
 import ByteArray from 'Utils/Math/ByteArray';
 import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
 
-
 /**
  * Contains all changes to the level state compared to the initial static state.
  */

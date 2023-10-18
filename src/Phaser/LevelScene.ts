@@ -1,4 +1,3 @@
-
 import GameManager from 'Game/GameManager';
 import LevelState from 'Game/Level/GameState/LevelState';
 import LevelParser from 'Game/Level/Generation/AssetLoading/LevelParser';
@@ -9,7 +8,6 @@ import GridUserInterfaceScene from 'Phaser/UI/GridUserInterfaceScene';
 import InventoryUI from 'Phaser/UI/InventoryUI';
 import SideUserInterfaceScene from 'Phaser/UI/SideUserInterfaceScene';
 import * as Phaser from 'phaser';
-
 
 export default class LevelScene extends Phaser.Scene {
   public cursors!: Phaser.Types.Input.Keyboard.CursorKeys;

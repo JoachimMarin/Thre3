@@ -2,7 +2,6 @@ import EventGroup from 'Game/Level/Events/GridObjectEvent';
 import GameObject from 'Game/Level/GameObjects/BaseClasses/GameObject';
 import ClassUtils from 'Utils/ClassUtils';
 
-
 function DefineEventGroup(
   eventGroups: Map<EventGroup, (obj: GameObject) => boolean>,
   key: EventGroup,

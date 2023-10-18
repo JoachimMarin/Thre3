@@ -8,7 +8,6 @@ import Player from 'Game/Level/GameObjects/PrePlaced/Player';
 import Tile from 'Game/Level/Generation/AssetLoading/Tile';
 import { Vec2 } from 'Utils/Math/GridPoint';
 
-
 class SimpleTile extends Tile {
   constructor(imageKey: string, ...tags: ObjectTag[]) {
     super(imageKey, (state, point) => {

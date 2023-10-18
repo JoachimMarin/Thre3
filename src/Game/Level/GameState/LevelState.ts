@@ -4,7 +4,6 @@ import StaticState from 'Game/Level/GameState/StaticState';
 import LevelParser from 'Game/Level/Generation/AssetLoading/LevelParser';
 import LevelScene from 'Phaser/LevelScene';
 
-
 export default class LevelState {
   private _staticState: StaticState;
   private _dynamicState: DynamicState;

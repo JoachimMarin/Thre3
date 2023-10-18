@@ -1,4 +1,3 @@
-
 import LevelState from 'Game/Level/GameState/LevelState';
 import StaticState from 'Game/Level/GameState/StaticState';
 import LevelScene from 'Phaser/LevelScene';
@@ -6,7 +5,6 @@ import GridUserInterfaceScene from 'Phaser/UI/GridUserInterfaceScene';
 import SideUserInterfaceScene from 'Phaser/UI/SideUserInterfaceScene';
 import { Vec2 } from 'Utils/Math/GridPoint';
 import * as Phaser from 'phaser';
-
 
 const maxZoomInTiles = 4;
 

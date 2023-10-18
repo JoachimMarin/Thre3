@@ -1,6 +1,5 @@
 import ImageKey from 'Game/Level/Generation/AssetLoading/ImageKey';
 
-
 export default class ItemType extends ImageKey {
   private static itemIdCounter: integer = 0;
   public readonly itemId: integer = ItemType.itemIdCounter++;
