@@ -1,18 +1,18 @@
+import EventGroupDefintions from 'Game/Level/Events/EventGroupDefintions';
 import EventGroup from 'Game/Level/Events/GridObjectEvent';
 import GameObject from 'Game/Level/GameObjects/BaseClasses/GameObject';
-import GridObjectChanges from 'Game/Level/GameState/GridObjectChanges';
+import GridObject from 'Game/Level/GameObjects/BaseClasses/GridObject';
 import GridObjectDynamic from 'Game/Level/GameObjects/BaseClasses/GridObjectDynamic';
 import GridObjectStatic from 'Game/Level/GameObjects/BaseClasses/GridObjectStatic';
-import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
-import StaticState from 'Game/Level/GameState/StaticState';
-import Player from 'Game/Level/GameObjects/PrePlaced/Player';
-import Inventory from 'Game/Level/GameState/Inventory';
-import EventGroupDefintions from 'Game/Level/Events/EventGroupDefintions';
 import ObjectTag from 'Game/Level/GameObjects/ObjectTag';
-import GridObject from 'Game/Level/GameObjects/BaseClasses/GridObject';
-//import ILevelScene from 'PhaserStubs/ILevelScene';
-import ByteArray from 'Utils/Math/ByteArray';
+import Player from 'Game/Level/GameObjects/PrePlaced/Player';
+import GridObjectChanges from 'Game/Level/GameState/GridObjectChanges';
+import Inventory from 'Game/Level/GameState/Inventory';
+import StaticState from 'Game/Level/GameState/StaticState';
 import LevelScene from 'Phaser/LevelScene';
+import ByteArray from 'Utils/Math/ByteArray';
+import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
+
 
 /**
  * Contains all changes to the level state compared to the initial static state.
@@ -25,7 +25,7 @@ export default class DynamicState {
 
   private playerStep = 0;
   private playerMaxStep = 3;
-  public player: Player = null;
+  public player: Player;
   public inventory: Inventory;
   private static changesSizeFactor = 2 + GridObjectChanges.GetByteArraySize();
   private changesKeyString: Uint8Array;
@@ -51,7 +51,7 @@ export default class DynamicState {
     const copy = new DynamicState(
       this.staticState,
       this.inventory.DeepVirtualCopy(),
-      null
+      undefined
     );
     copy.player = this.player.DeepCopy(copy);
     copy.playerStep = this.playerStep;

@@ -1,5 +1,6 @@
-import Direction from 'Utils/Math/Direction';
 import DynamicState from 'Game/Level/GameState/DynamicState';
+import Direction from 'Utils/Math/Direction';
+
 
 enum Result {
   Pending,
@@ -11,10 +12,10 @@ class Path {
   public readonly prev: Path;
   public readonly direction: integer;
   public readonly length: integer;
-  constructor(direction: integer, prev: Path = null) {
+  constructor(direction: integer, prev: Path = undefined) {
     this.prev = prev;
     this.direction = direction;
-    if (prev == null) {
+    if (prev == undefined) {
       this.length = 1;
     } else {
       this.length = prev.length + 1;
@@ -72,7 +73,7 @@ export default class Solver {
       let pathString = '';
       let current = path;
       const pathArray: integer[] = [];
-      while (current != null) {
+      while (current != undefined) {
         pathArray.push(current.direction);
         current = current.prev;
       }
@@ -90,7 +91,7 @@ export default class Solver {
 
   Solve(initialState: DynamicState) {
     console.time('Solver');
-    this._Solve(initialState, null);
+    this._Solve(initialState, undefined);
     console.timeEnd('Solver');
   }
 
@@ -108,7 +109,7 @@ export default class Solver {
     while (queue.length > 0 && this.victoryPaths.length == 0) {
       const [state, path] = queue.shift();
       this.counter++;
-      if (path != null && path.length > this.pathLength) {
+      if (path != undefined && path.length > this.pathLength) {
         this.pathLength = path.length;
         console.log('queued = ' + queue.length);
         console.log('path length = ' + this.pathLength);

@@ -3,8 +3,9 @@ process.chdir('./dist');
 import GameManager from 'Game/GameManager';
 import Inventory from 'Game/Level/GameState/Inventory';
 import LevelParser from 'Game/Level/Generation/AssetLoading/LevelParser';
-import { readFileSync } from 'fs';
 import { parseString } from 'xml2js';
+import { readFileSync } from 'fs';
+
 
 export class LocalLevelParser extends LevelParser {
   private cache = new Map<string, object>();
@@ -31,5 +32,5 @@ export class LocalLevelParser extends LevelParser {
   }
 }
 
-GameManager.Init(new LocalLevelParser(), null, () => new Inventory());
+GameManager.Init(new LocalLevelParser(), undefined, () => new Inventory());
 GameManager.SolveLevel(0);

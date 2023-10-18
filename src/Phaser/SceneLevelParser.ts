@@ -1,6 +1,7 @@
 import LevelParser from 'Game/Level/Generation/AssetLoading/LevelParser';
 import LevelScene from 'Phaser/LevelScene';
 
+
 export default class SceneLevelParser extends LevelParser {
   private scenes: Phaser.Scene[];
   private levelScene: LevelScene;

@@ -1,8 +1,9 @@
+import Constants from 'Game/Constants';
+import GameObject from 'Game/Level/GameObjects/BaseClasses/GameObject';
 import DynamicState from 'Game/Level/GameState/DynamicState';
 import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
-import GameObject from 'Game/Level/GameObjects/BaseClasses/GameObject';
-//import IImage from 'PhaserStubs/IImage';
-import Constants from 'Game/Constants';
+
+
 export default class GameObjectImage extends GameObject {
   protected image: Phaser.GameObjects.Image;
 
@@ -28,17 +29,17 @@ export default class GameObjectImage extends GameObject {
 
   override Remove(state: DynamicState): void {
     super.Remove(state);
-    if (Constants.INCLUDE_GRAPHICS && this.image != null) {
+    if (Constants.INCLUDE_GRAPHICS && this.image != undefined) {
       this.image.destroy();
-      this.image = null;
+      this.image = undefined;
     }
   }
 
   override Unload() {
     super.Unload();
-    if (Constants.INCLUDE_GRAPHICS && this.image != null) {
+    if (Constants.INCLUDE_GRAPHICS && this.image != undefined) {
       this.image.destroy();
-      this.image = null;
+      this.image = undefined;
     }
   }
 }

@@ -1,11 +1,12 @@
-import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
+import Constants from 'Game/Constants';
 import GridObjectStatic from 'Game/Level/GameObjects/BaseClasses/GridObjectStatic';
 import DynamicState from 'Game/Level/GameState/DynamicState';
 import StaticState from 'Game/Level/GameState/StaticState';
-import Constants from 'Game/Constants';
+import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
+
 
 export default class GridObjectStaticImage extends GridObjectStatic {
-  protected image: Phaser.GameObjects.Image = null;
+  protected image: Phaser.GameObjects.Image;
 
   constructor(
     state: StaticState,
@@ -29,17 +30,17 @@ export default class GridObjectStaticImage extends GridObjectStatic {
 
   override Remove(state: DynamicState): void {
     super.Remove(state);
-    if (Constants.INCLUDE_GRAPHICS && this.image != null) {
+    if (Constants.INCLUDE_GRAPHICS && this.image != undefined) {
       this.image.destroy();
-      this.image = null;
+      this.image = undefined;
     }
   }
 
   override Unload() {
     super.Unload();
-    if (Constants.INCLUDE_GRAPHICS && this.image != null) {
+    if (Constants.INCLUDE_GRAPHICS && this.image != undefined) {
       this.image.destroy();
-      this.image = null;
+      this.image = undefined;
     }
   }
 }

@@ -1,9 +1,9 @@
-import EventGroup from 'Game/Level/Events/GridObjectEvent';
-import ObjectTag from 'Game/Level/GameObjects/ObjectTag';
-import GridObjectStatic from 'Game/Level/GameObjects/BaseClasses/GridObjectStatic';
 import EventGroupDefintions from 'Game/Level/Events/EventGroupDefintions';
+import EventGroup from 'Game/Level/Events/GridObjectEvent';
+import GridObjectStatic from 'Game/Level/GameObjects/BaseClasses/GridObjectStatic';
+import ObjectTag from 'Game/Level/GameObjects/ObjectTag';
 import LevelScene from 'Phaser/LevelScene';
-//import ILevelScene from 'PhaserStubs/ILevelScene';
+
 
 export default class StaticState {
   public staticObjects = new Map<number, Set<GridObjectStatic>>();

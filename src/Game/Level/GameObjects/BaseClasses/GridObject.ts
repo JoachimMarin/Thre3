@@ -1,6 +1,6 @@
+import GameObject from 'Game/Level/GameObjects/BaseClasses/GameObject';
 import DynamicState from 'Game/Level/GameState/DynamicState';
 import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
-import GameObject from 'Game/Level/GameObjects/BaseClasses/GameObject';
 
 /**
  * GridObject

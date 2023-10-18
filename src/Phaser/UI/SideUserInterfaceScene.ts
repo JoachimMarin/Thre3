@@ -1,5 +1,5 @@
-import * as Phaser from 'phaser';
 import * as UI from 'Phaser/UI/UserInterface';
+import * as Phaser from 'phaser';
 
 /**
  * SideUserInterfaceScene is displayed on the right or bottom of the canvas depending on the aspect ratio.

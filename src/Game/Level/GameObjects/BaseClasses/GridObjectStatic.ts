@@ -1,8 +1,9 @@
-import DynamicState from 'Game/Level/GameState/DynamicState';
-import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
 import GridObject from 'Game/Level/GameObjects/BaseClasses/GridObject';
-import StaticState from 'Game/Level/GameState/StaticState';
+import DynamicState from 'Game/Level/GameState/DynamicState';
 import GridObjectChanges from 'Game/Level/GameState/GridObjectChanges';
+import StaticState from 'Game/Level/GameState/StaticState';
+import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
+
 
 export default abstract class GridObjectStatic extends GridObject {
   constructor(state: StaticState, point: IVec2) {

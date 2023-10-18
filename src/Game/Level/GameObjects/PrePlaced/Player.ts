@@ -1,18 +1,18 @@
-import * as Phaser from 'phaser';
-import Direction from 'Utils/Math/Direction';
-import ObjectTag from 'Game/Level/GameObjects/ObjectTag';
-import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
-import Item from 'Game/Level/GameObjects/PrePlaced/Item';
-import PopUp from 'Game/Level/GameObjects/Temporary/PopUp';
-import DynamicState from 'Game/Level/GameState/DynamicState';
-import GridObject from 'Game/Level/GameObjects/BaseClasses/GridObject';
-import { LaserProjectile } from 'Game/Level/GameObjects/PrePlaced/LaserGun';
-import ImageDefinitions from 'Game/Level/Generation/AssetDefinitions/ImageDefinitions';
-//import IImage from 'PhaserStubs/IImage';
-import ItemDefinitions from 'Game/Level/Generation/AssetDefinitions/ItemDefinitions';
-import TimedImage from 'Game/Level/GameObjects/Temporary/TimedImage';
-import GameManager from 'Game/GameManager';
 import Constants from 'Game/Constants';
+import GameManager from 'Game/GameManager';
+import GridObject from 'Game/Level/GameObjects/BaseClasses/GridObject';
+import ObjectTag from 'Game/Level/GameObjects/ObjectTag';
+import Item from 'Game/Level/GameObjects/PrePlaced/Item';
+import { LaserProjectile } from 'Game/Level/GameObjects/PrePlaced/LaserGun';
+import PopUp from 'Game/Level/GameObjects/Temporary/PopUp';
+import TimedImage from 'Game/Level/GameObjects/Temporary/TimedImage';
+import DynamicState from 'Game/Level/GameState/DynamicState';
+import ImageDefinitions from 'Game/Level/Generation/AssetDefinitions/ImageDefinitions';
+import ItemDefinitions from 'Game/Level/Generation/AssetDefinitions/ItemDefinitions';
+import Direction from 'Utils/Math/Direction';
+import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
+import * as Phaser from 'phaser';
+
 
 export default class Player extends GridObject {
   public image: Phaser.GameObjects.Image;
@@ -43,15 +43,15 @@ export default class Player extends GridObject {
   }
 
   override OnRemove(_state: DynamicState): void {
-    if (Constants.INCLUDE_GRAPHICS && this.image != null) {
+    if (Constants.INCLUDE_GRAPHICS && this.image != undefined) {
       this.image.destroy();
-      this.image = null;
+      this.image = undefined;
     }
   }
   override OnUnload(): void {
-    if (Constants.INCLUDE_GRAPHICS && this.image != null) {
+    if (Constants.INCLUDE_GRAPHICS && this.image != undefined) {
       this.image.destroy();
-      this.image = null;
+      this.image = undefined;
     }
   }
 

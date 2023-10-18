@@ -1,11 +1,12 @@
+import Constants from 'Game/Constants';
+import GridObjectStaticImage from 'Game/Level/GameObjects/BaseClasses/GridObjectStaticImage';
 import ObjectTag from 'Game/Level/GameObjects/ObjectTag';
 import DynamicState from 'Game/Level/GameState/DynamicState';
+import StaticState from 'Game/Level/GameState/StaticState';
+import ImageKey from 'Game/Level/Generation/AssetLoading/ImageKey';
 import Direction from 'Utils/Math/Direction';
 import { IVec2, Vec2 } from 'Utils/Math/GridPoint';
-import ImageKey from 'Game/Level/Generation/AssetLoading/ImageKey';
-import GridObjectStaticImage from 'Game/Level/GameObjects/BaseClasses/GridObjectStaticImage';
-import StaticState from 'Game/Level/GameState/StaticState';
-import Constants from 'Game/Constants';
+
 
 export class LaserColor {
   public readonly name: string;
@@ -105,7 +106,7 @@ export default class LaserGun extends GridObjectStaticImage {
     if (Constants.INCLUDE_GRAPHICS) {
       for (const projectile of this.projectiles) {
         projectile.image.destroy();
-        projectile.image = null;
+        projectile.image = undefined;
       }
     }
     this.projectiles = [];

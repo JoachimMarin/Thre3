@@ -1,12 +1,13 @@
-import Player from 'Game/Level/GameObjects/PrePlaced/Player';
+import Constants from 'Game/Constants';
+import ObjectTag from 'Game/Level/GameObjects/ObjectTag';
+import DirtWall from 'Game/Level/GameObjects/PrePlaced/DirtWall';
 import LaserGun, {
   LaserColor
 } from 'Game/Level/GameObjects/PrePlaced/LaserGun';
-import DirtWall from 'Game/Level/GameObjects/PrePlaced/DirtWall';
-import { Vec2 } from 'Utils/Math/GridPoint';
-import ObjectTag from 'Game/Level/GameObjects/ObjectTag';
+import Player from 'Game/Level/GameObjects/PrePlaced/Player';
 import Tile from 'Game/Level/Generation/AssetLoading/Tile';
-import Constants from 'Game/Constants';
+import { Vec2 } from 'Utils/Math/GridPoint';
+
 
 class SimpleTile extends Tile {
   constructor(imageKey: string, ...tags: ObjectTag[]) {

@@ -1,14 +1,15 @@
-import * as Phaser from 'phaser';
 
-import SideUserInterfaceScene from 'Phaser/UI/SideUserInterfaceScene';
-import GridUserInterfaceScene from 'Phaser/UI/GridUserInterfaceScene';
-
-import LevelParser from 'Game/Level/Generation/AssetLoading/LevelParser';
-import SceneLevelParser from 'Phaser/SceneLevelParser';
-import InventoryUI from 'Phaser/UI/InventoryUI';
-import CameraManager from 'Phaser/CameraManager';
 import GameManager from 'Game/GameManager';
 import LevelState from 'Game/Level/GameState/LevelState';
+import LevelParser from 'Game/Level/Generation/AssetLoading/LevelParser';
+import CameraManager from 'Phaser/CameraManager';
+import SceneLevelParser from 'Phaser/SceneLevelParser';
+import GridUserInterfaceScene from 'Phaser/UI/GridUserInterfaceScene';
+
+import InventoryUI from 'Phaser/UI/InventoryUI';
+import SideUserInterfaceScene from 'Phaser/UI/SideUserInterfaceScene';
+import * as Phaser from 'phaser';
+
 
 export default class LevelScene extends Phaser.Scene {
   public cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -61,9 +62,9 @@ export default class LevelScene extends Phaser.Scene {
     }
     this.staticImages = [];
     this.background.destroy();
-    this.background = null;
+    this.background = undefined;
     this.cameraManager.Unload();
-    this.cameraManager = null;
+    this.cameraManager = undefined;
   }
 
   ChangeSceneToLevel(current: Phaser.Scene, index: integer) {
