@@ -38,10 +38,6 @@ export default abstract class GameManager {
 
     // load level for state and scene
     this.levelState.LoadLevel(index, this.parser, this.inventory());
-    if (this.levelScene != null) {
-      // the new level might have different dimensions, so the scene may have to be adjusted
-      this.levelScene.LoadLevel(this.levelState);
-    }
   }
 
   public static SolveLevel(index: integer) {
