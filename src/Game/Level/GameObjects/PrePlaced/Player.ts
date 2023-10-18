@@ -43,13 +43,13 @@ export default class Player extends GridObject {
   }
 
   override OnRemove(_state: DynamicState): void {
-    if (Constants.INCLUDE_GRAPHICS) {
+    if (Constants.INCLUDE_GRAPHICS && this.image != null) {
       this.image.destroy();
       this.image = null;
     }
   }
   override OnUnload(): void {
-    if (Constants.INCLUDE_GRAPHICS) {
+    if (Constants.INCLUDE_GRAPHICS && this.image != null) {
       this.image.destroy();
       this.image = null;
     }

@@ -32,7 +32,7 @@ export class LaserColor {
 }
 
 export class LaserProjectile {
-  public image: Phaser.GameObjects.Image = null;
+  public image: Phaser.GameObjects.Image;
   public owner: LaserGun;
 
   constructor(
@@ -81,13 +81,6 @@ export class LaserProjectile {
       }, 150);
     }
   }
-
-  Remove() {
-    if (this.image != null) {
-      this.image.destroy();
-      this.image = null;
-    }
-  }
 }
 
 export default class LaserGun extends GridObjectStaticImage {
@@ -108,26 +101,28 @@ export default class LaserGun extends GridObjectStaticImage {
     return LaserGun.tags.has(tag);
   }
 
-  override OnRemove(_state: DynamicState) {
-    for (const projectile of this.projectiles) {
-      projectile.Remove();
+  private RemoveProjectiles() {
+    if (Constants.INCLUDE_GRAPHICS) {
+      for (const projectile of this.projectiles) {
+        projectile.image.destroy();
+        projectile.image = null;
+      }
     }
     this.projectiles = [];
+  }
+
+  override OnRemove(_state: DynamicState) {
+    this.RemoveProjectiles();
   }
 
   override OnUnload(): void {
-    for (const projectile of this.projectiles) {
-      projectile.Remove();
-    }
-    this.projectiles = [];
+    this.RemoveProjectiles();
   }
 
   override OnBeginStep(_state: DynamicState, _trigger: boolean): void {
-    for (const projectile of this.projectiles) {
-      projectile.Remove();
-    }
-    this.projectiles = [];
+    this.RemoveProjectiles();
   }
+
   override OnBeginStepTrigger(state: DynamicState): void {
     if (
       !Constants.INCLUDE_GRAPHICS &&
