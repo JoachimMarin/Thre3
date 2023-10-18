@@ -70,7 +70,9 @@ export default class LevelState {
       inv,
       this.levelScene
     );
-
+    if (this.levelScene != null) {
+      this.levelScene.LoadLevel(this);
+    }
     levelParser.BuildLevel(this);
     this.loaded = true;
   }

@@ -17,6 +17,7 @@ export default class LevelScene extends Phaser.Scene {
   private additionalScenes: Phaser.Scene[];
 
   public static readonly SCENE = new LevelScene();
+  private background: Phaser.GameObjects.Rectangle;
   public staticImages: Phaser.GameObjects.Image[] = [];
 
   private readonly gameManager: GameManager;
@@ -43,6 +44,15 @@ export default class LevelScene extends Phaser.Scene {
 
   LoadLevel(state: LevelState) {
     this.cameraManager = new CameraManager(this, state);
+    this.background = this.add
+      .rectangle(
+        0,
+        0,
+        state.staticState.width,
+        state.staticState.height,
+        0xaabbcc
+      )
+      .setOrigin(0, 0);
   }
 
   Unload() {
@@ -50,6 +60,8 @@ export default class LevelScene extends Phaser.Scene {
       img.destroy();
     }
     this.staticImages = [];
+    this.background.destroy();
+    this.background = null;
     this.cameraManager.Unload();
     this.cameraManager = null;
   }
