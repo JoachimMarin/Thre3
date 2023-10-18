@@ -3,7 +3,6 @@
   "parser": "@typescript-eslint/parser",
   "plugins": [
     "@typescript-eslint",
-    "prettier",
     "no-relative-import-paths",
     "import",
     "no-null"
@@ -13,8 +12,7 @@
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:import/recommended",
-    "plugin:import/typescript",
-    "prettier"
+    "plugin:import/typescript"
   ],
   "settings": {
     "import/resolver": {
