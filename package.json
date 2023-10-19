@@ -8,9 +8,10 @@
     "build": "rollup --config rollup.config.dist.mjs",
     "watch": "rollup --watch --config rollup.config.dev.mjs",
     "local": "rollup --config rollup.config.local.mjs --configArgs=\"",
-    "prettier-format": "prettier --config .prettierrc src/**/*.ts --write",
-    "lint": "eslint . --ext .ts",
-    "lint-and-fix": "eslint . --ext .ts --fix",
+    "format-check": "prettier --config .prettierrc src/**/*.ts --check",
+    "format-fix": "prettier --config .prettierrc src/**/*.ts --write",
+    "lint-check": "eslint . --ext .ts",
+    "lint-fix": "eslint . --ext .ts --fix",
     "gh-pages": "gh-pages -d dist",
     "prepare": "husky install"
   },
