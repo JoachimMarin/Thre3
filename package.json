@@ -7,7 +7,9 @@
     "dev": "rollup --config rollup.config.dev.mjs",
     "build": "rollup --config rollup.config.dist.mjs",
     "watch": "rollup --watch --config rollup.config.dev.mjs",
-    "local": "rollup --config rollup.config.local.mjs --configArgs=\"",
+    "headless-build": "rollup --config rollup.config.headless.mjs",
+    "headless": "npm run headless-build && node ./dist/headless.js",
+    "headless-help": "echo \"Use 'npm run headless -- <args>' to pass args to the headless script instead of npm. E.g. 'npm run headless -- --help' \"",
     "format-check": "prettier --config .prettierrc src/**/*.ts --check",
     "format-fix": "prettier --config .prettierrc src/**/*.ts --write",
     "lint-check": "eslint . --ext .ts",
@@ -34,6 +36,7 @@
     "@rollup/plugin-typescript": "^11.1.0",
     "@types/node": "^20.6.0",
     "@types/xml2js": "^0.4.12",
+    "@types/yargs": "^17.0.29",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.8.0",
     "eslint": "^8.49.0",
@@ -54,6 +57,7 @@
     "typescript": "^5.0.3"
   },
   "dependencies": {
+    "commander": "^11.1.0",
     "enum-for": "0.0.6",
     "xml2js": "^0.6.2"
   },

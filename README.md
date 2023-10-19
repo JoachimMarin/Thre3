@@ -21,10 +21,10 @@ Parts of Thre3 can run headless using node. This can be used in unit tests or to
 
 ## Available Commands
 
-| Command                   | Description                                                                       |
-| ------------------------- | --------------------------------------------------------------------------------- |
-| `npm install`             | Install project dependencies                                                      |
-| `npm run watch`           | Build project and open web server running project, watching for changes           |
-| `npm run dev`             | Builds project and open web server, but do not watch for changes                  |
-| `npm run build`           | Builds code bundle with production settings (minification, no source maps, etc..) |
-| `npm run local -- [args]` | Builds code bundle for running Thre3 headless using node.                         |
+| Command                      | Description                                                                       |
+| ---------------------------- | --------------------------------------------------------------------------------- |
+| `npm install`                | Install project dependencies                                                      |
+| `npm run watch`              | Build project and open web server running project, watching for changes           |
+| `npm run dev`                | Builds project and open web server, but do not watch for changes                  |
+| `npm run build`              | Builds code bundle with production settings (minification, no source maps, etc..) |
+| `npm run headless -- [args]` | Builds code bundle for running Thre3 headless using node.                         |
