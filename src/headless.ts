@@ -1,10 +1,10 @@
 import GameManager from 'Game/GameManager';
 import Inventory from 'Game/Level/GameState/Inventory';
 import FileSystemLevelParser from 'Headless/FileSystemLevelParser';
+import InitHeadless from 'Headless/InitHeadless';
 import { program } from 'commander';
 
-// the web game runs in ./dist, so to be able to access the same files, headless should run there too
-process.chdir('./dist');
+InitHeadless();
 
 program
   .name('Thre3-headless')
@@ -22,7 +22,23 @@ program
       undefined,
       () => new Inventory()
     );
-    GameManager.SolveLevel(level);
+    console.log('paths:');
+    for (const path of GameManager.SolveLevel(level)) {
+      console.log(path.toString());
+    }
+  });
+program
+  .command('verify <level>')
+  .description(
+    'Verifies that the given level can be solved by the solution specified in the level file.'
+  )
+  .action((level) => {
+    GameManager.Init(
+      new FileSystemLevelParser(),
+      undefined,
+      () => new Inventory()
+    );
+    console.log(GameManager.VerifyLevel(level));
   });
 
 program.parse();
