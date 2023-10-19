@@ -66,8 +66,8 @@ export default class Solver {
     console.log('?');
   }
 
-  ReportVictoryPaths(initialState: DynamicState) {
-    console.log('possible paths:');
+  GetVictoryPaths(initialState: DynamicState) {
+    const stringArray = [];
     for (const path of this.victoryPaths) {
       let pathString = '';
       let current = path;
@@ -84,8 +84,9 @@ export default class Solver {
         pathString += dir.toString().padStart(5, ' ') + ' => ' + pos + '\n';
       }
 
-      console.log(pathString);
+      stringArray.push(pathString);
     }
+    return stringArray;
   }
 
   Solve(initialState: DynamicState) {
