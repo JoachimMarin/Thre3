@@ -1,11 +1,10 @@
-import * as Phaser from 'phaser';
-
-import SideUserInterfaceScene from 'Phaser/UI/SideUserInterfaceScene';
-import GridUserInterfaceScene from 'Phaser/UI/GridUserInterfaceScene';
-import { Vec2 } from 'Utils/Math/GridPoint';
-import LevelScene from 'Phaser/LevelScene';
 import LevelState from 'Game/Level/GameState/LevelState';
 import StaticState from 'Game/Level/GameState/StaticState';
+import LevelScene from 'Phaser/LevelScene';
+import GridUserInterfaceScene from 'Phaser/UI/GridUserInterfaceScene';
+import SideUserInterfaceScene from 'Phaser/UI/SideUserInterfaceScene';
+import { Vec2 } from 'Utils/Math/GridPoint';
+import * as Phaser from 'phaser';
 
 const maxZoomInTiles = 4;
 
@@ -14,7 +13,7 @@ export default class CameraManager {
   private uiCanvasSize: Vec2 = Vec2.AsVec2([0, 0]);
   private mainCanvasSize: Vec2 = Vec2.AsVec2([0, 0]);
 
-  private staticState: StaticState = null;
+  private staticState: StaticState;
 
   private mainScene: Phaser.Scene;
   private mainCam: Phaser.Cameras.Scene2D.Camera;

@@ -1,15 +1,15 @@
+import Item from 'Game/Level/GameObjects/PrePlaced/Item';
+import LevelState from 'Game/Level/GameState/LevelState';
 import ImageDefinitions from 'Game/Level/Generation/AssetDefinitions/ImageDefinitions';
 
+import ItemDefinitions from 'Game/Level/Generation/AssetDefinitions/ItemDefinitions';
+import LevelList from 'Game/Level/Generation/AssetDefinitions/LevelList';
+import TileDefinitions from 'Game/Level/Generation/AssetDefinitions/TileDefinitions';
 import ImageKey from 'Game/Level/Generation/AssetLoading/ImageKey';
 
-import Item from 'Game/Level/GameObjects/PrePlaced/Item';
-import { IVec2 } from 'Utils/Math/GridPoint';
-import TileDefinitions from 'Game/Level/Generation/AssetDefinitions/TileDefinitions';
-import ItemDefinitions from 'Game/Level/Generation/AssetDefinitions/ItemDefinitions';
-import LevelState from 'Game/Level/GameState/LevelState';
-import Tile from 'Game/Level/Generation/AssetLoading/Tile';
 import ItemType from 'Game/Level/Generation/AssetLoading/ItemType';
-import LevelList from 'Game/Level/Generation/AssetDefinitions/LevelList';
+import Tile from 'Game/Level/Generation/AssetLoading/Tile';
+import { IVec2 } from 'Utils/Math/GridPoint';
 
 // ensure correct initialization order by importing object definitions
 // this function is a workaround for unused import warnings

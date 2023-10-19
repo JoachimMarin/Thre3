@@ -1,16 +1,15 @@
-//import ILevelScene from 'PhaserStubs/ILevelScene';
-import LevelParser from 'Game/Level/Generation/AssetLoading/LevelParser';
-import LevelState from 'Game/Level/GameState/LevelState';
 import Inventory from 'Game/Level/GameState/Inventory';
+import LevelState from 'Game/Level/GameState/LevelState';
+import Solver from 'Game/Level/GameState/Solver';
 import LevelList from 'Game/Level/Generation/AssetDefinitions/LevelList';
-import Solver from './Level/GameState/Solver';
+import LevelParser from 'Game/Level/Generation/AssetLoading/LevelParser';
 import LevelScene from 'Phaser/LevelScene';
 
 export default abstract class GameManager {
   private static parser: LevelParser;
   private static levelScene: LevelScene;
   private static inventory: () => Inventory;
-  private static levelState: LevelState = null;
+  private static levelState: LevelState;
   private static _levelIndex: integer = -1;
 
   static get levelIndex(): integer {
@@ -30,7 +29,7 @@ export default abstract class GameManager {
   public static LoadLevel(index: integer) {
     this._levelIndex = index;
     // clear previous level state
-    if (this.levelState != null) {
+    if (this.levelState != undefined) {
       this.levelState.UnloadLevel();
     }
     // create new level state

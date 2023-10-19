@@ -1,7 +1,7 @@
+import Constants from 'Game/Constants';
+import GameObjectImage from 'Game/Level/GameObjects/BaseClasses/GameObjectImage';
 import DynamicState from 'Game/Level/GameState/DynamicState';
 import { IVec2 } from 'Utils/Math/GridPoint';
-import GameObjectImage from 'Game/Level/GameObjects/BaseClasses/GameObjectImage';
-import Constants from 'Game/Constants';
 
 export default class TimedImage extends GameObjectImage {
   private duration: number;
@@ -37,7 +37,7 @@ export default class TimedImage extends GameObjectImage {
         displayHeight
       );
     } else {
-      return null;
+      return undefined;
     }
   }
 

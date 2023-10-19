@@ -1,9 +1,9 @@
-import ObjectTag from 'Game/Level/GameObjects/ObjectTag';
 import GridObjectStaticImage from 'Game/Level/GameObjects/BaseClasses/GridObjectStaticImage';
+import ObjectTag from 'Game/Level/GameObjects/ObjectTag';
 import DynamicState from 'Game/Level/GameState/DynamicState';
-import { IVec2 } from 'Utils/Math/GridPoint';
 import StaticState from 'Game/Level/GameState/StaticState';
 import ItemDefinitions from 'Game/Level/Generation/AssetDefinitions/ItemDefinitions';
+import { IVec2 } from 'Utils/Math/GridPoint';
 
 export default class DirtWall extends GridObjectStaticImage {
   static tags = new Set<ObjectTag>([

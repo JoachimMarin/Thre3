@@ -1,9 +1,9 @@
+import GridObjectStaticImage from 'Game/Level/GameObjects/BaseClasses/GridObjectStaticImage';
 import ObjectTag from 'Game/Level/GameObjects/ObjectTag';
 import DynamicState from 'Game/Level/GameState/DynamicState';
-import { IVec2 } from 'Utils/Math/GridPoint';
-import GridObjectStaticImage from 'Game/Level/GameObjects/BaseClasses/GridObjectStaticImage';
-import ItemType from 'Game/Level/Generation/AssetLoading/ItemType';
 import StaticState from 'Game/Level/GameState/StaticState';
+import ItemType from 'Game/Level/Generation/AssetLoading/ItemType';
+import { IVec2 } from 'Utils/Math/GridPoint';
 
 export default class Item extends GridObjectStaticImage {
   static tags = new Set<ObjectTag>([ObjectTag.ITEM]);

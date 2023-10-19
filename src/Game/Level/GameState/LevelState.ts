@@ -1,7 +1,6 @@
-//import ILevelScene from 'PhaserStubs/ILevelScene';
 import DynamicState from 'Game/Level/GameState/DynamicState';
-import StaticState from 'Game/Level/GameState/StaticState';
 import Inventory from 'Game/Level/GameState/Inventory';
+import StaticState from 'Game/Level/GameState/StaticState';
 import LevelParser from 'Game/Level/Generation/AssetLoading/LevelParser';
 import LevelScene from 'Phaser/LevelScene';
 
@@ -40,12 +39,12 @@ export default class LevelState {
   public UnloadLevel() {
     if (this.loaded) {
       this.dynamicState.Unload();
-      this.dynamicState = null;
+      this.dynamicState = undefined;
       this.staticState.Unload();
-      this.staticState = null;
-      if (this.levelScene != null) {
+      this.staticState = undefined;
+      if (this.levelScene != undefined) {
         this.levelScene.Unload();
-        this.levelScene = null;
+        this.levelScene = undefined;
       }
       this.loaded = false;
     }
@@ -70,7 +69,7 @@ export default class LevelState {
       inv,
       this.levelScene
     );
-    if (this.levelScene != null) {
+    if (this.levelScene != undefined) {
       this.levelScene.LoadLevel(this);
     }
     levelParser.BuildLevel(this);

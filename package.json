@@ -8,10 +8,12 @@
     "build": "rollup --config rollup.config.dist.mjs",
     "watch": "rollup --watch --config rollup.config.dev.mjs",
     "local": "rollup --config rollup.config.local.mjs --configArgs=\"",
-    "prettier-format": "prettier --config .prettierrc src/**/*.ts --write",
-    "lint": "eslint . --ext .ts",
-    "lint-and-fix": "eslint . --ext .ts --fix",
-    "gh-pages": "gh-pages -d dist"
+    "format-check": "prettier --config .prettierrc src/**/*.ts --check",
+    "format-fix": "prettier --config .prettierrc src/**/*.ts --write",
+    "lint-check": "eslint . --ext .ts",
+    "lint-fix": "eslint . --ext .ts --fix",
+    "gh-pages": "gh-pages -d dist",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -33,11 +35,17 @@
     "@types/node": "^20.6.0",
     "@types/xml2js": "^0.4.12",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
-    "@typescript-eslint/parser": "^6.7.0",
+    "@typescript-eslint/parser": "^6.8.0",
     "eslint": "^8.49.0",
     "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-no-null": "^1.0.2",
+    "eslint-plugin-no-relative-import-paths": "^1.5.3",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
     "gh-pages": "^6.0.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.0.1",
     "phaser": "^3.60.0",
     "prettier": "^3.0.3",
     "rollup": "^3.20.2",
@@ -48,5 +56,13 @@
   "dependencies": {
     "enum-for": "0.0.6",
     "xml2js": "^0.6.2"
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "eslint --fix"
+    ],
+    "src/**/*.{html,ts,scss}": [
+      "prettier --write"
+    ]
   }
 }
