@@ -4,6 +4,7 @@ import Solver, { Path } from 'Game/Level/GameState/Solver';
 import LevelList from 'Game/Level/Generation/AssetDefinitions/LevelList';
 import LevelParser from 'Game/Level/Generation/AssetLoading/LevelParser';
 import LevelScene from 'Phaser/LevelScene';
+import { Vec2 } from 'Utils/Math/GridPoint';
 
 export default abstract class GameManager {
   private static parser: LevelParser;
@@ -39,13 +40,13 @@ export default abstract class GameManager {
     this.levelState.LoadLevel(index, this.parser, this.inventory());
   }
 
-  public static SolveLevel(index: integer) {
+  public static SolveLevel(index: integer): [Path, Vec2] {
     this.LoadLevel(index);
-    let paths: Path[] = [];
+    let result: [Path, Vec2];
     this.RunSolver((solver) => {
-      paths = solver.Solve(this.levelState.dynamicState);
+      result = solver.Solve(this.levelState.dynamicState);
     });
-    return paths;
+    return result;
   }
 
   public static VerifyLevel(index: integer) {

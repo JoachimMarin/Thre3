@@ -81,9 +81,9 @@ export class Path {
         const dir = Direction.ALL[dirId];
         pos = pos.Translate(dir);
         stringArray.push(
-          useDirString
-            ? dir.toString().padStart(5, ' ')
-            : dir.id.toString() + ' => ' + pos
+          (useDirString ? dir.toString().padStart(5, ' ') : dir.id.toString()) +
+            ' => ' +
+            pos
         );
       }
     }
@@ -135,21 +135,24 @@ export default class Solver {
     this.result = Result.Victory;
   }
 
-  Solve(initialState: DynamicState) {
-    const victoryPaths: Path[] = [];
+  Solve(initialState: DynamicState): [Path, Vec2] {
     console.time('Solver');
     const queue: [DynamicState, Path][] = [
       [initialState.DeepVirtualCopy(), undefined]
     ];
 
-    while (queue.length > 0 && victoryPaths.length == 0) {
+    console.log('Queue[0]=1');
+    while (queue.length > 0) {
       const [state, path] = queue.shift();
       this.counter++;
-      if (path != undefined && path.length > this.pathLength) {
+
+      if (path == undefined) {
+        console.log('Queue[1]=' + (queue.length + 1));
+      } else if (path.length > this.pathLength) {
         this.pathLength = path.length;
-        console.log('queued = ' + queue.length);
-        console.log('path length = ' + this.pathLength);
-        console.log('break');
+        console.log(
+          'Queue[' + (this.pathLength + 1) + ']=' + (queue.length + 1)
+        );
       }
 
       for (const dir of Direction.ALL) {
@@ -174,15 +177,14 @@ export default class Solver {
                 this.counter +
                 ' search steps.'
             );
-            victoryPaths.push(newPath);
-            break;
+            return [newPath, initialState.player.position];
           }
         }
       }
       state.Unload();
     }
     console.timeEnd('Solver');
-    return victoryPaths;
+    return undefined;
   }
 
   Verify(initialState: DynamicState, pathString: string) {
