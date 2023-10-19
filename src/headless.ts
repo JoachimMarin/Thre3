@@ -16,15 +16,22 @@ program
   .description(
     'Uses the brute force solver to compute a shortest solution path for the given level.'
   )
-  .action((level) => {
+  .option('-r --raw', 'Returns the solution path as direction index string.')
+  .action((level, options) => {
     GameManager.Init(
       new FileSystemLevelParser(),
       undefined,
       () => new Inventory()
     );
-    console.log('paths:');
-    for (const path of GameManager.SolveLevel(level)) {
-      console.log(path.toString());
+    const path = GameManager.SolveLevel(level);
+    if (path !== undefined) {
+      console.log(
+        options['raw']
+          ? path[0].toString('', false, undefined)
+          : path[0].toString('\n', true, path[1])
+      );
+    } else {
+      console.log('Goal cannot be reached.');
     }
   });
 program
