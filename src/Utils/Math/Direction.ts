@@ -1,4 +1,5 @@
 export default class Direction {
+  private static map: { [name: string]: Direction } = {};
   public readonly angle: integer;
   public readonly name: string;
   public readonly id: integer;
@@ -7,10 +8,15 @@ export default class Direction {
     this.id = id;
     this.angle = id * 90;
     this.name = name;
+    Direction.map[name] = this;
   }
 
   toString() {
     return this.name;
+  }
+
+  static fromString(str: string) {
+    return this.map[str];
   }
 
   static readonly RIGHT = new Direction(0, 'RIGHT');

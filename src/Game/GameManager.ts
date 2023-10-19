@@ -1,6 +1,6 @@
 import Inventory from 'Game/Level/GameState/Inventory';
 import LevelState from 'Game/Level/GameState/LevelState';
-import Solver from 'Game/Level/GameState/Solver';
+import Solver, { Path } from 'Game/Level/GameState/Solver';
 import LevelList from 'Game/Level/Generation/AssetDefinitions/LevelList';
 import LevelParser from 'Game/Level/Generation/AssetLoading/LevelParser';
 import LevelScene from 'Phaser/LevelScene';
@@ -41,18 +41,34 @@ export default abstract class GameManager {
 
   public static SolveLevel(index: integer) {
     this.LoadLevel(index);
+    let paths: Path[] = [];
+    this.RunSolver((solver) => {
+      paths = solver.Solve(this.levelState.dynamicState);
+    });
+    return paths;
+  }
+
+  public static VerifyLevel(index: integer) {
+    this.LoadLevel(index);
+    let verified = false;
+    this.RunSolver((solver) => {
+      verified = solver.Verify(
+        this.levelState.dynamicState,
+        this.parser.levelFile.pathString
+      );
+    });
+    return verified;
+  }
+
+  private static RunSolver(func: (solver: Solver) => void) {
     const solver = new Solver();
-    // override defeat and victory while running solver
-    {
-      const _defeat = this.Defeat;
-      const _victory = this.Victory;
-      this.Defeat = () => solver.Defeat();
-      this.Victory = () => solver.Victory();
-      solver.Solve(this.levelState.dynamicState);
-      this.Defeat = _defeat;
-      this.Victory = _victory;
-    }
-    return solver.GetVictoryPaths(this.levelState.dynamicState);
+    const _defeat = this.Defeat;
+    const _victory = this.Victory;
+    this.Defeat = () => solver.Defeat();
+    this.Victory = () => solver.Victory();
+    func(solver);
+    this.Defeat = _defeat;
+    this.Victory = _victory;
   }
 
   public static Defeat() {

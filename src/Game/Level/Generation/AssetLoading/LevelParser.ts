@@ -44,10 +44,34 @@ class LevelFile {
   public readonly width: integer = 0;
   public readonly height: integer = 0;
   public readonly objects: integer[][][] = [];
+  public readonly pathString: string = '';
 
   constructor(data: object) {
     const map = data['map'];
     const layers = map['layer'];
+    const properties = map['properties'];
+    if (properties.length == 1) {
+      const propertiesArray = properties[0]['property'];
+      for (const property of propertiesArray) {
+        const propertyAttributes = property['$'];
+        const propertyName = propertyAttributes['name'];
+        switch (propertyName) {
+          case 'solution':
+            this.pathString = propertyAttributes['value'];
+            if (this.pathString === undefined) {
+              this.pathString = property['_'];
+            }
+            if (this.pathString === undefined) {
+              this.pathString = '';
+            }
+            break;
+        }
+      }
+    } else {
+      console.error(
+        'Error while parsing level file. Map must have one properties child element.'
+      );
+    }
 
     for (const layer of layers) {
       this.width = Math.max(this.width, parseInt(layer['$']['width']));
@@ -126,7 +150,6 @@ export default abstract class LevelParser {
      */
     this.levelIndex = levelIndex;
     this.tilesFile = new TilesFile(this.GetXmlObject('tiles'));
-    console.log(levelIndex);
     this.levelFile = new LevelFile(
       this.GetXmlObject(LevelList[levelIndex].fileName)
     );

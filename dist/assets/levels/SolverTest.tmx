@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="15" height="30" tilewidth="256" tileheight="256" infinite="0" nextlayerid="2" nextobjectid="1">
+ <properties>
+  <property name="solution" value="00000000000011222222222211112111112110100000000000112222222222221100000000000011222222222222110000000000001122222222222211000000000000"/>
+ </properties>
  <tileset firstgid="1" source="../tiles.tsx"/>
  <layer id="1" name="Layer1" width="15" height="30">
   <data encoding="csv">

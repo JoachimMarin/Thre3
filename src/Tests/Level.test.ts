@@ -1,15 +1,20 @@
 import GameManager from 'Game/GameManager';
 import Inventory from 'Game/Level/GameState/Inventory';
+import LevelList from 'Game/Level/Generation/AssetDefinitions/LevelList';
 import FileSystemLevelParser from 'Headless/FileSystemLevelParser';
+import InitHeadless from 'Headless/InitHeadless';
 
-// the web game runs in ./dist, so to be able to access the same files, headless should run there too
-process.chdir('./dist');
+InitHeadless();
 
-test('Testing level 0.', () => {
-  GameManager.Init(
-    new FileSystemLevelParser(),
-    undefined,
-    () => new Inventory()
-  );
-  expect(GameManager.SolveLevel(0).length > 0);
-});
+for (let i = 0; i < LevelList.length; i++) {
+  const capture = i;
+  test('Testing level ' + LevelList[capture].levelName + '.', () => {
+    GameManager.Init(
+      new FileSystemLevelParser(),
+      undefined,
+      () => new Inventory()
+    );
+    const result = GameManager.VerifyLevel(capture);
+    expect(result).toBe(true);
+  });
+}
