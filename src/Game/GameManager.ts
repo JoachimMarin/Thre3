@@ -52,7 +52,7 @@ export default abstract class GameManager {
       this.Defeat = _defeat;
       this.Victory = _victory;
     }
-    solver.ReportVictoryPaths(this.levelState.dynamicState);
+    return solver.GetVictoryPaths(this.levelState.dynamicState);
   }
 
   public static Defeat() {

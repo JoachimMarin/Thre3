@@ -126,6 +126,7 @@ export default abstract class LevelParser {
      */
     this.levelIndex = levelIndex;
     this.tilesFile = new TilesFile(this.GetXmlObject('tiles'));
+    console.log(levelIndex);
     this.levelFile = new LevelFile(
       this.GetXmlObject(LevelList[levelIndex].fileName)
     );
