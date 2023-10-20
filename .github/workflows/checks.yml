@@ -7,19 +7,19 @@ on:
     branches: [main]
 
 jobs:
-  checks:
-    name: checks
+  coding-conventions:
+    name: Check Coding Conventions
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 18
-      - name: Install dependencies
-        run: npm install
-      - name: Check Linter
-        run: npm run lint-check
-      - name: Check Formatter
-        run: npm run format-check
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/install-dependencies
+      - run: npm run lint-check
+      - run: npm run format-check
+  run-tests:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/install-dependencies
+      - run: npm run test
+
