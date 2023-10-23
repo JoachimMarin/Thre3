@@ -50,7 +50,7 @@ class LevelFile {
     const map = data['map'];
     const layers = map['layer'];
     const properties = map['properties'];
-    if (properties.length == 1) {
+    if (properties.length === 1) {
       const propertiesArray = properties[0]['property'];
       for (const property of propertiesArray) {
         const propertyAttributes = property['$'];
@@ -96,7 +96,7 @@ class LevelFile {
       for (let y = 0; y < this.height; y++) {
         for (let x = 0; x < this.width; x++) {
           const idAt = parseInt(rawData[i]);
-          if (idAt != 0) {
+          if (idAt !== 0) {
             this.objects[x][y].push(idAt);
           }
           i++;

@@ -52,7 +52,7 @@ export default class Inventory {
 
     if (remaining > 0) {
       this.itemCountMap.set(itemKey, remaining);
-    } else if (remaining == 0) {
+    } else if (remaining === 0) {
       this.itemCountMap.delete(itemKey);
     } else {
       console.error('Not enough items');

@@ -42,7 +42,7 @@ export default class LevelState {
       this.dynamicState = undefined;
       this.staticState.Unload();
       this.staticState = undefined;
-      if (this.levelScene != undefined) {
+      if (this.levelScene !== undefined) {
         this.levelScene.Unload();
         this.levelScene = undefined;
       }
@@ -69,7 +69,7 @@ export default class LevelState {
       inv,
       this.levelScene
     );
-    if (this.levelScene != undefined) {
+    if (this.levelScene !== undefined) {
       this.levelScene.LoadLevel(this);
     }
     levelParser.BuildLevel(this);

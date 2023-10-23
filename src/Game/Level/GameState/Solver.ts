@@ -15,7 +15,7 @@ export class Path {
   constructor(direction: integer, prev: Path = undefined) {
     this.prev = prev;
     this.direction = direction;
-    if (prev == undefined) {
+    if (prev === undefined) {
       this.length = 1;
     } else {
       this.length = prev.length + 1;
@@ -25,7 +25,7 @@ export class Path {
   toArray() {
     let current: Path = this;
     const pathArray: integer[] = [];
-    while (current != undefined) {
+    while (current !== undefined) {
       pathArray.push(current.direction);
       current = current.prev;
     }
@@ -146,7 +146,7 @@ export default class Solver {
       const [state, path] = queue.shift();
       this.counter++;
 
-      if (path == undefined) {
+      if (path === undefined) {
         console.log('Queue[1]=' + (queue.length + 1));
       } else if (path.length > this.pathLength) {
         this.pathLength = path.length;
@@ -165,11 +165,11 @@ export default class Solver {
           newState.player.SetGridPosition(newState.player.destination);
           newState.player.EndPlayerStep();
           const newPath = new Path(dir.id, path);
-          if (this.result == Result.Pending) {
+          if (this.result === Result.Pending) {
             if (this.knownStates.AddState(newState, newPath)) {
               queue.push([newState, newPath]);
             }
-          } else if (this.result == Result.Victory) {
+          } else if (this.result === Result.Victory) {
             console.log(
               'Found path of length ' +
                 newPath.length +
@@ -198,9 +198,9 @@ export default class Solver {
         state.BeginPlayerStep();
         state.player.SetGridPosition(state.player.destination);
         state.player.EndPlayerStep();
-        if (this.result == Result.Defeat) {
+        if (this.result === Result.Defeat) {
           return false;
-        } else if (this.result == Result.Victory) {
+        } else if (this.result === Result.Victory) {
           return true;
         }
       } else {
