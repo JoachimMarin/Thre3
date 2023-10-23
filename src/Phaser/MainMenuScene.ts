@@ -8,8 +8,8 @@ export default class MainMenuScene extends Phaser.Scene {
   public static readonly SCENE = new MainMenuScene();
 
   private levelSelectionBox: UI.Box;
-  private levelButtons: Phaser.GameObjects.Image[] = [];
-  private levelTexts: UI.Text[] = [];
+  private levelButtons: Phaser.GameObjects.Image[];
+  private levelTexts: UI.Text[];
   private title: UI.Text;
 
   private canvasSize: Vec2 = Vec2.AsVec2([0, 0]);
@@ -36,7 +36,7 @@ export default class MainMenuScene extends Phaser.Scene {
       vertical--;
     }
     let missingLastRow = horizontal * vertical - numButtons;
-    while (missingLastRow >= vertical && vertical != 1) {
+    while (missingLastRow >= vertical && vertical !== 1) {
       horizontal -= 1;
       missingLastRow -= vertical;
     }
@@ -90,7 +90,7 @@ export default class MainMenuScene extends Phaser.Scene {
     for (let i = 0; i < LevelList.length; i++) {
       const row = Math.floor(i / horizontal);
       const column = i % horizontal;
-      if (row == vertical - 1 && column == 0) {
+      if (row === vertical - 1 && column === 0) {
         offsetX += (sideLength * missingLastRow) / 2;
       }
 
@@ -117,7 +117,8 @@ export default class MainMenuScene extends Phaser.Scene {
 
     this.title = new UI.Text(this, 0, 0, 'Select Level:');
     this.title.GetTextObject().setOrigin(0.5, 0);
-
+    this.levelButtons = [];
+    this.levelTexts = [];
     for (let i = 0; i < LevelList.length; i++) {
       const btn = this.add.image(0, 0, 'level_button').setOrigin(0, 0);
       btn.setTint(UI.Const.AccentColor);
@@ -147,15 +148,16 @@ export default class MainMenuScene extends Phaser.Scene {
 
   create() {
     this.initBorder();
+    this.UpdateCanvas(true);
   }
 
-  UpdateCanvas() {
+  UpdateCanvas(forceUpdate: boolean = false) {
     const newCanvasSize = Vec2.AsVec2([
       this.sys.game.canvas.width,
       this.sys.game.canvas.height
     ]);
 
-    if (newCanvasSize.Subtract(this.canvasSize).Norm() <= 0) {
+    if (newCanvasSize.Subtract(this.canvasSize).Norm() <= 0 && !forceUpdate) {
       return;
     }
     this.canvasSize = newCanvasSize;

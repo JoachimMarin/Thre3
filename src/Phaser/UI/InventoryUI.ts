@@ -6,6 +6,8 @@ import * as UI from 'Phaser/UI/UserInterface';
 class InventoryEntry {
   public imageL: Phaser.GameObjects.Image;
   public textL: UI.Text;
+  public imageP: Phaser.GameObjects.Image;
+  public textP: UI.Text;
   public itemType: ItemType;
   public count: integer;
   public index: integer;
@@ -24,10 +26,18 @@ class InventoryEntry {
       .image(0, 0, itemType.imageKey)
       .setDisplaySize(6, 6)
       .setOrigin(0, 0);
+    this.imageP = SideUserInterfaceScene.SCENE.add
+      .image(0, 0, itemType.imageKey)
+      .setDisplaySize(6, 6)
+      .setOrigin(0, 0);
 
     this.textL = new UI.Text(SideUserInterfaceScene.SCENE);
     this.textL.SetSize(3);
     this.textL.GetTextObject().setOrigin(0, 0.5);
+
+    this.textP = new UI.Text(SideUserInterfaceScene.SCENE);
+    this.textP.SetSize(3);
+    this.textP.GetTextObject().setOrigin(0, 0.5);
     this.OnInventoryChange();
   }
 
@@ -35,17 +45,33 @@ class InventoryEntry {
    * Updates inventory slot index and item count in the UI.
    */
   OnInventoryChange() {
-    const indexX = this.index % 2;
-    const indexY = Math.floor(this.index / 2);
-    const x = SideUserInterfaceScene.SCENE.landscapeX(2.5 + indexX * 13);
-    const y = SideUserInterfaceScene.SCENE.landscapeY(8 + indexY * 7.5);
-    const textX = SideUserInterfaceScene.SCENE.landscapeX(8.75 + indexX * 13);
-    const textY = SideUserInterfaceScene.SCENE.landscapeY(11 + indexY * 7.5);
+    const indexXL = this.index % 2;
+    const indexYL = Math.floor(this.index / 2);
 
-    this.imageL.setPosition(x, y);
-    const text = this.textL.GetTextObject();
-    text.setPosition(textX, textY);
-    text.setText('x' + this.count);
+    const xL = SideUserInterfaceScene.SCENE.landscapeX(2.5 + indexXL * 13);
+    const yL = SideUserInterfaceScene.SCENE.landscapeY(32.5 + indexYL * 7.5);
+    const textXL = SideUserInterfaceScene.SCENE.landscapeX(8.75 + indexXL * 13);
+    const textYL = SideUserInterfaceScene.SCENE.landscapeY(
+      35.5 + indexYL * 7.5
+    );
+
+    this.imageL.setPosition(xL, yL);
+    const textObjectL = this.textL.GetTextObject();
+    textObjectL.setPosition(textXL, textYL);
+    textObjectL.setText('x' + this.count);
+
+    const indexXP = Math.floor(this.index / 3);
+    const indexYP = this.index % 3;
+
+    const xP = SideUserInterfaceScene.SCENE.portraitX(32.5 + indexXP * 11);
+    const yP = SideUserInterfaceScene.SCENE.portraitY(2.5 + indexYP * 9.5);
+    const textXP = SideUserInterfaceScene.SCENE.portraitX(38.75 + indexXP * 11);
+    const textYP = SideUserInterfaceScene.SCENE.portraitY(5.5 + indexYP * 9.5);
+
+    this.imageP.setPosition(xP, yP);
+    const textObjectP = this.textP.GetTextObject();
+    textObjectP.setPosition(textXP, textYP);
+    textObjectP.setText('x' + this.count);
   }
 
   /**
@@ -53,6 +79,7 @@ class InventoryEntry {
    */
   Update() {
     this.textL.Update();
+    this.textP.Update();
   }
 
   /**
@@ -61,6 +88,8 @@ class InventoryEntry {
   Remove() {
     this.imageL.destroy();
     this.textL.Remove();
+    this.imageP.destroy();
+    this.textP.Remove();
   }
 }
 
@@ -98,7 +127,7 @@ export default class InventoryUI extends Inventory {
       const entry = this.itemEntryList[this.itemEntryMap.get(itemKey)];
       entry.count = remaining;
       entry.OnInventoryChange();
-    } else if (remaining == 0) {
+    } else if (remaining === 0) {
       const listIndex = this.itemEntryMap.get(itemKey);
       this.itemEntryList[listIndex].Remove();
       this.itemEntryList.splice(listIndex, 1);

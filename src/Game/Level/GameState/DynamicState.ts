@@ -22,8 +22,9 @@ export default class DynamicState {
   public dynamicEventObjects = new Map<EventGroup, Set<GameObject>>();
   public staticState: StaticState | null;
 
-  private playerStep = 0;
-  private playerMaxStep = 3;
+  private _currentStep = 0;
+  private _maxStep = 3;
+  private _totalStep = 0;
   public player: Player;
   public inventory: Inventory;
   private static changesSizeFactor = 2 + GridObjectChanges.GetByteArraySize();
@@ -46,6 +47,16 @@ export default class DynamicState {
     this.levelScene = levelScene;
   }
 
+  public get currentStep() {
+    return this._currentStep;
+  }
+  public get maxStep() {
+    return this._maxStep;
+  }
+  public get totalStep() {
+    return this._totalStep;
+  }
+
   DeepVirtualCopy() {
     const copy = new DynamicState(
       this.staticState,
@@ -53,8 +64,9 @@ export default class DynamicState {
       undefined
     );
     copy.player = this.player.DeepCopy(copy);
-    copy.playerStep = this.playerStep;
-    copy.playerMaxStep = this.playerMaxStep;
+    copy._currentStep = this._currentStep;
+    copy._totalStep = this._totalStep;
+    copy._maxStep = this._maxStep;
     copy.changesKeyString = this.changesKeyString;
     copy.dynamicsKeyString = this.dynamicsKeyString;
     copy.lockGridKey = true;
@@ -143,8 +155,8 @@ export default class DynamicState {
   GetPlayerKey() {
     this.playerKeyString[0] = this.player.position.x;
     this.playerKeyString[1] = this.player.position.y;
-    this.playerKeyString[2] = this.playerStep;
-    this.playerKeyString[3] = this.playerMaxStep;
+    this.playerKeyString[2] = this._currentStep;
+    this.playerKeyString[3] = this._maxStep;
     return this.playerKeyString.toString();
   }
 
@@ -297,11 +309,14 @@ export default class DynamicState {
    */
   BeginPlayerStep() {
     let trigger = false;
-    this.playerStep--;
-    if (this.playerStep == 0) {
+    if (this._currentStep === this._maxStep) {
+      this._currentStep = 1;
+    } else {
+      this._currentStep += 1;
+    }
+    this._totalStep += 1;
+    if (this._currentStep === this._maxStep) {
       trigger = true;
-    } else if (this.playerStep < 0) {
-      this.playerStep = this.playerMaxStep - 1;
     }
     this.ForEventGroup(EventGroup.BEGIN_STEP_ALL, (obj) =>
       obj.OnBeginStep(this, trigger)
@@ -317,7 +332,7 @@ export default class DynamicState {
    * The player reaches a tile.
    */
   EndPlayerStep() {
-    const trigger = this.playerStep == 0;
+    const trigger = this._currentStep === this._maxStep;
     this.ForEventGroup(EventGroup.END_STEP_ALL, (obj) =>
       obj.OnEndStep(this, trigger)
     );

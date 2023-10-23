@@ -70,6 +70,7 @@
       }
     ],
     "no-null/no-null": "error",
-    "no-unary-plus/no-unary-plus": "error"
+    "no-unary-plus/no-unary-plus": "error",
+    "eqeqeq": "error"
   }
 }

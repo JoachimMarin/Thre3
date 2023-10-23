@@ -12,7 +12,7 @@ import * as Phaser from 'phaser';
 export default class LevelScene extends Phaser.Scene {
   public cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private levelParser: LevelParser;
-  private ready: boolean = false;
+  private _ready: boolean = false;
   private additionalScenes: Phaser.Scene[];
 
   public static readonly SCENE = new LevelScene();
@@ -31,6 +31,10 @@ export default class LevelScene extends Phaser.Scene {
     ];
     this.levelParser = new SceneLevelParser(this, []);
     GameManager.Init(this.levelParser, this, () => new InventoryUI());
+  }
+
+  public get ready() {
+    return this._ready;
   }
 
   init() {
@@ -71,7 +75,7 @@ export default class LevelScene extends Phaser.Scene {
   }
 
   create() {
-    this.ready = false;
+    this._ready = false;
     for (const scene of this.additionalScenes) {
       this.scene.launch(scene);
     }
@@ -81,7 +85,7 @@ export default class LevelScene extends Phaser.Scene {
     // for example accessing their cameras with CameraManager
     const waitForScenes = setInterval(() => {
       for (const scene of this.additionalScenes) {
-        if (this.scene.getStatus(scene) != 5) {
+        if (this.scene.getStatus(scene) !== 5) {
           return;
         }
       }
@@ -93,11 +97,11 @@ export default class LevelScene extends Phaser.Scene {
 
   createReady() {
     GameManager.LoadLevel(this.levelIndex);
-    this.ready = true;
+    this._ready = true;
   }
 
   update(time: number, delta: number) {
-    if (this.ready) {
+    if (this._ready) {
       GameManager.Update(time, delta);
       this.cameraManager.Update();
     }
