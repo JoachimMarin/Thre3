@@ -126,8 +126,8 @@ export default class LaserGun extends GridObjectStaticImage {
   override OnBeginStepTrigger(state: DynamicState): void {
     if (
       !Constants.INCLUDE_GRAPHICS &&
-      this.position.x != state.player.destination.x &&
-      this.position.y != state.player.destination.y
+      this.position.x !== state.player.destination.x &&
+      this.position.y !== state.player.destination.y
     ) {
       // TODO: could cause problems once more complicated items are added
       return;

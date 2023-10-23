@@ -29,7 +29,7 @@ export default class GridObjectStaticImage extends GridObjectStatic {
 
   override Remove(state: DynamicState): void {
     super.Remove(state);
-    if (Constants.INCLUDE_GRAPHICS && this.image != undefined) {
+    if (Constants.INCLUDE_GRAPHICS && this.image !== undefined) {
       this.image.destroy();
       this.image = undefined;
     }
@@ -37,7 +37,7 @@ export default class GridObjectStaticImage extends GridObjectStatic {
 
   override Unload() {
     super.Unload();
-    if (Constants.INCLUDE_GRAPHICS && this.image != undefined) {
+    if (Constants.INCLUDE_GRAPHICS && this.image !== undefined) {
       this.image.destroy();
       this.image = undefined;
     }

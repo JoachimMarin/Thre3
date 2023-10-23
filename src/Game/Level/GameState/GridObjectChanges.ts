@@ -24,6 +24,6 @@ export default abstract class GridObjectChanges {
   }
 
   static HasFlag(changes: integer, index: integer): boolean {
-    return (changes & (1 << index)) != 0;
+    return (changes & (1 << index)) !== 0;
   }
 }

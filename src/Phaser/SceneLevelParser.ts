@@ -27,7 +27,7 @@ export default class SceneLevelParser extends LevelParser {
     for (const attr of xml.attributes) {
       obj['$'][attr.nodeName] = attr.value;
     }
-    if (xml.children.length == 0 && xml.innerHTML != '') {
+    if (xml.children.length === 0 && xml.innerHTML !== '') {
       obj['_'] = xml.innerHTML;
     } else {
       for (const child of xml.children) {

@@ -5,7 +5,7 @@ abstract class IsImplemented {
     if (!this.cache.has(func)) {
       const functionString: string = func.toString().replace(/\s/g, '');
       const first = functionString.indexOf('{}');
-      const result = first == -1 || first != functionString.lastIndexOf('{}');
+      const result = first === -1 || first !== functionString.lastIndexOf('{}');
       this.cache.set(func, result);
       return result;
     }

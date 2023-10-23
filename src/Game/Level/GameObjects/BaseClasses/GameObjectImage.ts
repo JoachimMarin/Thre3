@@ -28,7 +28,7 @@ export default class GameObjectImage extends GameObject {
 
   override Remove(state: DynamicState): void {
     super.Remove(state);
-    if (Constants.INCLUDE_GRAPHICS && this.image != undefined) {
+    if (Constants.INCLUDE_GRAPHICS && this.image !== undefined) {
       this.image.destroy();
       this.image = undefined;
     }
@@ -36,7 +36,7 @@ export default class GameObjectImage extends GameObject {
 
   override Unload() {
     super.Unload();
-    if (Constants.INCLUDE_GRAPHICS && this.image != undefined) {
+    if (Constants.INCLUDE_GRAPHICS && this.image !== undefined) {
       this.image.destroy();
       this.image = undefined;
     }
