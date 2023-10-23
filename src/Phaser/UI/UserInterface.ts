@@ -3,6 +3,8 @@ import * as Phaser from 'phaser';
 export const Const = {
   BackGroundColor: 0x6a8bab,
   AccentColor: 0x1a529b,
+  BackGroundRed: 0xaa6969,
+  AccentRed: 0x991a1a,
   MinimumFontSize: 32
 };
 
@@ -55,6 +57,7 @@ export class Text {
 }
 
 export class Box {
+  private boundingBox: Phaser.GameObjects.Rectangle;
   private backgroundBlack: Phaser.GameObjects.Rectangle;
   private background: Phaser.GameObjects.Rectangle;
   private sides: Phaser.GameObjects.Image[] = [];
@@ -78,6 +81,10 @@ export class Box {
     this.background.y = minY + borderWidth / 4;
     this.background.width = maxX - minX - borderWidth / 2;
     this.background.height = maxY - minY - borderWidth / 2;
+    this.boundingBox.x = minX;
+    this.boundingBox.y = minY;
+    this.boundingBox.width = maxX - minX;
+    this.boundingBox.height = maxY - minY;
 
     // the correct length would be max - min - 2 * borderWidth to account for borders on both sides
     // this can lead to small artifacts at the connections between the corners and the sides
@@ -105,6 +112,10 @@ export class Box {
     }
   }
 
+  public get BoundingBox(): Phaser.GameObjects.Rectangle {
+    return this.boundingBox;
+  }
+
   constructor(
     scene: Phaser.Scene,
     minX: number = 0,
@@ -115,6 +126,10 @@ export class Box {
     backgroundColor: number = Const.BackGroundColor,
     accentColor: number = Const.AccentColor
   ) {
+    this.boundingBox = scene.add
+      .rectangle(0, 0, 1, 1, 0)
+      .setOrigin(0, 0)
+      .setAlpha(0.01);
     this.backgroundBlack = scene.add.rectangle(0, 0, 1, 1, 0).setOrigin(0, 0);
     this.background = scene.add
       .rectangle(0, 0, 1, 1, backgroundColor)

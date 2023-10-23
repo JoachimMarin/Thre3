@@ -10,11 +10,15 @@ export default abstract class GameManager {
   private static parser: LevelParser;
   private static levelScene: LevelScene;
   private static inventory: () => Inventory;
-  private static levelState: LevelState;
+  private static _levelState: LevelState;
   private static _levelIndex: integer = -1;
 
   static get levelIndex(): integer {
     return this._levelIndex;
+  }
+
+  static get levelState(): LevelState {
+    return this._levelState;
   }
 
   static Init(
@@ -30,21 +34,21 @@ export default abstract class GameManager {
   public static LoadLevel(index: integer) {
     this._levelIndex = index;
     // clear previous level state
-    if (this.levelState != undefined) {
-      this.levelState.UnloadLevel();
+    if (this._levelState !== undefined) {
+      this._levelState.UnloadLevel();
     }
     // create new level state
-    this.levelState = new LevelState(this.levelScene);
+    this._levelState = new LevelState(this.levelScene);
 
     // load level for state and scene
-    this.levelState.LoadLevel(index, this.parser, this.inventory());
+    this._levelState.LoadLevel(index, this.parser, this.inventory());
   }
 
   public static SolveLevel(index: integer): [Path, Vec2] {
     this.LoadLevel(index);
     let result: [Path, Vec2];
     this.RunSolver((solver) => {
-      result = solver.Solve(this.levelState.dynamicState);
+      result = solver.Solve(this._levelState.dynamicState);
     });
     return result;
   }
@@ -54,7 +58,7 @@ export default abstract class GameManager {
     let verified = false;
     this.RunSolver((solver) => {
       verified = solver.Verify(
-        this.levelState.dynamicState,
+        this._levelState.dynamicState,
         this.parser.levelFile.pathString
       );
     });
@@ -80,7 +84,7 @@ export default abstract class GameManager {
     this.NextLevel();
   }
 
-  private static RestartLevel() {
+  public static RestartLevel() {
     this.LoadLevel(this._levelIndex);
   }
 
@@ -91,6 +95,6 @@ export default abstract class GameManager {
   }
 
   public static Update(_time: number, delta: number) {
-    this.levelState.dynamicState.Update(delta);
+    this._levelState.dynamicState.Update(delta);
   }
 }
