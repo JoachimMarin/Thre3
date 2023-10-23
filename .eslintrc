@@ -5,7 +5,8 @@
     "@typescript-eslint",
     "no-relative-import-paths",
     "import",
-    "no-null"
+    "no-null",
+    "no-unary-plus"
   ],
   "extends": [
     "eslint:recommended",
@@ -68,6 +69,7 @@
         }
       }
     ],
-    "no-null/no-null": "error"
+    "no-null/no-null": "error",
+    "no-unary-plus/no-unary-plus": "error"
   }
 }
